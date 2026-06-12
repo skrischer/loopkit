@@ -148,6 +148,12 @@ asking where you can:
   mechanism (`Todo` / `In Progress` / `Done`). Ask for the existing project
   URL/number; if none exists, create one (`gh project create`) on explicit
   confirmation, never silently. `none` is not a valid value.
+- **Brownfield backfill:** put every existing open issue onto the board
+  (`Todo`, or its real state) AND retrofit the issue conventions on the
+  existing issue bodies — above all a parseable `Depends on: #N` line per
+  issue, derived from the specs' phase and step order. The implement loop's
+  unblocked check reads exactly that line; prose dependencies are invisible
+  to it and let issues get picked too early.
 - **Commands** — derived from the stack just fixed in the constitution:
   - **Bootstrap** — makes a fresh clone or worktree runnable (install deps
     from the lockfile, copy env files). Run it once to prove it works.
