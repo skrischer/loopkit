@@ -1,0 +1,7 @@
+{
+  "name": "loopkit",
+  "displayName": "Loopkit",
+  "version": "0.1.0",
+  "description": "Spec-driven loop engineering: /inception bootstraps a project into loop-readiness; /plan and /implement run as parallel attended loops over GitHub issues, milestones, and a project board.",
+  "author": { "name": "Sebastian Krischer" }
+}
