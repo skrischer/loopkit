@@ -179,6 +179,11 @@ per project:
 - The contract's Autonomy section is the human-readable counterpart: it
   explicitly grants autonomous commits, pushes, merges, dependency installs,
   and `.env` edits to the skills, overriding any stricter global user rules.
+- **Conflict check:** read the user-level `~/.claude/settings.json`. Deny
+  rules and PreToolUse hooks there beat every project setting — a global
+  `Bash(npm install*)` deny silently kills Bootstrap, and no project file can
+  override it. Surface every global rule that collides with the contract's
+  Autonomy section and ask the user to relax it (their edit, never yours).
 
 GATE: present the settings before writing; merge with an existing file, never
 overwrite silently.
@@ -191,6 +196,11 @@ artifact):
 - List `docs/prior-art.md`, `docs/architecture.md`, `docs/roadmap.md`, and
   `docs/workflow.md` as on-demand references — explicitly NOT loaded permanently
   (token budget).
+- State the contract's Autonomy grant directly in `CLAUDE.md` — the
+  always-in-context counterpart to stricter global user rules (which are also
+  always in context): within the loopkit skills, autonomous commits, pushes,
+  merges, dependency installs, and `.env` edits are explicitly granted; hard
+  limits live in `.claude/settings.json`.
 
 ## Close out — loop readiness
 
