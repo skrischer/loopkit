@@ -1,0 +1,11 @@
+{
+  "name": "loopkit",
+  "owner": { "name": "Sebastian Krischer" },
+  "plugins": [
+    {
+      "name": "loopkit",
+      "source": "./",
+      "description": "Spec-driven loop engineering: inception bootstraps loop-ready projects; plan and implement run as parallel attended loops over GitHub issues, milestones, and a project board."
+    }
+  ]
+}
