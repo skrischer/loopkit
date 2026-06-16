@@ -9,28 +9,32 @@
 
 | Phase | Name | Spec | Milestone |
 |---|---|---|---|
-| P1 | Drop spec lifecycle state (DRAFT/READY) | — | — |
-| P2 | Drop roadmap current-focus + status; manual targeting | — | — |
-| P3 | Proportional ceremony: living-spec milestone + `track:adhoc` fast-lane | — | — |
-| P4 | Prior-art elevation: mandatory consult + linking; template challenge fields | — | — |
-| P5 | `/implement` as milestone orchestrator; `/plan` emits milestone-level depends-on | — | — |
-| P6 | Clarification belongs to planning: planner anticipates implementer questions; implementer escalates forks back | — | — |
+| P1 | Drop spec lifecycle state (DRAFT/READY) | [spec-P1](specs/spec-P1.md) | [#1](https://github.com/skrischer/loopkit/milestone/1) |
+| P2 | Drop roadmap current-focus + status; manual targeting | [spec-P2](specs/spec-P2.md) | [#2](https://github.com/skrischer/loopkit/milestone/2) |
+| P3 | Proportional ceremony: living-spec milestone + `track:adhoc` fast-lane | [spec-P3](specs/spec-P3.md) | [#3](https://github.com/skrischer/loopkit/milestone/3) |
+| P4 | Prior-art elevation: mandatory consult + linking; template challenge fields | [spec-P4](specs/spec-P4.md) | [#4](https://github.com/skrischer/loopkit/milestone/4) |
+| P5 | `/implement` as milestone orchestrator; `/plan` emits milestone-level depends-on | [spec-P5](specs/spec-P5.md) | [#5](https://github.com/skrischer/loopkit/milestone/5) |
+| P6 | Clarification belongs to planning: planner anticipates implementer questions; implementer escalates forks back | [spec-P6](specs/spec-P6.md) | [#6](https://github.com/skrischer/loopkit/milestone/6) |
 
-A phase gets a Spec link once `/plan` drafts it, and a Milestone link once its
-issues exist. The milestone (open/closed + issue progress) is where status lives.
+The milestone (open/closed + issue progress) is where status lives.
 
 ## Dependencies & parallelization
 
-The milestone-level `depends-on` principle, applied to loopkit itself:
+Applying the milestone-level `depends-on` principle to loopkit itself — with an
+honest correction surfaced during planning: loopkit's phases are **not**
+independent. P2–P6 all edit `skills/plan/SKILL.md`, and P1/P3/P5/P6 also edit
+`skills/implement/SKILL.md`. Because they share these core files, the phases run
+as a **sequential** chain, not parallel orchestrators:
 
-- **P1, P2, P4 are largely independent** — parallelizable as separate milestones
-  (independent orchestrators).
-- **P3 builds on P1** (the proportional tracks assume the no-DRAFT/READY spec
-  model).
-- **P5 interacts with P3** (the fast-lane's dispatch is part of the orchestrator
-  model) — sequence P5 alongside or after P3.
-- **P6 complements P4** (planner exhaustiveness) and builds on the spec model
-  (P1).
+- Run order: **P1 → P2 → P3 → P4 → P5 → P6**. Each milestone carries a
+  `Depends on milestone: #<n>` line to its predecessor.
+- The earlier "P1/P2/P4 are parallelizable" assumption was optimistic; the
+  file-level reality serializes them. That is itself a dogfood finding: on a
+  small, shared-file codebase the parallelizable frontier is narrow — the
+  orchestrator's parallelism pays off later, on feature work that touches
+  disjoint files.
+- Within a milestone, issues touching different files run in parallel; issues
+  touching the same file are serialized by their `Depends on:` lines.
 - The inception challenge lens (part of P4) is already bootstrapped in
   `skills/inception/SKILL.md`.
 
