@@ -63,21 +63,43 @@ Work out with the user: problem, why now, target users, measurable success
 criteria. Short dialog, not a form. GATE: confirm the goal summary before
 research starts.
 
-## Step 2 — Prior-art research (gate 2)
+## Step 2 — Prior-art challenge (gate 2)
 
-- Time-boxed, no claim of completeness. Prefer the deep-research skill if
-  available (pass concern-focused questions derived from the goal); otherwise
-  fall back to a handful of WebSearch/WebFetch lookups.
-- COST: deep-research fans out ~100 subagents that inherit the session model.
-  Run this step on a cost-appropriate model (e.g. Opus) — a heavy model (Fable)
-  multiplies the cost ~100x and can exhaust the session limit. Switch the
-  session model before triggering the research, not during.
-- Look for exemplary, preferably OSS projects that productively solve the
-  problem or its sub-problems.
-- Fill `docs/prior-art.md` from the template: per entry concern, repo +
-  concrete path, license, verdict (reuse / reference-only / avoid + why),
-  date. Living document — gaps are fine.
-- GATE: present findings and verdicts before finalizing.
+Prior art is not just catalogued — it CHALLENGES the project. Derive the
+challenge questions from the goal and answer them from the findings:
+
+- **Existence** — does an existing tool already solve this well enough to make
+  the project redundant? The honest output may be "reuse X, don't build."
+- **USP** — in one sharp sentence, what justifies this project that prior art
+  does not already cover?
+- **Differentiation / non-goals** — where does this project deliberately stop
+  where others go on? Feeds the vision's scope and non-goals.
+- **Idea harvest** — per reference: what works, what fails, did we account for
+  the same concerns; what to adopt, what to avoid on purpose.
+
+The challenge answers are an input to the vision (Step 3: USP, non-goals) and
+may spawn roadmap items — prior art is not a passive document.
+
+**Research mode — ASK, never assume.** Present the choice before researching:
+
+- **deep-research** — the deep-research skill: deep, multi-source. COST: it
+  fans out ~100 subagents that inherit the session model — run on a
+  cost-appropriate model (e.g. Opus); a heavy model (Fable) multiplies the cost
+  ~100x and can exhaust the session limit. Switch the session model before
+  triggering, not during.
+- **websearch** — a handful of focused WebSearch/WebFetch lookups; cheap, fast,
+  enough for a landscape comparison.
+- **none** — offer ONLY when `docs/prior-art.md` already exists with relevant
+  entries: reuse what is there, skip fresh research.
+
+Look for exemplary, preferably OSS projects that solve the problem or its
+sub-problems. Fill `docs/prior-art.md` from the template: per entry concern,
+repo + concrete path, license, verdict (reuse / reference-only / avoid + why),
+date, and the harvest notes (adopt / avoid) in Notes. Living document — gaps
+are fine.
+
+GATE: present the challenge answers (existence, USP, differentiation, harvest)
+and the per-entry verdicts before finalizing.
 
 ## Step 3 — Sharpen the vision (gate 3)
 
