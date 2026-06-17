@@ -31,12 +31,13 @@ one. On human blockers, park the issue and move on (see If blocked).
   checklist.
 - Without an argument (loop mode), pick the next **unblocked** issue:
   - board status `Todo`, no `blocked:human` label, every `Depends on:` issue
-    closed, and its spec `READY` on the default branch;
+    closed, and its spec merged on the default branch with a milestone;
   - order: roadmap phase order, then dependency order, then issue number.
   - **Loop idle state:** if no issue qualifies, report one line — "waiting for
     /loopkit:plan — no unblocked Todo issues" — and end the cycle.
-- Read the referenced `docs/specs/spec-*.md`. It must be `READY` (never act on
-  a `DRAFT`). The spec owns the design; the issue owns the step.
+- Read the referenced `docs/specs/spec-*.md`. It must be merged on the default
+  branch with a milestone — that is the acceptance signal. The spec owns the
+  design; the issue owns the step.
 - A `feat:`/`fix:` PR must close an issue that traces to a spec. `chore:`/
   `docs:`/`refactor:`/`test:`/`ci:`/`build:`/`perf:` are exempt.
 
