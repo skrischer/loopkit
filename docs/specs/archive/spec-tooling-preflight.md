@@ -163,3 +163,10 @@ smoke run the human performs at the milestone-QA gate).
   before acceptance: the scope-detection probe is pinned verbatim, and
   `read:org` was reduced to a reactive remedy (no brittle up-front org
   detection).
+- 2026-06-17: Milestone-QA accepted. Machine-checkable items green (preflight
+  first in inception Step 0 + checklist; plan/implement once-per-run guards;
+  Environment-prerequisites section before Repository in template + contract;
+  cross-file consistency — `gh auth refresh -s project` exactly once across all
+  five surfaces). Non-disruptive smoke confirmed the check commands behave as
+  specified. Built and accepted via the first end-to-end `/loopkit:plan` ->
+  `/loopkit:implement` run on a real feature (a 3-wide parallel frontier).
