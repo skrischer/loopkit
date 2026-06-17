@@ -35,6 +35,16 @@ implementation. Reference the constitution rather than restating it.
 - Constraint 1
 - Constraint 2
 
+## Prior art
+
+Relevant entries from `docs/prior-art.md` that inform this scope. `/loopkit:plan`
+consults the prior-art doc — indexed by concern — and links the entries that bear
+on this spec here, so `/loopkit:implement` can reach them. List each by its
+concern-heading as a link, with a one-line note on why it is relevant. Write
+`none relevant` explicitly if prior art has nothing for this scope.
+
+- [<Concern heading>](../prior-art.md#<concern-heading>) — why it is relevant here
+
 ## Human prerequisites
 
 Everything only a human can provide for this milestone — secrets, external
