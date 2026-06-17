@@ -92,3 +92,10 @@ spec and no milestone).
 
 - 2026-06-16: Three tracks; `track:adhoc` skips spec+milestone; living-spec
   milestone never archived (from the constitution).
+- 2026-06-17: The spec did not specify HOW `/loopkit:implement` tells a
+  living-spec milestone from a full-spec one at the QA gate (review surfaced the
+  gap). Resolved with a machine-readable discriminator: a living-spec milestone
+  carries a `Track: living-spec` line in its milestone description — `/plan`
+  writes it, `/implement` reads it (`gh api .../milestones/<n> --jq
+  .description`), and both the workflow template and `docs/workflow.md` document
+  the marker. A full-spec milestone has no such line.
