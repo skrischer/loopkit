@@ -5,6 +5,16 @@
 > gates, and loop behavior of this project. Filled during inception; the skills
 > read it instead of hardcoding specifics.
 
+## Environment prerequisites
+
+- `git` and `gh` must be installed and on PATH.
+- `gh` must be authenticated (`gh auth status`) with the `repo`
+  (issues/milestones/PRs) and `project` (the ProjectV2 board) scopes.
+- Landmine: `gh auth login` does NOT grant `project` by default. Remedy: missing
+  `project` scope -> `gh auth refresh -s project` (OAuth login; for a PAT or
+  `GH_TOKEN`, `gh auth refresh` does not apply — re-create the token with the
+  `project` scope instead).
+
 ## Repository
 
 - GitHub repo: `<owner/repo>`
