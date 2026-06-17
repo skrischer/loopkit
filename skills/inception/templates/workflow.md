@@ -60,8 +60,9 @@ human milestone-QA gate instead.
 
 ## Status
 
-- Specs carry only `DRAFT`/`READY` in their header. A completed spec moves to
-  `docs/specs/archive/`; its closed milestone is the "done" signal.
+- Specs carry no lifecycle state. "Accepted" = merged on the default branch
+  with a milestone and issues. A completed spec moves to `docs/specs/archive/`;
+  its closed milestone is the "done" signal.
 - Live work state is the board: `Todo` (ready), `In Progress` (claimed by a
   loop), `Done` (merged). Claiming = set `In Progress` + assignee.
 - Everything else — blocked, deferred — lives on the GitHub issues and
@@ -87,8 +88,9 @@ spec never lists steps; the issues never restate the design. The spec's
   autonomous squash-merge.
 - **Per milestone — human gates:**
   - Planning: the spec-acceptance gate — genuinely-open decisions
-    (AskUserQuestion, never guess) + human-prerequisites handover, then
-    `READY` + merge.
+    (AskUserQuestion, never guess) + human-prerequisites handover, then merge
+    on the default branch (acceptance = merged spec with a milestone and
+    issues).
   - Implementation: the milestone QA gate — when the milestone's last issue
     closes, QA scenarios are derived from the spec's Verification section; the
     human accepts or files regressions.
@@ -111,7 +113,7 @@ terminal from the main checkout:
 - Plan loop:
 
   ```
-  /loop /loopkit:plan — plan the roadmap's next unplanned phase to a READY spec
+  /loop /loopkit:plan — plan the roadmap's next unplanned phase to a merged spec
   with milestone, issues, and board entries; stop at the spec-acceptance gate;
   when no unplanned phase remains, report and end. Ceiling: <N> iterations;
   stop when the same blocker repeats twice.
