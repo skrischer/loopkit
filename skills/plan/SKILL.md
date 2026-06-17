@@ -207,7 +207,7 @@ second human stop.
 A living-spec is the same chain as step 7, with two differences — it is
 **human-initiated** and its milestone **stays open**.
 
-- **Acceptance is the P1 model** — exactly as step 6: a merged spec on the
+- **Acceptance is the no-lifecycle model** — exactly as step 6: a merged spec on the
   default branch + an open milestone. The spec carries no lifecycle header to
   flip; the **open milestone is the signal the theme is active**. Nothing about
   acceptance differs from full-spec.
