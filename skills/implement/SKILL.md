@@ -44,9 +44,9 @@ The argument selects the unit of work:
 ### track:adhoc fast-lane (P3 — preserved)
 
 A `track:adhoc` issue is the fast-lane: it has **no spec and no milestone**, so it
-is **not orchestrated**. It is pickable with just board `Todo`, no `blocked:human`
-label, and every `Depends on:` issue closed — the spec-merged requirement is
-**waived**. Drive it **solo** through one subagent's contract (§3) to a merged PR;
+is **not orchestrated**. It is pickable with just board `Todo`, neither a
+`blocked:human` nor a `needs:planning` label, and every `Depends on:` issue
+closed — the spec-merged requirement is **waived**. Drive it **solo** through one subagent's contract (§3) to a merged PR;
 its body (`Goal:`/`Acceptance:`) is the whole contract. There is **no QA gate** —
 the squash merge is the done signal. The relaxed spec-trace rule applies: a
 `feat:`/`fix:` PR normally must close an issue that traces to a spec, but a
@@ -85,8 +85,8 @@ cycle.
 ## 2. Wave-based fan-out (the core loop)
 
 Repeat **while the unblocked frontier is non-empty** — when it empties, the loop
-ends and the milestone is either done or only parked work remains (the branch
-after step 5):
+ends and the milestone is either done or only escalated (`needs:planning`) or
+parked (`blocked:human`) work remains (the branch after step 5):
 
 1. **Compute the current unblocked frontier** (§1).
 2. **Dispatch each frontier issue as a parallel in-session subagent** via the
