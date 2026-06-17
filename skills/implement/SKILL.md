@@ -38,10 +38,10 @@ The argument selects the unit of work:
   gate beyond the issue's own merge). Use for a one-off issue.
 - **`/loopkit:implement` (no argument, loop mode)** — per the workflow contract,
   orchestrate the appropriate milestone, or — if a `track:adhoc` issue is the
-  workable unit — drive it solo (the P3 fast-lane below). Order: roadmap phase
+  workable unit — drive it solo (the track:adhoc fast-lane below). Order: roadmap phase
   order, then dependency order, then issue number.
 
-### track:adhoc fast-lane (P3 — preserved)
+### track:adhoc fast-lane
 
 A `track:adhoc` issue is the fast-lane: it has **no spec and no milestone**, so it
 is **not orchestrated**. It is pickable with just board `Todo`, neither a
