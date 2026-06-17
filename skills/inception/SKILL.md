@@ -132,7 +132,6 @@ architecture seed — break the work into ordered, plannable phases. From
 
 - A phase-overview table (Phase, Name, Spec, Milestone). Specs and milestones
   are created later by `/loopkit:plan`, so both columns start `—`.
-- A "current focus" pointer at the first phase to plan.
 - A one-line north star tying back to the vision.
 
 No status markers in the roadmap — progress lives in the GitHub issues and
