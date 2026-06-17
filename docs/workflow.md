@@ -59,6 +59,9 @@ truth, milestones and issues are created on GitHub from them.
 - An issue is **unblocked** when every `Depends on` issue is closed and it
   carries no `blocked:human` label.
 - `track:adhoc` = a bug/QoL issue with no spec and no milestone — the fast-lane.
+- A living-spec milestone carries a `Track: living-spec` line in its milestone
+  description — the discriminator `/loopkit:implement`'s QA gate reads to tell it
+  from a full-spec milestone (which has no such line).
 
 ## State
 

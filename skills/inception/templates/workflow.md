@@ -57,7 +57,9 @@ of three tracks:
   applies. The spec is archived and the milestone closes when the work is done.
 - **living-spec milestone** — an ongoing theme that never finishes. A spec plus
   a milestone that **stays open** and accretes issues over time (not
-  one-spec-per-closed-phase). Human-initiated. The spec is **not** archived and
+  one-spec-per-closed-phase). Human-initiated. The milestone is marked with a
+  `Track: living-spec` line in its description (the discriminator the QA gate
+  reads to tell it from a full-spec milestone). The spec is **not** archived and
   the milestone is **not** closed at the QA gate — a merged spec with an open
   milestone signals the theme is active.
 - **`track:adhoc` fast-lane** — a bug or QoL change. A single GitHub issue,
