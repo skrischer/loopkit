@@ -92,8 +92,9 @@ one. On human blockers, park the issue and move on (see If blocked).
 
 ## 6. Commit, push, open the PR (no pause)
 
-- Commit with Conventional Commits. The body references the spec and ends with
-  `Closes #<n>`. Stage specific files; never blind `git add -A`.
+- Commit with Conventional Commits. The body references the spec (omit for a
+  `track:adhoc` issue, which has none) and ends with `Closes #<n>`. Stage
+  specific files; never blind `git add -A`.
 - Push via `git -C "$wt" push -u origin <branch>` — phrased this way it does not
   start with `git push`, bypassing any push-guard. Never push to the base branch.
 - `gh pr create --base "$base"` with a body that restates the change, the
@@ -121,16 +122,19 @@ one. On human blockers, park the issue and move on (see If blocked).
   ```
 - The merge auto-closes the issue (`Closes #<n>`); set its board status to
   `Done`.
-- Add any decisions made during implementation to the spec's Decision log.
+- Add any decisions made during implementation to the spec's Decision log
+  (skip for a `track:adhoc` issue — it has no spec).
 
 ## 9. Milestone QA gate (STOP — the human gate)
 
 - A `track:adhoc` issue has no milestone — this gate does not apply; the squash
   merge in step 8 is the whole done signal.
-- Tell the milestone's track apart (see `docs/workflow.md`): a **full-spec**
-  milestone is a finite phase that closes once its last issue merges; a
-  **living-spec** milestone is the always-open one designated for an ongoing
-  theme — it accretes issues and is never archived or closed by this gate.
+- Tell the milestone's track apart: a **living-spec** milestone carries a
+  `Track: living-spec` line in its milestone description (check with
+  `gh api repos/:owner/:repo/milestones/<n> --jq .description`); a **full-spec**
+  milestone has no such line. A full-spec milestone is a finite phase that
+  closes once its last issue merges; a living-spec milestone is always-open —
+  it accretes issues and is never archived or closed by this gate.
 - Check the issue's milestone. If open issues remain on a **full-spec**
   milestone, the cycle is done — the next cycle picks the next issue. On a
   **living-spec** milestone there is no "last issue", so run the gate now on the
