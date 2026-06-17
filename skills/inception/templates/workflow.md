@@ -62,8 +62,8 @@ of three tracks:
   milestone signals the theme is active.
 - **`track:adhoc` fast-lane** — a bug or QoL change. A single GitHub issue,
   labeled `track:adhoc`, with **no spec and no milestone** — it holds its whole
-  state on the board and skips ceremony entirely (no spec, no milestone, no
-  dependency graph). Created by the **human**, not by `/loopkit:plan`.
+  state on the board and skips ceremony entirely (no dependency graph either).
+  Created by the **human**, not by `/loopkit:plan`.
 
 The `feat`/`fix`-must-trace-to-a-spec rule is relaxed for `track:adhoc` only;
 full-spec and living-spec changes always reference a spec.
@@ -95,8 +95,9 @@ Across all tracks:
 ## Status
 
 - Specs carry no lifecycle state. "Accepted" = merged on the default branch
-  with a milestone and issues. A completed spec moves to `docs/specs/archive/`;
-  its closed milestone is the "done" signal.
+  with a milestone and issues. A completed full-spec moves to
+  `docs/specs/archive/` and its closed milestone is the "done" signal; a
+  living-spec milestone is the exception — it stays open (see Gates).
 - Live work state is the board: `Todo` (ready), `In Progress` (claimed by a
   loop), `Done` (merged). Claiming = set `In Progress` + assignee.
 - Everything else — blocked, deferred — lives on the GitHub issues and
