@@ -158,7 +158,7 @@ not actually open:
   first. Then create the milestone and one issue per implementable step:
   ```
   gh api repos/:owner/:repo/milestones -f title="<Milestone>" \
-    -f description="Design: docs/specs/spec-<scope>.md\nHuman prerequisites: <delivered | summary>"
+    -f description="Design: docs/specs/spec-<scope>.md\nHuman prerequisites: <delivered | summary>\nDepends on milestone: #<n>[, #<m>] | none"
   gh issue create --title "[<scope>] <step>" --milestone "<Milestone>" \
     --body "Goal: ...\nAcceptance:\n- [ ] ...\nDepends on: #N\n\nSpec: docs/specs/spec-<scope>.md"
   ```
@@ -169,6 +169,13 @@ not actually open:
   first issue depends on the prior phase's last). The implement loop selects
   only unblocked issues; an issue without correct `Depends on` lines can be
   picked too early.
+- **Milestone-level depends-on:** record which milestones this one depends on as
+  a parseable `Depends on milestone: #<n>[, #<m>]` line in the milestone
+  description — e.g. a roadmap phase that must follow a prior phase, or a feature
+  that builds on another milestone. When the milestone is independent (depends on
+  no other), write `Depends on milestone: none`. `/loopkit:implement` and humans
+  read this token to tell which milestones are independent and can run as
+  parallel orchestrators.
 - Add every issue to the project board (the contract names it) with status
   `Todo`.
 
