@@ -98,7 +98,10 @@ Milestone-level depends-on:
 Across all tracks:
 
 - An issue is **unblocked** when every `Depends on` issue is closed and it
-  carries no `blocked:human` label.
+  carries neither a `blocked:human` nor a `needs:planning` label. The two
+  exclusions differ: `blocked:human` = a human prerequisite (secret, external
+  provisioning); `needs:planning` = a design fork the implementer escalated to
+  the planner, resolved by re-running `/loopkit:plan` on the spec.
 - **Park, don't stop:** a blocker only a human can clear gets the
   `blocked:human` label plus a comment naming exactly what is needed and where
   to deliver it; the loop moves on to the next unblocked issue.
