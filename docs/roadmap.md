@@ -14,7 +14,7 @@
 | P3 | Proportional ceremony: living-spec milestone + `track:adhoc` fast-lane | [spec-P3](specs/archive/spec-P3.md) | [#3](https://github.com/skrischer/loopkit/milestone/3) |
 | P4 | Prior-art elevation: mandatory consult + linking; template challenge fields | [spec-P4](specs/archive/spec-P4.md) | [#4](https://github.com/skrischer/loopkit/milestone/4) |
 | P5 | `/implement` as milestone orchestrator; `/plan` emits milestone-level depends-on | [spec-P5](specs/archive/spec-P5.md) | [#5](https://github.com/skrischer/loopkit/milestone/5) |
-| P6 | Clarification belongs to planning: planner anticipates implementer questions; implementer escalates forks back | [spec-P6](specs/spec-P6.md) | [#6](https://github.com/skrischer/loopkit/milestone/6) |
+| P6 | Clarification belongs to planning: planner anticipates implementer questions; implementer escalates forks back | [spec-P6](specs/archive/spec-P6.md) | [#6](https://github.com/skrischer/loopkit/milestone/6) |
 
 The milestone (open/closed + issue progress) is where status lives.
 
