@@ -1,12 +1,11 @@
 # Spec: [Feature/Phase Name]
 
-> Status: DRAFT | READY
 > Created: YYYY-MM-DD
 
-One-sentence summary of what this spec delivers. The only status this spec
-carries is `DRAFT` or `READY` — all progress (in progress, done, blocked) lives
-in the GitHub issues and milestone. A completed spec is moved to
-`docs/specs/archive/`.
+One-sentence summary of what this spec delivers. This spec carries no lifecycle
+state — acceptance is the spec merged on the default branch with a milestone and
+issues, and all progress (in progress, done, blocked) lives in the GitHub issues
+and milestone. A completed spec is moved to `docs/specs/archive/`.
 
 ## Outcome
 
@@ -65,7 +64,7 @@ issue per step, grouped under a milestone. This spec owns the design; the issues
 own progress. Do not duplicate the step list here.
 
 - Milestone: [Phase/Feature name](<milestone-url>)
-- Issues: created from this spec once it is `READY` (one per implementable step)
+- Issues: created from this spec once it is merged (one per implementable step)
 
 Each issue references this spec path in its body.
 
