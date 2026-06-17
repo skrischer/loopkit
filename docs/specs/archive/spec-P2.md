@@ -83,3 +83,7 @@ make `/loopkit:plan` take its scope from the human, not from a roadmap pointer.
 
 - 2026-06-16: Manual targeting; no-argument plan asks instead of auto-advancing
   (from the constitution).
+- 2026-06-17: The roadmap template's `[First plannable phase]` placeholder was
+  kept — it is a neutral phase-name placeholder (parallel to `[Next phase]` /
+  `[Later phase]`), not a current-focus pointer, so it does not violate the
+  no-status-marker rule.
