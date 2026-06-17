@@ -48,7 +48,18 @@ blockers, park instead of dying (see If blocked).
   link" — the human names the unit of work.
 - **Loop terminal state:** if every roadmap phase already has a merged spec
   with a milestone and issues, report "roadmap fully planned — waiting for new
-  phases" in one line and end the cycle.
+  phases" in one line and end the cycle. Loop-mode iterates **roadmap phases
+  only**; a living-spec milestone (step 6a) is never a roadmap phase, so it is
+  excluded from this set and the terminal state is unaffected by it.
+- **Track (the proportional dial, see `docs/workflow.md`):** decide which of
+  the contract's three tracks this scope uses before drafting. Most planning is
+  **full-spec** (a finite phase: spec + milestone that closes). When the human
+  asks to open an **ongoing theme** that accretes work over time rather than a
+  finite phase, plan the **living-spec** track (step 6a): same spec + milestone
+  cycle, but the milestone stays open. A living-spec is **human-initiated** —
+  never inferred from the roadmap, never auto-planned in loop mode. The
+  `track:adhoc` fast-lane carries no spec or milestone and is not a plan cycle
+  (the human files it directly; `/loopkit:implement` picks it up).
 - Survey existing specs, open issues and milestones:
   ```
   gh api repos/:owner/:repo/milestones --jq '.[]|"\(.number) \(.title) [\(.state)] open=\(.open_issues)"'
@@ -57,6 +68,9 @@ blockers, park instead of dying (see If blocked).
 - If a merged spec already covers the scope (with a milestone and issues),
   there is nothing to plan — point at `/loopkit:implement`. A spec still in an
   open PR is in review, not accepted: do not start a second plan against it.
+  Exception: a living-spec milestone (step 6a) is meant to be re-run with the
+  same scope to accrete more issues — there, "already covered" is expected, so
+  skip straight to step 6a's issue-creation, do not short-circuit.
 
 ## 2. Resolve decisions before writing
 
@@ -152,7 +166,31 @@ not actually open:
 - Add every issue to the project board (the contract names it) with status
   `Todo`.
 
-## 7. Roadmap (mandatory — closes the loop)
+## 6a. Living-spec milestone (only when the human opened an ongoing theme)
+
+A living-spec is the same chain as step 6, with two differences — it is
+**human-initiated** and its milestone **stays open**.
+
+- **Acceptance is the P1 model** — exactly as step 5: a merged spec on the
+  default branch + an open milestone. The spec carries no lifecycle header to
+  flip; the **open milestone is the signal the theme is active**. Nothing about
+  acceptance differs from full-spec.
+- Create the milestone (step 6) and **leave it open**; do not plan an end state
+  for it. **Mark it living-spec** so `/loopkit:implement` can tell the tracks
+  apart at the QA gate: put a `Track: living-spec` line in the milestone
+  description (a full-spec milestone has no such line). Seed it with the issues
+  known now and **keep accreting** issues into the same open milestone as the
+  theme grows — re-run this skill with the same scope to add more (the merged
+  spec already covers them). Use `Depends on: #N` for ordering as usual.
+- It is **not a roadmap phase:** skip step 7 — do not add it to the roadmap
+  overview's phase table, and never fill a current-focus/status marker.
+  Loop-mode never sees it (step 1), so the loop terminal state is unaffected.
+- It is **never archived or closed by the QA gate.** Closing one of its issues
+  archives nothing; the milestone and spec stay live. `/loopkit:implement`
+  handles the QA-gate behavior (per-batch summary, no archive) — this skill's
+  job is to open the milestone and keep accreting issues into it.
+
+## 7. Roadmap (mandatory for full-spec — closes the loop; skip for living-spec, see 6a)
 
 - Every plan cycle ends by updating `docs/roadmap.md`: fill the planned
   phase's **Spec** and **Milestone** links in the overview table. That is the
@@ -169,6 +207,10 @@ not actually open:
   `/loopkit:implement`'s milestone QA gate archives the spec and updates the
   roadmap. The closed milestone is the "done" signal — never add a status
   marker to a spec.
+- **Exception — a living-spec milestone (step 6a) never closes out:** its
+  milestone stays open and accretes issues; the QA gate runs per closed-issue
+  batch without archiving the spec or closing the milestone. There is no "done"
+  signal for an ongoing theme.
 
 ## If blocked — park, don't die
 
