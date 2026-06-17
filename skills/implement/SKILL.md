@@ -77,8 +77,10 @@ cycle.
   script.
 - Parse each open issue's `Depends on: #N` lines and build the dependency graph.
 - The **unblocked frontier** = every **open** issue in the milestone whose
-  `Depends on:` issues are **all closed** and which carries **no** `blocked:human`
-  label.
+  `Depends on:` issues are **all closed** and which carries **neither** a
+  `blocked:human` **nor** a `needs:planning` label (both take an issue out of the
+  frontier — `blocked:human` parks it, `needs:planning` escalates it to the
+  planner; see §4).
 
 ## 2. Wave-based fan-out (the core loop)
 
@@ -107,8 +109,8 @@ after step 5):
    wave. The board may show `Todo`/`In Progress`/`Done` for human visibility, but
    it is **not** a claim or lock — ownership, not claiming, keeps waves correct.
 
-When the milestone's issues are all closed (none parked), go to §5. If any issue
-is parked, go to §4.
+When the milestone's issues are all closed (none escalated or parked), go to §5.
+If any issue is escalated (`needs:planning`) or parked (`blocked:human`), go to §4.
 
 ## 3. Per-issue subagent contract (what each fan-out subagent does)
 
@@ -122,9 +124,16 @@ dispatch). Its steps:
 - **Plan the step.** Lay out a short in-session plan; prefer existing patterns,
   build the minimum the issue needs. Do not stop for confirmation — the spec and
   its acceptance checklist are the approved design. A genuine fork the spec and
-  code do not settle is a missed planning decision: do **not** guess — park the
-  issue (§4). For a `track:adhoc` issue there is no spec to reopen; if its body
-  leaves the change genuinely underspecified, park it the same way.
+  code do not settle is a missed planning decision, not a human prerequisite: do
+  **not** guess and **never** ask the human — **escalate it to planning**. Label
+  the issue `needs:planning` (**not** `blocked:human`), comment the exact
+  question, leave the board at `Todo`, **stop this issue**, and return the
+  escalation to the orchestrator (§4); the orchestrator continues the rest of the
+  frontier. Resolution path: the human re-runs `/loopkit:plan` on the spec, which
+  settles the fork in the spec and returns the issue to the frontier — the
+  implementer never resolves it itself. For a `track:adhoc` issue there is no
+  spec to reopen; escalate it `needs:planning` the same way (the planner gives it
+  a spec or tightens its body).
 - **Branch + worktree.** Pick a branch from the contract's naming
   (`feat/<scope>`, `fix/<scope>`, `chore/<scope>`). Always work in a worktree —
   never the main checkout:
@@ -167,33 +176,50 @@ dispatch). Its steps:
   The merge auto-closes the issue (`Closes #<n>`); set its board status to `Done`
   (visibility only — not a lock). Add any decisions made during implementation to
   the spec's Decision log (skip for a `track:adhoc` issue).
-- **Report back** to the orchestrator: **merged** (issue closed), or **parked**
-  (`blocked:human` — issue number + reason). The subagent never asks the human; it
-  parks and returns.
+- **Report back** to the orchestrator: **merged** (issue closed), **escalated**
+  (`needs:planning` — a design fork; issue number + the question), or **parked**
+  (`blocked:human` — a human prerequisite; issue number + reason). The subagent
+  never asks the human; it escalates or parks and returns.
 
-## 4. Park, don't stall
+## 4. Escalate or park, don't stall
 
-When a subagent **parks** its issue — `blocked:human` (a blocker only a human can
-clear: a secret, external provisioning, a decision the spec does not settle) or
-the no-progress rule trips — it labels the issue `blocked:human`, comments exactly
-what is needed and where to deliver it, leaves the board at `Todo`, and returns the
-park to the orchestrator.
+A subagent takes an issue out of the frontier two ways, by **destination**:
 
-The orchestrator then:
+- **`needs:planning` — a design fork (routes to the planner).** The spec and code
+  do not settle a decision the issue needs (a missed planning decision), or a
+  `track:adhoc` issue is genuinely underspecified. The subagent labels the issue
+  `needs:planning`, comments the exact question, leaves the board at `Todo`, stops
+  the issue, and returns the **escalation**. **Resolution path:** the human re-runs
+  `/loopkit:plan` on the spec, which resolves the fork in the spec and returns the
+  issue to the frontier — clarification stays in planning, where vision /
+  constitution / prior-art are in context. The implementer never asks the human
+  directly and never guesses.
+- **`blocked:human` — a human prerequisite (routes to human delivery).** A blocker
+  only a human can clear: a secret, external provisioning. The no-progress rule
+  (the identical failure twice) also parks here. The subagent labels the issue
+  `blocked:human`, comments exactly what is needed and where to deliver it, leaves
+  the board at `Todo`, and returns the **park**. This is **not** a planning
+  question — it does not route to `/loopkit:plan`.
 
-- **Excludes the parked issue AND all its transitive dependents** (issues that
-  `Depends on:` it, directly or indirectly) from further waves.
-- **Finishes the rest** of the reachable frontier (continue §2).
-- At the end, **reports the parked issues** (and their excluded dependents)
-  **instead of running the milestone-QA gate** — a milestone with parked issues is
-  **not** complete. List them with `gh issue list --label blocked:human`.
+In both cases the orchestrator then:
+
+- **Excludes the escalated/parked issue AND all its transitive dependents** (issues
+  that `Depends on:` it, directly or indirectly) from further waves.
+- **Finishes the rest** of the reachable frontier (continue §2) — one escalated or
+  parked issue never stalls the orchestrator.
+- At the end, **reports the escalated and parked issues** (and their excluded
+  dependents) **instead of running the milestone-QA gate** — escalated and parked
+  issues do **not** count toward milestone completion, so a milestone carrying any
+  is **not** complete. List them with
+  `gh issue list --label needs:planning` and `gh issue list --label blocked:human`.
 
 Never implement workarounds; never add status markers to specs.
 
 ## 5. Milestone QA gate (STOP — the human gate)
 
-Run only when the milestone's issues are **all closed (none parked)**. If any
-issue is parked, report parked issues **instead** (§4). A `track:adhoc` issue has
+Run only when the milestone's issues are **all closed (none escalated or
+parked)**. If any issue is escalated (`needs:planning`) or parked
+(`blocked:human`), report those **instead** (§4). A `track:adhoc` issue has
 no milestone — this gate never applies to it; its squash merge is the whole done
 signal.
 
