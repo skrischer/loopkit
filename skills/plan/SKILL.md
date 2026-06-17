@@ -68,6 +68,9 @@ blockers, park instead of dying (see If blocked).
 - If a merged spec already covers the scope (with a milestone and issues),
   there is nothing to plan — point at `/loopkit:implement`. A spec still in an
   open PR is in review, not accepted: do not start a second plan against it.
+  Exception: a living-spec milestone (step 6a) is meant to be re-run with the
+  same scope to accrete more issues — there, "already covered" is expected, so
+  skip straight to step 6a's issue-creation, do not short-circuit.
 
 ## 2. Resolve decisions before writing
 
@@ -173,10 +176,12 @@ A living-spec is the same chain as step 6, with two differences — it is
   flip; the **open milestone is the signal the theme is active**. Nothing about
   acceptance differs from full-spec.
 - Create the milestone (step 6) and **leave it open**; do not plan an end state
-  for it. Seed it with the issues known now and **keep accreting** issues into
-  the same open milestone as the theme grows — re-run this skill with the same
-  scope to add more (the merged spec already covers them). Use `Depends on: #N`
-  for ordering as usual.
+  for it. **Mark it living-spec** so `/loopkit:implement` can tell the tracks
+  apart at the QA gate: put a `Track: living-spec` line in the milestone
+  description (a full-spec milestone has no such line). Seed it with the issues
+  known now and **keep accreting** issues into the same open milestone as the
+  theme grows — re-run this skill with the same scope to add more (the merged
+  spec already covers them). Use `Depends on: #N` for ordering as usual.
 - It is **not a roadmap phase:** skip step 7 — do not add it to the roadmap
   overview's phase table, and never fill a current-focus/status marker.
   Loop-mode never sees it (step 1), so the loop terminal state is unaffected.
@@ -185,7 +190,7 @@ A living-spec is the same chain as step 6, with two differences — it is
   handles the QA-gate behavior (per-batch summary, no archive) — this skill's
   job is to open the milestone and keep accreting issues into it.
 
-## 7. Roadmap (mandatory — closes the loop)
+## 7. Roadmap (mandatory for full-spec — closes the loop; skip for living-spec, see 6a)
 
 - Every plan cycle ends by updating `docs/roadmap.md`: fill the planned
   phase's **Spec** and **Milestone** links in the overview table. That is the
