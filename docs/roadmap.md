@@ -45,7 +45,7 @@ The P1–P6 redesign is complete; new work is planned directly via
 
 | Feature | Spec | Milestone |
 |---|---|---|
-| tooling-preflight — fail fast when git/gh are missing or unauthorized | [spec](specs/spec-tooling-preflight.md) | [#7](https://github.com/skrischer/loopkit/milestone/7) |
+| tooling-preflight — fail fast when git/gh are missing or unauthorized | [spec](specs/archive/spec-tooling-preflight.md) | [#7](https://github.com/skrischer/loopkit/milestone/7) |
 
 Unlike the P1–P6 chain, this feature's issues touch **disjoint files** — the
 first real parallel frontier, the orchestrator payoff the chain's own narrative
