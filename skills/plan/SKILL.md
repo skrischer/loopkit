@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop ONCE at the spec-acceptance gate (open decisions + prerequisites handover), merge autonomously (the merge is acceptance), then create the GitHub milestone, issues with dependencies, board entries, and update the roadmap. Loop-capable: without an argument it plans the roadmap's next unplanned phase and reports "fully planned" when none remains. Reads docs/workflow.md for project specifics.
+description: Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop ONCE at the spec-acceptance gate (open decisions + prerequisites handover), merge autonomously (the merge is acceptance), then create the GitHub milestone, issues with dependencies, board entries, and update the roadmap. Loop-capable: without an argument it reports the roadmap's unplanned phases and asks the human which to plan (it does not auto-pick), and reports "fully planned" when none remains. Reads docs/workflow.md for project specifics.
 ---
 
 # /loopkit:plan — drive one planning cycle to a merged spec + issues
@@ -8,8 +8,9 @@ description: Drive a single planning cycle end-to-end — survey readiness, sort
 Orchestrates the readiness -> merged spec -> milestone + issues + board cycle.
 Specs are the **local single source of truth**; milestones and issues are
 created on GitHub from them. The argument is the scope to plan
-(`/loopkit:plan dashboard-kpis`) — or empty, in loop mode: then the roadmap's
-next unplanned phase is the unit of work.
+(`/loopkit:plan dashboard-kpis`) — or empty, in loop mode: then the cycle
+reports the roadmap's unplanned phases and asks the human which one to plan
+(it never auto-picks the unit of work).
 
 This is the planning-side sibling to `/loopkit:implement`. Both read
 **`docs/workflow.md`** (the workflow contract, produced by
@@ -38,11 +39,15 @@ blockers, park instead of dying (see If blocked).
 
 ## 1. Readiness
 
-- `docs/roadmap.md` is the queue — it names the sequenced phases and which is
-  the current focus. Orient on it first; if the scope argument is empty, the
-  next phase without a Spec link is what to plan.
-- **Loop terminal state:** if every roadmap phase has a merged spec with a
-  milestone and issues, report "roadmap fully planned — waiting for new
+- Scope comes from the argument — the human passes it explicitly
+  (`/loopkit:plan dashboard-kpis`). `docs/roadmap.md` is the queue of sequenced
+  phases (it carries no current-focus or status marker); orient on it first.
+- **No argument:** list the phases that have no merged spec with a milestone
+  and issues yet, then ASK the human which one to plan (`AskUserQuestion` /
+  in-session question). Never auto-advance to "the next phase without a Spec
+  link" — the human names the unit of work.
+- **Loop terminal state:** if every roadmap phase already has a merged spec
+  with a milestone and issues, report "roadmap fully planned — waiting for new
   phases" in one line and end the cycle.
 - Survey existing specs, open issues and milestones:
   ```
@@ -150,8 +155,8 @@ not actually open:
 ## 7. Roadmap (mandatory — closes the loop)
 
 - Every plan cycle ends by updating `docs/roadmap.md`: fill the planned
-  phase's **Spec** and **Milestone** links in the overview table, and move the
-  **current-focus** pointer to the next phase. No status marker — the linked
+  phase's **Spec** and **Milestone** links in the overview table. That is the
+  only change — no current-focus pointer, no status marker. The linked
   milestone is where status lives.
 - Do this via its own `docs:` worktree + PR (step 4 again), **merged
   autonomously** — no gate. The `#NN` links only exist after step 6, which is
