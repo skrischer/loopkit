@@ -89,7 +89,7 @@ fast with an actionable remedy, before any repo or network work.
 | The skill INSTRUCTS the remedy, never auto-runs `gh auth login`/`refresh` | those are interactive browser/device flows; constitution forbids silent outward/interactive actions | 2026-06-17 |
 | Remedy strings are pinned verbatim in this spec so the parallel issues stay byte-consistent across inception/plan/implement/template/contract | the P6 frontier lesson: a shared token must be added identically everywhere at once | 2026-06-17 |
 | Scope detection — pinned two-step: (1) run `gh auth status` and read the `Token scopes:` line; if present, require it to contain `repo` and `project`. (2) If the line is ABSENT (fine-grained PAT / GitHub App / `GH_TOKEN` report no classic scopes), do NOT parse — fall back to the pinned probe `gh api graphql -f query='{viewer{projectsV2(first:1){nodes{id}}}}'`; exit 0 = `project` access OK, a non-zero exit whose stderr matches `INSUFFICIENT_SCOPES` or mentions `project` (case-insensitive) = missing `project`. `repo` access is likewise confirmed by the probe `gh repo view >/dev/null` (non-zero = no repo access). | robustness across all `gh` auth methods, no guessing | 2026-06-17 |
-| OPEN — the required-scope POLICY: confirm exactly `repo` + `project` (the reviewer verified no skill calls `gh workflow`, so `workflow` is not needed), or mandate a stricter set | security-relevant; the project owner confirms the final set | resolved at the spec-acceptance gate |
+| Required-scope policy = exactly `repo` + `project` — no `workflow`, no up-front `read:org` | confirmed by the project owner at the spec-acceptance gate; the skills use only `repo` + `project`, reviewer verified no `gh workflow` usage, and the minimal set avoids blocking fresh users | 2026-06-17 |
 
 ### Pinned reference strings (issues copy these verbatim)
 
@@ -157,3 +157,9 @@ smoke run the human performs at the milestone-QA gate).
 - 2026-06-17: Preflight checks tooling + auth + scopes, fails fast with an
   actionable remedy, instructs (never auto-runs) the fix; the `project`-scope
   gap of default `gh auth login` is the specific landmine targeted.
+- 2026-06-17: Spec-acceptance gate — required-scope policy confirmed by the
+  project owner as exactly `repo` + `project` (not `workflow`, not up-front
+  `read:org`). Spec review (PR #61) resolved two blocking implementer-forks
+  before acceptance: the scope-detection probe is pinned verbatim, and
+  `read:org` was reduced to a reactive remedy (no brittle up-front org
+  detection).
