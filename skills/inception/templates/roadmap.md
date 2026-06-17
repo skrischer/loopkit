@@ -19,13 +19,6 @@ A phase gets a Spec link once `/plan` drafts it, and a Milestone link once the
 spec is merged. The milestone (open/closed + issue progress) is where status
 lives.
 
-## Current focus
-
-**Phase 1: [name]**
-
-One paragraph: what this phase delivers and why it is first — what the next
-`/plan <scope>` run should pick up.
-
 ## North star
 
 One sentence tying the sequence back to the vision — the outcome all phases
