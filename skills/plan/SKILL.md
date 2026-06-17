@@ -78,7 +78,8 @@ Sort every open design question into three buckets — most "open" questions are
 not actually open:
 
 1. **Precedent-decided** — backed by reference implementations in
-   `docs/prior-art.md` (if the project keeps one). Adopt and record in the spec.
+   `docs/prior-art.md`. Consult it for the scope unconditionally; adopt and
+   record in the spec.
 2. **Constraint-determined** — derivable from this codebase, `docs/constitution.md`,
    or `CLAUDE.md`. Decide it and record the rationale.
 3. **Genuinely open** — neither precedent nor constraint settles it. These are
@@ -94,6 +95,11 @@ not actually open:
   `docs/specs/spec-<scope>.md`. Bound the scope tightly. Put settled decisions
   in **Prior decisions** with rationale; mark each genuinely-open point
   explicitly (e.g. an `OPEN — resolved at the spec-acceptance gate` row).
+- Fill the **Prior art** section: consult `docs/prior-art.md` for this scope and
+  link the relevant entries by concern-heading so `/loopkit:implement` can reach
+  them — or record `none relevant` explicitly when it has nothing for the scope.
+  This section is a real planning output, checked at the spec-acceptance review
+  (step 5).
 - Fill **Human prerequisites** completely: every secret, external
   provisioning, dashboard config, or account only a human can provide for this
   milestone — or `none` explicitly. The implement loop depends on this being
