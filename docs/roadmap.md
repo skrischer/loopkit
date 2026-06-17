@@ -9,7 +9,7 @@
 
 | Phase | Name | Spec | Milestone |
 |---|---|---|---|
-| P1 | Drop spec lifecycle state (DRAFT/READY) | [spec-P1](specs/spec-P1.md) | [#1](https://github.com/skrischer/loopkit/milestone/1) |
+| P1 | Drop spec lifecycle state (DRAFT/READY) | [spec-P1](specs/archive/spec-P1.md) | [#1](https://github.com/skrischer/loopkit/milestone/1) |
 | P2 | Drop roadmap current-focus + status; manual targeting | [spec-P2](specs/spec-P2.md) | [#2](https://github.com/skrischer/loopkit/milestone/2) |
 | P3 | Proportional ceremony: living-spec milestone + `track:adhoc` fast-lane | [spec-P3](specs/spec-P3.md) | [#3](https://github.com/skrischer/loopkit/milestone/3) |
 | P4 | Prior-art elevation: mandatory consult + linking; template challenge fields | [spec-P4](specs/spec-P4.md) | [#4](https://github.com/skrischer/loopkit/milestone/4) |
