@@ -6,7 +6,7 @@ Spec-driven loop engineering for Claude Code — developed via its own loops (do
 
 - @docs/vision.md — what loopkit is and why (normative).
 - @docs/constitution.md — binding, verifiable rules (tech stack, principles,
-  don'ts, tech debt P1–P6).
+  don'ts).
 
 ## On demand (NOT auto-loaded — read when relevant)
 

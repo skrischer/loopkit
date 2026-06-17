@@ -3,13 +3,8 @@
 > Operational contract for the loopkit skills (`/loopkit:plan`,
 > `/loopkit:implement`) — the single source for the branch model, commands,
 > gates, and loop behavior of this project. Filled during inception; the skills
-> read it instead of hardcoding specifics.
->
-> **Transition note.** This contract describes the TARGET operating model
-> (milestone orchestrator, manual targeting, no spec lifecycle state,
-> proportional ceremony). The current skills still deviate — see the Tech debt
-> table in `docs/constitution.md` (P1–P6). The first dogfood loops run on
-> current skill behavior and implement the deltas.
+> read it instead of hardcoding specifics. The skills now fully match this
+> contract (the P1–P6 brownfield roadmap is complete).
 
 ## Repository
 
@@ -140,6 +135,6 @@ terminal from the main checkout.
   never grind.
 - Iteration ceiling default: 10 per loop run.
 
-**Transition (until P2/P5 land):** the current skills still auto-pick and claim.
-Start the dogfood with `/loopkit:plan P1`, then `/loopkit:implement` (no arg,
-picks the next unblocked Todo issue).
+**Usage:** plan a scope with `/loopkit:plan <scope>`, then orchestrate its
+milestone with `/loopkit:implement <milestone>`. Run independent milestones as
+separate orchestrators.

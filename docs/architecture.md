@@ -3,8 +3,8 @@
 > Structural, living document — the most volatile artifact. Update whenever a
 > change alters components, boundaries, or flows.
 >
-> This describes the TARGET (the orchestrator model). The current flat
-> `/implement` deviates — tracked as P5 in `docs/constitution.md` (Tech debt).
+> This describes the orchestrator model, which `/loopkit:implement` now
+> implements (the P1–P6 brownfield roadmap is complete).
 
 ## Component map
 

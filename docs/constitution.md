@@ -26,10 +26,9 @@ Each one is checkable in review.
   `--dangerously-skip-permissions`, an API key, or a scheduler/cron. Subagents
   run in-session, not headless. (grep-verifiable.)
 - **Specs carry no lifecycle state.** No `DRAFT`/`READY` header; "accepted" =
-  merged on the default branch with a milestone and issues. (Target — see Tech
-  debt.)
+  merged on the default branch with a milestone and issues.
 - **The roadmap carries no current-focus or status marker.** The human passes
-  scope to the loops explicitly. (Target — see Tech debt.)
+  scope to the loops explicitly.
 - **Proportional ceremony.** Three tracks, each change uses exactly one:
   full-spec (a feature), a living-spec milestone (an ongoing theme), a
   `track:adhoc` fast-lane (a bug/QoL change — no spec, no milestone).
@@ -43,19 +42,18 @@ Each one is checkable in review.
   in-session subagents/agent-teams along the unblocked frontier. As the sole
   dispatcher it needs no claiming. Milestone-level parallelism = a second
   orchestrator on an independent milestone. Ownership replaces claiming at both
-  levels. (Target — see Tech debt.)
+  levels.
 - **Reuse native primitives.** Skills wrap `/loop`, `/plan`, `/batch`, and
   worktrees rather than reimplementing them.
 - **Bounded retry.** The identical failure twice in a row stops the loop with a
   resumable report; loops never grind.
 - **Prior art is consulted and linked.** `/plan` checks `docs/prior-art.md` per
-  spec and links the relevant entries so `/implement` can reach them. (Target —
-  P4.)
+  spec and links the relevant entries so `/implement` can reach them.
 - **Clarification belongs to planning.** The implementer never asks the human.
   The spec — informed by vision, constitution, and prior art — must leave zero
   open questions for implementation. A fork that reaches an implementer is a
   planning defect: the implementer escalates it back to the planner (reopen the
-  spec), which resolves it at the spec-acceptance gate. (Target — P6.)
+  spec), which resolves it at the spec-acceptance gate.
 - **Exactly two human gates.** Spec-acceptance and milestone-QA; everything else
   is autonomous.
 
@@ -93,11 +91,9 @@ Each one is checkable in review.
 
 ## Tech debt (brownfield only)
 
-| Deviation | Where | Plan |
-| --------- | ----- | ---- |
-| Specs carry `DRAFT`/`READY`; `/plan` flips it, `/implement` guards on it | plan/implement SKILL, spec-template, workflow | P1 |
-| Roadmap has a current-focus pointer; `/plan` advances it | roadmap template, plan SKILL steps 1+7 | P2 |
-| No ad-hoc / living-spec model | all three skills, workflow | P3 |
-| Prior art not consulted/linked by `/plan`; templates lack the challenge lens | plan SKILL, prior-art/spec/vision templates | P4 (inception challenge lens already bootstrapped) |
-| `/implement` is a flat consumer that claims issues (In Progress + assignee), not a milestone orchestrator; `/plan` emits no milestone-level depends-on | implement SKILL, plan SKILL, workflow | P5 |
-| `/implement` parks forks to `blocked:human` as a dead-end; `/plan` has no explicit step to anticipate implementer questions | implement SKILL, plan SKILL | P6 |
+None. The brownfield deviations the P1–P6 roadmap tracked here — spec lifecycle
+state, roadmap current-focus, the missing ad-hoc/living-spec model, unlinked
+prior art, the flat claiming implementer, and dead-end fork parking — are all
+resolved: each phase's spec is merged and its milestone closed (history in
+`docs/specs/archive/`). The skills now match this constitution, with no
+remaining `(Target)` caveats.
