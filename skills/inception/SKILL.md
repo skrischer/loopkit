@@ -136,7 +136,8 @@ architecture seed — break the work into ordered, plannable phases. From
 - A one-line north star tying back to the vision.
 
 No status markers in the roadmap — progress lives in the GitHub issues and
-milestones each phase links to (only specs carry `DRAFT`/`READY`). Living
+milestones each phase links to; specs carry no lifecycle state either, a spec
+is accepted once merged on the default branch with a milestone. Living
 document; `/loopkit:plan` keeps the links current. GATE before finalizing.
 
 ## Step 7 — Establish the workflow contract (gate 7)
