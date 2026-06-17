@@ -80,3 +80,9 @@ Remove the DRAFT/READY lifecycle from specs. A spec's acceptance signal becomes
 
 - 2026-06-16: Acceptance = merged spec + milestone (derived from the
   constitution).
+- 2026-06-17: The grep sweep also caught the in-session spec-review verdict
+  token `VERDICT: READY` in `plan/SKILL.md` (a review token, not a lifecycle
+  marker). Rather than exempt it, the token was unified with the project-wide
+  vocabulary — `VERDICT: APPROVE` / `VERDICT: REQUEST_CHANGES` (matching
+  `implement/SKILL.md` and the constitution quality gate) — so no `READY`
+  string survives and the two skills share one verdict vocabulary.
