@@ -107,8 +107,8 @@ not actually open:
 - Review the spec with a **fresh context via the Agent tool**
   (`general-purpose` or `code-reviewer`), seeded with the PR diff and the
   decision docs (`docs/constitution.md`, `docs/prior-art.md`, any sibling spec
-  it builds on). Ask for a verdict whose first line is `VERDICT: ACCEPT` or
-  `VERDICT: NEEDS CHANGES`, with blocking vs non-blocking findings. The Agent
+  it builds on). Ask for a verdict whose first line is `VERDICT: APPROVE` or
+  `VERDICT: REQUEST_CHANGES`, with blocking vs non-blocking findings. The Agent
   tool runs in-session — never shell out to a billed CLI. Address the findings.
 - **STOP — the cycle's one human gate:**
   - Resolve each genuinely-open decision via `AskUserQuestion` — do not guess.
