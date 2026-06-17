@@ -38,7 +38,7 @@ truth, milestones and issues are created on GitHub from them.
 
 ## Branch and spec naming
 
-- Branches: `feat/<scope>`, `fix/<scope>`, `chore/<scope>`, `docs/<scope>`.
+- Branches: `feat/<scope>`, `fix/<scope>`, `chore/<scope>`, `docs/<scope>`, `refactor/<scope>`.
 - Specs: `docs/specs/spec-<scope>.md` — the single source of truth for design.
 - Completed specs: moved to `docs/specs/archive/` with the same name.
 - Proportional tracks (one per change): full-spec (a feature), a living-spec
