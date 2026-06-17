@@ -82,21 +82,27 @@ cycle.
 
 ## 2. Wave-based fan-out (the core loop)
 
-Repeat until no open issues remain in the milestone (excluding parked issues and
-their dependents — see §4):
+Repeat **while the unblocked frontier is non-empty** — when it empties, the loop
+ends and the milestone is either done or only parked work remains (the branch
+after step 5):
 
 1. **Compute the current unblocked frontier** (§1).
 2. **Dispatch each frontier issue as a parallel in-session subagent** via the
    **Agent tool** (subscription-auth; **never** `claude -p`, never a
    detached/headless process). One subagent implements **exactly one** issue
-   end-to-end per the contract in §3. Same-file issues are serialized by their
-   `Depends on:` lines, so a truly-unblocked frontier never has two subagents
-   editing the same file. (Rolling dispatch — re-dispatching as each subagent
-   returns — is a future optimization; wave-based is the simplest correct
+   end-to-end per the contract in §3. Set each dispatched issue's board status to
+   `In Progress` for human visibility (it is **not** a lock). Same-file issues are
+   serialized by their `Depends on:` lines, so a truly-unblocked frontier never has
+   two subagents editing the same file. (Rolling dispatch — re-dispatching as each
+   subagent returns — is a future optimization; wave-based is the simplest correct
    coordination.)
 3. **Await the whole batch** of subagents.
-4. **Re-read GitHub issue state** — issues just merged are now closed
-   (`gh issue list --milestone "<milestone>" --state all ...`).
+4. **Re-read GitHub issue state and fast-forward local base** — issues just merged
+   are now closed (`gh issue list --milestone "<milestone>" --state all ...`); then
+   fast-forward the orchestrator's main checkout
+   (`git checkout <base> && git pull --ff-only`) so the next wave's worktrees branch
+   off the merged state — a wave-N issue that `Depends on:` a wave-(N-1) merge must
+   see it in its worktree base.
 5. **Recompute the next frontier** (newly-unblocked issues) and dispatch the next
    wave. The board may show `Todo`/`In Progress`/`Done` for human visibility, but
    it is **not** a claim or lock — ownership, not claiming, keeps waves correct.

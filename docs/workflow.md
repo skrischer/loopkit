@@ -54,8 +54,10 @@ truth, milestones and issues are created on GitHub from them.
 
 - Body format: a `Goal:` line, an `Acceptance:` checklist, a `Depends on: #N`
   line (issue-level), and a `Spec:` path (or `none` for `track:adhoc`).
-- Milestones carry milestone-level depends-on info, so independent milestones
-  can run as parallel orchestrators.
+- Milestones carry milestone-level depends-on info as a `Depends on milestone:
+  #<n>[, #<m>] | none` line in the milestone description (`/loopkit:plan` writes
+  it, `/loopkit:implement` and humans read it). Milestones with no edge between
+  them are independent and can run as parallel orchestrators.
 - An issue is **unblocked** when every `Depends on` issue is closed and it
   carries no `blocked:human` label.
 - `track:adhoc` = a bug/QoL issue with no spec and no milestone — the fast-lane.
