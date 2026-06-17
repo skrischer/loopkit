@@ -38,8 +38,10 @@ fast with an actionable remedy, before any repo or network work.
   Step 0, and the matching Close-out readiness-checklist item.
 - `skills/plan/SKILL.md`, `skills/implement/SKILL.md` — a one-line auth/scope
   guard in each Preconditions section (once per run).
-- `skills/inception/templates/workflow.md` and `docs/workflow.md` — document the
-  `gh` (authed, scopes `repo` + `project`) + `git` environment prerequisite.
+- `skills/inception/templates/workflow.md` and `docs/workflow.md` — add a short
+  `## Environment prerequisites` section **immediately before the `## Repository`
+  section**, documenting `gh` (authenticated; scopes `repo` + `project`) + `git`
+  as required, with the same remedy strings.
 
 ### Out of scope
 
@@ -81,26 +83,32 @@ fast with an actionable remedy, before any repo or network work.
 |---|---|---|
 | Required tools: `git` and `gh` on PATH, verified via `command -v` + `--version` | constitution runtime stack | 2026-06-17 |
 | `gh` must be authenticated, verified via `gh auth status` | every loop op hits GitHub | 2026-06-17 |
-| Required token scopes: `repo` (issues/milestones/PRs) + `project` (the ProjectV2 board); `read:org` additionally only when the repo/project owner is an org (detect via `gh repo view --json owner -q .owner.type`) | grounded in the skills' gh usage; `project` is the default-`gh-auth-login` gap | 2026-06-17 |
-| inception checks all of the above as the FIRST action of Step 0 and STOPS listing every failure at once with the exact remedy; no partial progress | preflight pattern + fail-fast; re-running inception after `gh auth refresh` is cheap | 2026-06-17 |
+| Required token scopes: exactly `repo` (issues/milestones/PRs) + `project` (the ProjectV2 board). `read:org` is NOT required up front and is NOT detected up front (no skill calls `gh workflow` or org APIs; the only org case is a board that lives under an org, an edge case) — it is a **reactive remedy only**: if a board op later fails with an org-scope error, instruct `gh auth refresh -s read:org`. | grounded in the skills' gh usage; `project` is the default-`gh-auth-login` gap; avoids brittle up-front org detection | 2026-06-17 |
+| inception runs the check as the **literal first action of Step 0** — before mode detection and before any `gh repo view`/`$ARGUMENTS` branch, so even mode detection's gh calls are guarded — and STOPS listing every failure at once with the exact remedy; no partial progress | preflight pattern + fail-fast; re-running inception after the remedy is cheap | 2026-06-17 |
 | plan + implement check once per run (not per iteration/wave) | the loops run in separate sessions over time; once-per-run honors "loops never grind" | 2026-06-17 |
 | The skill INSTRUCTS the remedy, never auto-runs `gh auth login`/`refresh` | those are interactive browser/device flows; constitution forbids silent outward/interactive actions | 2026-06-17 |
 | Remedy strings are pinned verbatim in this spec so the parallel issues stay byte-consistent across inception/plan/implement/template/contract | the P6 frontier lesson: a shared token must be added identically everywhere at once | 2026-06-17 |
-| Scope detection: parse the `gh auth status` "Token scopes:" line; if it is absent (e.g. `GH_TOKEN`/app auth), fall back to a cheap probe (attempt a harmless ProjectV2 read) and treat a scope error as the missing scope | robustness across auth methods | 2026-06-17 |
-| OPEN — the required-scope POLICY: mandate exactly `repo` + `project` (+ `read:org` for org-owned), or a stricter set (e.g. also `workflow`)? | security-relevant; the project owner confirms it | resolved at the spec-acceptance gate |
+| Scope detection — pinned two-step: (1) run `gh auth status` and read the `Token scopes:` line; if present, require it to contain `repo` and `project`. (2) If the line is ABSENT (fine-grained PAT / GitHub App / `GH_TOKEN` report no classic scopes), do NOT parse — fall back to the pinned probe `gh api graphql -f query='{viewer{projectsV2(first:1){nodes{id}}}}'`; exit 0 = `project` access OK, a non-zero exit whose stderr matches `INSUFFICIENT_SCOPES` or mentions `project` (case-insensitive) = missing `project`. `repo` access is likewise confirmed by the probe `gh repo view >/dev/null` (non-zero = no repo access). | robustness across all `gh` auth methods, no guessing | 2026-06-17 |
+| OPEN — the required-scope POLICY: confirm exactly `repo` + `project` (the reviewer verified no skill calls `gh workflow`, so `workflow` is not needed), or mandate a stricter set | security-relevant; the project owner confirms the final set | resolved at the spec-acceptance gate |
 
 ### Pinned reference strings (issues copy these verbatim)
 
 - Tool check: `command -v git` and `command -v gh` (with `git --version` /
   `gh --version`).
 - Auth check: `gh auth status`.
-- Scope check: the `Token scopes:` line of `gh auth status` must contain `repo`
-  and `project` (and `read:org` for org-owned repos).
+- Scope check (two-step, per the scope-detection decision above):
+  1. `Token scopes:` line present -> it must contain `repo` and `project`.
+  2. line absent -> probe `gh api graphql -f query='{viewer{projectsV2(first:1){nodes{id}}}}'`
+     (project) and `gh repo view >/dev/null` (repo); a non-zero exit whose
+     stderr matches `INSUFFICIENT_SCOPES` or mentions `project` = missing scope.
 - Remedies (instruct, do not auto-run):
   - tool missing -> "install git / gh — https://cli.github.com"
   - not authenticated -> `gh auth login`
-  - missing `project` scope -> `gh auth refresh -s project`
-  - missing `read:org` (org repos) -> `gh auth refresh -s read:org`
+  - missing `project` scope -> `gh auth refresh -s project` *(OAuth login; for a
+    PAT or `GH_TOKEN`, `gh auth refresh` does not apply — re-create the token
+    with the `project` scope instead)*
+  - org-board scope error (reactive only) -> `gh auth refresh -s read:org`
+    *(same PAT caveat)*
 
 ## Tracking
 
@@ -109,30 +117,39 @@ fast with an actionable remedy, before any repo or network work.
   implement; workflow contract). Independent (disjoint files); the spec's pinned
   strings keep them consistent. Milestone-level: `Depends on milestone: none`.
 
-## Verification
+Verify is `none yet`, so the QA gate splits into machine-checkable items
+(read-through + grep, done at review) and manual-attended items (a hands-on
+smoke run the human performs at the milestone-QA gate).
 
-- [ ] Verify command is `none yet` — these acceptance items are checked at the
-      milestone-QA gate (read-through + the behavioral checks below).
-- [ ] Behavioral: with `gh` logged out, `/loopkit:inception` stops at Step 0 with
-      `gh auth login` guidance — not a cryptic mid-flow error.
-- [ ] Behavioral: with `gh` authed but WITHOUT the `project` scope,
-      `/loopkit:inception` stops at Step 0 with `gh auth refresh -s project`
-      guidance — not a Step-7 board-creation crash.
-- [ ] Behavioral: with `git` or `gh` absent from PATH, inception stops naming the
-      missing tool and where to get it.
-- [ ] Read-through: `plan` and `implement` Preconditions carry the once-per-run
-      auth/scope guard with the same remedy strings.
-- [ ] Read-through: the workflow template AND `docs/workflow.md` document the
-      `gh` (authed, scopes `repo` + `project`) + `git` prerequisite.
+**Machine-checkable (read-through / grep):**
+
+- [ ] `inception/SKILL.md` Step 0 opens with the preflight (tool + auth + scope)
+      as its literal first action, before mode detection; the Close-out
+      readiness checklist includes the check.
+- [ ] `plan/SKILL.md` and `implement/SKILL.md` Preconditions carry the
+      once-per-run auth/scope guard with the same remedy strings.
+- [ ] The workflow template AND `docs/workflow.md` have an
+      `## Environment prerequisites` section before `## Repository` documenting
+      `gh` (authed, scopes `repo` + `project`) + `git`.
 - [ ] grep: the pinned remedy strings and the scope list (`repo`, `project`)
       match across inception/plan/implement/template/contract — no drift.
+
+**Manual-attended (hands-on smoke run at the QA gate — no machine check covers these):**
+
+- [ ] With `gh` logged out, `/loopkit:inception` stops at Step 0 with
+      `gh auth login` guidance — not a cryptic mid-flow error.
+- [ ] With `gh` authed but WITHOUT the `project` scope, `/loopkit:inception`
+      stops at Step 0 with `gh auth refresh -s project` guidance — not a Step-7
+      board-creation crash. (Reproduce via a token lacking `project`.)
+- [ ] With `git` or `gh` absent from PATH, inception stops naming the missing
+      tool and where to get it.
 
 ## Risks and mitigations
 
 | Risk | Mitigation |
 |---|---|
-| Scope detection fails for non-token auth (`GH_TOKEN` / GitHub App) where `gh auth status` omits the scopes line | fall back to a cheap ProjectV2 probe and treat a scope error as the missing scope |
-| Over-blocking: stopping for a scope that this particular run will not actually use | require only the universally-needed set (`repo` + `project`); `read:org` stays conditional on org ownership |
+| Scope detection fails for non-token auth (`GH_TOKEN` / GitHub App / fine-grained PAT) where `gh auth status` omits the scopes line | the pinned two-step: when the scopes line is absent, fall back to the pinned ProjectV2 + repo probes and treat an `INSUFFICIENT_SCOPES`/`project` error as the missing scope |
+| Over-blocking: stopping for a scope this run will not use | require only `repo` + `project`; `read:org` is a reactive remedy (shown only if an org-board op actually errors), never an up-front block — so the brittle org-board-on-user-repo case needs no up-front detection |
 | Drift: the scope list / remedy strings diverge across the five edited surfaces | the spec pins the exact strings; a grep-consistency Verification item closes the loop |
 
 ## Decision log
