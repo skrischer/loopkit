@@ -10,7 +10,8 @@
 - GitHub repo: `<owner/repo>`
 - Base / integration branch: `<main | develop>`
 - GitHub Project board: `<url-or-number>` — mandatory; the loops' queue and
-  claim mechanism. Status values: `Todo`, `In Progress`, `Done`.
+  status display. Status values: `Todo`, `In Progress`, `Done` — a status
+  display, **not** a claim or lock (see Orchestration).
 
 `/loopkit:plan` requires a GitHub repo; specs are the local single source of
 truth, milestones and issues are created on GitHub from them.
@@ -85,6 +86,15 @@ Per track:
   and `Acceptance:` checklist still describe it; `Depends on:` is allowed but
   rarely needed. Its full state lives on the board.
 
+Milestone-level depends-on:
+
+- A milestone that depends on another carries a `Depends on milestone: #<n>`
+  line in its **description** — a fixed, parseable token `/loopkit:plan` writes
+  and humans/`/loopkit:implement` read. Two milestones with no `Depends on
+  milestone` edge between them are **independent** and may run as parallel
+  orchestrators (see Orchestration); a milestone is workable once its
+  depended-on milestones are closed.
+
 Across all tracks:
 
 - An issue is **unblocked** when every `Depends on` issue is closed and it
@@ -100,8 +110,11 @@ Across all tracks:
   with a milestone and issues. A completed full-spec moves to
   `docs/specs/archive/` and its closed milestone is the "done" signal; a
   living-spec milestone is the exception — it stays open (see Gates).
-- Live work state is the board: `Todo` (ready), `In Progress` (claimed by a
-  loop), `Done` (merged). Claiming = set `In Progress` + assignee.
+- Live work state is the board: `Todo` (ready), `In Progress` (an orchestrator's
+  subagent is on it), `Done` (merged). These are a **status display only — not a
+  claim or lock**: race-prevention is unnecessary because each milestone has a
+  single owning orchestrator (see Orchestration), so no two loops contend for the
+  same issue.
 - Everything else — blocked, deferred — lives on the GitHub issues and
   milestones, the single source of truth for progress.
 
@@ -119,6 +132,44 @@ spec never lists steps; the issues never restate the design. The spec's
 `Outcome` list is done-criteria, not a progress mirror. This chain applies to
 the full-spec and living-spec tracks; a `track:adhoc` issue bypasses it
 (no spec, no milestone) and goes issue -> PR directly.
+
+## Orchestration
+
+`/loopkit:implement` is a **milestone orchestrator**, not a flat issue-consumer.
+Pointed at **one** milestone, it owns that milestone end-to-end:
+
+- **Build the graph.** Read the milestone's open issues and build the dependency
+  DAG from their `Depends on: #N` lines. The **unblocked frontier** is every open
+  issue whose `Depends on` issues are all closed and that carries no
+  `blocked:human` label.
+- **Fan out in waves.** Dispatch the current frontier as a **parallel batch of
+  in-session subagents** (the Agent tool — subscription-auth, never `claude -p`
+  or a detached process). **One subagent implements exactly one issue
+  end-to-end:** worktree -> implement -> Verify -> review -> merge. Await the
+  whole batch, re-read GitHub issue state, recompute the next frontier, and
+  repeat until no open issues remain. (Wave-based dispatch is the baseline;
+  rolling dispatch is a later optimization.)
+- **Park, don't stall.** If a subagent parks its issue (`blocked:human`), the
+  orchestrator excludes that issue **and its dependents**, finishes the rest of
+  the frontier, and reports the parked issues **instead of running milestone-QA**
+  — a milestone with parked issues is not complete.
+
+No claiming. **Ownership replaces claiming:** the orchestrator is the **sole
+dispatcher** of its milestone's issues, so there is no race to prevent and no
+`In Progress` + assignee claim. The board's `In Progress` is a status display,
+not a lock (see Status).
+
+Milestone-level parallelism = a **second orchestrator on an independent
+milestone**. Which milestones are independent is read from the `Depends on
+milestone: #<n>` line in each milestone description (see Issue conventions):
+milestones with no edge between them run as separate orchestrators, one human
+attended per orchestrator. Single-orchestrator-per-milestone is an attended
+**convention**, not a GitHub lock — the constitution forbids claim arbitration
+of any kind.
+
+A `track:adhoc` issue has no milestone and so no orchestrator: the human (or the
+implement loop) drives it issue -> PR directly through the same per-PR machine
+gate.
 
 ## Gates
 
@@ -165,10 +216,11 @@ terminal from the main checkout:
 - Implement loop:
 
   ```
-  /loop /loopkit:implement — pick the next unblocked Todo issue and drive it to
-  a merged PR; when a milestone completes, stop at the QA gate; when nothing is
-  workable, report "waiting for plan" and end the tick. Ceiling: <N>
-  iterations; stop when the same failure repeats twice.
+  /loop /loopkit:implement <milestone> — orchestrate one milestone: build the
+  issue DAG and fan out in-session subagents along the unblocked frontier in
+  waves until it is done; when the milestone completes, stop at the QA gate;
+  when nothing is workable, report "waiting for plan" and end the tick.
+  Ceiling: <N> iterations; stop when the same failure repeats twice.
   ```
 
 - No-progress rule: the identical failure twice in a row -> stop and report,
