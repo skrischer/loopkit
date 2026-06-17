@@ -59,7 +59,9 @@ truth, milestones and issues are created on GitHub from them.
   it, `/loopkit:implement` and humans read it). Milestones with no edge between
   them are independent and can run as parallel orchestrators.
 - An issue is **unblocked** when every `Depends on` issue is closed and it
-  carries no `blocked:human` label.
+  carries neither a `blocked:human` nor a `needs:planning` label
+  (`blocked:human` = a human prerequisite; `needs:planning` = a design fork
+  escalated to the planner, resolved by re-running `/loopkit:plan`).
 - `track:adhoc` = a bug/QoL issue with no spec and no milestone — the fast-lane.
 - A living-spec milestone carries a `Track: living-spec` line in its milestone
   description — the discriminator `/loopkit:implement`'s QA gate reads to tell it

@@ -98,7 +98,10 @@ Milestone-level depends-on:
 Across all tracks:
 
 - An issue is **unblocked** when every `Depends on` issue is closed and it
-  carries no `blocked:human` label.
+  carries neither a `blocked:human` nor a `needs:planning` label. The two
+  exclusions differ: `blocked:human` = a human prerequisite (secret, external
+  provisioning); `needs:planning` = a design fork the implementer escalated to
+  the planner, resolved by re-running `/loopkit:plan` on the spec.
 - **Park, don't stop:** a blocker only a human can clear gets the
   `blocked:human` label plus a comment naming exactly what is needed and where
   to deliver it; the loop moves on to the next unblocked issue.
@@ -140,8 +143,8 @@ Pointed at **one** milestone, it owns that milestone end-to-end:
 
 - **Build the graph.** Read the milestone's open issues and build the dependency
   DAG from their `Depends on: #N` lines. The **unblocked frontier** is every open
-  issue whose `Depends on` issues are all closed and that carries no
-  `blocked:human` label.
+  issue whose `Depends on` issues are all closed and that carries neither a
+  `blocked:human` nor a `needs:planning` label.
 - **Fan out in waves.** Dispatch the current frontier as a **parallel batch of
   in-session subagents** (the Agent tool — subscription-auth, never `claude -p`
   or a detached process). **One subagent implements exactly one issue
@@ -149,10 +152,12 @@ Pointed at **one** milestone, it owns that milestone end-to-end:
   whole batch, re-read GitHub issue state, recompute the next frontier, and
   repeat until no open issues remain. (Wave-based dispatch is the baseline;
   rolling dispatch is a later optimization.)
-- **Park, don't stall.** If a subagent parks its issue (`blocked:human`), the
-  orchestrator excludes that issue **and its dependents**, finishes the rest of
-  the frontier, and reports the parked issues **instead of running milestone-QA**
-  — a milestone with parked issues is not complete.
+- **Escalate or park, don't stall.** If a subagent escalates a design fork
+  (`needs:planning` — back to the planner) or parks its issue (`blocked:human` —
+  a human prerequisite), the orchestrator excludes that issue **and its
+  dependents**, finishes the rest of the frontier, and reports the escalated /
+  parked issues **instead of running milestone-QA** — a milestone with such
+  issues is not complete.
 
 No claiming. **Ownership replaces claiming:** the orchestrator is the **sole
 dispatcher** of its milestone's issues, so there is no race to prevent and no
