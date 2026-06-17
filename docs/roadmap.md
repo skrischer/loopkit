@@ -11,7 +11,7 @@
 |---|---|---|---|
 | P1 | Drop spec lifecycle state (DRAFT/READY) | [spec-P1](specs/archive/spec-P1.md) | [#1](https://github.com/skrischer/loopkit/milestone/1) |
 | P2 | Drop roadmap current-focus + status; manual targeting | [spec-P2](specs/archive/spec-P2.md) | [#2](https://github.com/skrischer/loopkit/milestone/2) |
-| P3 | Proportional ceremony: living-spec milestone + `track:adhoc` fast-lane | [spec-P3](specs/spec-P3.md) | [#3](https://github.com/skrischer/loopkit/milestone/3) |
+| P3 | Proportional ceremony: living-spec milestone + `track:adhoc` fast-lane | [spec-P3](specs/archive/spec-P3.md) | [#3](https://github.com/skrischer/loopkit/milestone/3) |
 | P4 | Prior-art elevation: mandatory consult + linking; template challenge fields | [spec-P4](specs/spec-P4.md) | [#4](https://github.com/skrischer/loopkit/milestone/4) |
 | P5 | `/implement` as milestone orchestrator; `/plan` emits milestone-level depends-on | [spec-P5](specs/spec-P5.md) | [#5](https://github.com/skrischer/loopkit/milestone/5) |
 | P6 | Clarification belongs to planning: planner anticipates implementer questions; implementer escalates forks back | [spec-P6](specs/spec-P6.md) | [#6](https://github.com/skrischer/loopkit/milestone/6) |
