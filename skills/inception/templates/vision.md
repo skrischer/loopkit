@@ -20,6 +20,16 @@
 
 <One paragraph: the outcome this project exists to produce>
 
+## USP / differentiation
+
+<Why this deserves to exist and how it differs from the alternatives. The
+inception challenge lens (existence, USP, differentiation) lands here: name the
+one thing this project does that the prior art does not, and the deliberate
+trade-offs that set it apart. Cross-reference `docs/prior-art.md` and its
+per-entry ADOPT/AVOID harvest — that is where the differentiation evidence
+lives (what to adopt from each alternative, what to avoid). Do not restate the
+harvest; point to it.>
+
 ## Success criteria
 
 <Measurable. Each criterion checkable with a number or a yes/no observation>
