@@ -61,6 +61,13 @@ cycle.
 
 ## Preconditions
 
+- `gh` authenticated with the `repo` + `project` scopes — checked ONCE per run
+  (the orchestrator checks once at the start, not every iteration/wave; mirrors
+  inception's Step-0 preflight, same `gh auth status` two-step probe). If not,
+  STOP and instruct the remedy (never auto-run): not authenticated ->
+  `gh auth login`; missing `project` scope -> `gh auth refresh -s project`
+  (OAuth login; for a PAT/`GH_TOKEN`, re-create the token with the scope
+  instead).
 - Run from the main checkout on the base branch, with a clean tree. Check
   `git rev-parse --abbrev-ref HEAD` and `git status -sb`; if not on a clean base
   branch, stop and ask.
