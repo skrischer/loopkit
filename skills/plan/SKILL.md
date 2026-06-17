@@ -1,11 +1,11 @@
 ---
 name: plan
-description: Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop ONCE at the spec-acceptance gate (open decisions + prerequisites handover), flip it READY, merge autonomously, then create the GitHub milestone, issues with dependencies, board entries, and update the roadmap. Loop-capable: without an argument it plans the roadmap's next unplanned phase and reports "fully planned" when none remains. Reads docs/workflow.md for project specifics.
+description: Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop ONCE at the spec-acceptance gate (open decisions + prerequisites handover), merge autonomously (the merge is acceptance), then create the GitHub milestone, issues with dependencies, board entries, and update the roadmap. Loop-capable: without an argument it plans the roadmap's next unplanned phase and reports "fully planned" when none remains. Reads docs/workflow.md for project specifics.
 ---
 
-# /loopkit:plan — drive one planning cycle to a READY spec + issues
+# /loopkit:plan — drive one planning cycle to a merged spec + issues
 
-Orchestrates the readiness -> `READY` spec -> milestone + issues + board cycle.
+Orchestrates the readiness -> merged spec -> milestone + issues + board cycle.
 Specs are the **local single source of truth**; milestones and issues are
 created on GitHub from them. The argument is the scope to plan
 (`/loopkit:plan dashboard-kpis`) — or empty, in loop mode: then the roadmap's
@@ -41,7 +41,7 @@ blockers, park instead of dying (see If blocked).
 - `docs/roadmap.md` is the queue — it names the sequenced phases and which is
   the current focus. Orient on it first; if the scope argument is empty, the
   next phase without a Spec link is what to plan.
-- **Loop terminal state:** if every roadmap phase has a `READY` spec with
+- **Loop terminal state:** if every roadmap phase has a merged spec with a
   milestone and issues, report "roadmap fully planned — waiting for new
   phases" in one line and end the cycle.
 - Survey existing specs, open issues and milestones:
@@ -49,9 +49,9 @@ blockers, park instead of dying (see If blocked).
   gh api repos/:owner/:repo/milestones --jq '.[]|"\(.number) \(.title) [\(.state)] open=\(.open_issues)"'
   gh issue list --state open
   ```
-- If a `READY` spec already covers the scope (with a milestone and issues),
-  there is nothing to plan — point at `/loopkit:implement`. Never act against
-  a `DRAFT`.
+- If a merged spec already covers the scope (with a milestone and issues),
+  there is nothing to plan — point at `/loopkit:implement`. A spec still in an
+  open PR is in review, not accepted: do not start a second plan against it.
 
 ## 2. Resolve decisions before writing
 
@@ -63,8 +63,8 @@ not actually open:
 2. **Constraint-determined** — derivable from this codebase, `docs/constitution.md`,
    or `CLAUDE.md`. Decide it and record the rationale.
 3. **Genuinely open** — neither precedent nor constraint settles it. These are
-   the only ones that block `READY`; they are resolved at the spec-acceptance
-   gate (step 5), not guessed now.
+   the only ones that block acceptance; they are resolved at the
+   spec-acceptance gate (step 5), not guessed now.
 
 > Check bucket 2 against the codebase and constitution before declaring anything
 > "open" — most "open" decisions turn out to be already determined.
@@ -107,7 +107,7 @@ not actually open:
 - Review the spec with a **fresh context via the Agent tool**
   (`general-purpose` or `code-reviewer`), seeded with the PR diff and the
   decision docs (`docs/constitution.md`, `docs/prior-art.md`, any sibling spec
-  it builds on). Ask for a verdict whose first line is `VERDICT: READY` or
+  it builds on). Ask for a verdict whose first line is `VERDICT: ACCEPT` or
   `VERDICT: NEEDS CHANGES`, with blocking vs non-blocking findings. The Agent
   tool runs in-session — never shell out to a billed CLI. Address the findings.
 - **STOP — the cycle's one human gate:**
@@ -117,10 +117,10 @@ not actually open:
     keys/config or confirms them as in place NOW, so the milestone can later
     be implemented without interruption. Record delivered items as checked.
   - Ask the human to accept the spec.
-- On acceptance: flip the header `DRAFT` -> `READY` **in the same PR**, commit,
-  push, and merge autonomously — wait for green checks only if the repo has CI
-  checks configured, then squash-merge, remove the worktree, and fast-forward
-  the local base branch.
+- On acceptance: merge the spec PR autonomously — the merge **is** acceptance,
+  the spec carries no lifecycle header to flip. Wait for green checks only if
+  the repo has CI checks configured, then squash-merge, remove the worktree,
+  and fast-forward the local base branch.
   ```
   gh pr merge <n> --squash --delete-branch
   git worktree remove "$wt"
