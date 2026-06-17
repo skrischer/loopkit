@@ -47,10 +47,44 @@ human milestone-QA gate instead.
 - Specs: `docs/specs/spec-<scope>.md` — the single source of truth for design.
 - Completed specs: moved to `docs/specs/archive/` with the same name.
 
+## Proportional tracks
+
+Planning weight scales with change size. Every change runs on exactly **one**
+of three tracks:
+
+- **full-spec** — a feature. A spec under `docs/specs/`, a milestone, and
+  dependency-ordered issues. The full chain (spec -> milestone -> issues -> PR)
+  applies. The spec is archived and the milestone closes when the work is done.
+- **living-spec milestone** — an ongoing theme that never finishes. A spec plus
+  a milestone that **stays open** and accretes issues over time (not
+  one-spec-per-closed-phase). Human-initiated. The spec is **not** archived and
+  the milestone is **not** closed at the QA gate — a merged spec with an open
+  milestone signals the theme is active.
+- **`track:adhoc` fast-lane** — a bug or QoL change. A single GitHub issue,
+  labeled `track:adhoc`, with **no spec and no milestone** — it holds its whole
+  state on the board and skips ceremony entirely (no spec, no milestone, no
+  dependency graph). Created by the **human**, not by `/loopkit:plan`.
+
+The `feat`/`fix`-must-trace-to-a-spec rule is relaxed for `track:adhoc` only;
+full-spec and living-spec changes always reference a spec.
+
 ## Issue conventions
 
-- Body format: a `Goal:` line, an `Acceptance:` checklist, an optional
-  `Depends on: #N[, #M]` line, and a `Spec:` path.
+Per track:
+
+- **full-spec** — Body format: a `Goal:` line, an `Acceptance:` checklist, an
+  optional `Depends on: #N[, #M]` line, and a `Spec:` path pointing at the
+  feature spec. The issue belongs to the feature's milestone.
+- **living-spec** — same body format; the `Spec:` path points at the living
+  spec, and the issue belongs to the always-open living-spec milestone. Closing
+  the issue does not archive the spec or close the milestone.
+- **`track:adhoc`** — created by the human as a single issue carrying the
+  `track:adhoc` label, with **no `Spec:` path and no milestone**. A `Goal:` line
+  and `Acceptance:` checklist still describe it; `Depends on:` is allowed but
+  rarely needed. Its full state lives on the board.
+
+Across all tracks:
+
 - An issue is **unblocked** when every `Depends on` issue is closed and it
   carries no `blocked:human` label.
 - **Park, don't stop:** a blocker only a human can clear gets the
@@ -79,7 +113,9 @@ human milestone-QA gate instead.
 
 A PR closes an issue (`Closes #N`); the issue references its spec path. The
 spec never lists steps; the issues never restate the design. The spec's
-`Outcome` list is done-criteria, not a progress mirror.
+`Outcome` list is done-criteria, not a progress mirror. This chain applies to
+the full-spec and living-spec tracks; a `track:adhoc` issue bypasses it
+(no spec, no milestone) and goes issue -> PR directly.
 
 ## Gates
 
@@ -93,7 +129,11 @@ spec never lists steps; the issues never restate the design. The spec's
     issues).
   - Implementation: the milestone QA gate — when the milestone's last issue
     closes, QA scenarios are derived from the spec's Verification section; the
-    human accepts or files regressions.
+    human accepts or files regressions. For a **living-spec** milestone the gate
+    runs per closed-issue batch but does **not** archive the spec or close the
+    milestone — the theme stays open.
+- A `track:adhoc` issue has no milestone, so it skips both human gates; its only
+  gate is the per-PR machine gate above.
 - QA-gate default check: `<review | UI check | smoke test>`.
 
 ## Autonomy
