@@ -26,6 +26,12 @@ blockers, park instead of dying (see If blocked).
 
 ## Preconditions
 
+- `gh` authenticated with the `repo` + `project` scopes — checked ONCE at the
+  start of the run (mirrors inception's Step-0 preflight; same `gh auth status`
+  two-step probe). If not, STOP and instruct the remedy (never auto-run): not
+  authenticated -> `gh auth login`; missing `project` scope ->
+  `gh auth refresh -s project` (OAuth login; for a PAT/`GH_TOKEN`, re-create the
+  token with the scope instead).
 - A GitHub repo is required (the chain creates milestones and issues). Confirm
   with `gh repo view`; if there is none, stop.
 - The base branch must have at least one commit — the spec PR worktree is
