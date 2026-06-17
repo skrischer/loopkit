@@ -111,3 +111,13 @@ can run independent milestones as parallel orchestrators.
 
 - 2026-06-16: Orchestrator fans out via the in-session Agent tool, one subagent
   per issue, no claiming (from the constitution + architecture).
+- 2026-06-17: Implementation review hardened the wave loop with three
+  refinements: (1) the loop runs **while the unblocked frontier is non-empty**
+  (precise, terminating condition) rather than "until no open issues remain";
+  (2) the orchestrator **fast-forwards its local base between waves**
+  (`git pull --ff-only` after awaiting a batch) so a wave-N issue that
+  `Depends on:` a wave-(N-1) merge sees it in its worktree base — a real
+  dependency-chain correctness fix; (3) the orchestrator sets dispatched issues
+  to `In Progress` for board visibility (explicitly not a lock) now that the
+  claim step is gone. The `Depends on milestone:` token was also documented in
+  `docs/workflow.md` (not just the template) for dogfood consistency.
