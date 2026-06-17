@@ -44,6 +44,33 @@ it, never duplicate content across artifacts.
 
 ## Step 0 — Determine mode (no gate)
 
+**Preflight (the LITERAL FIRST action — before mode detection, before any
+`gh repo view`, before the `$ARGUMENTS` branch).** Every loopkit op hard-depends
+on `git` and an authenticated `gh` with the `repo` + `project` scopes; verify
+that now so nothing fails cryptically mid-flow (e.g. board creation in Step 7).
+Run all checks, then on ANY failure STOP and list EVERY problem at once with the
+exact remedy — INSTRUCT the fix, never auto-run `gh auth login`/`gh auth refresh`
+(those are interactive browser/device flows):
+
+- **Tools on PATH.** `command -v git` and `command -v gh` (then `git --version` /
+  `gh --version`). Missing -> remedy: "install git / gh — https://cli.github.com".
+- **`gh` authenticated.** `gh auth status`. Not authenticated -> remedy:
+  `gh auth login`.
+- **Token scopes — required: `repo` + `project` (two-step check).**
+  1. If the `Token scopes:` line of `gh auth status` is present, it must contain
+     `repo` and `project`.
+  2. If that line is ABSENT (fine-grained PAT / GitHub App / `GH_TOKEN` report no
+     classic scopes), do NOT parse — probe instead:
+     `gh api graphql -f query='{viewer{projectsV2(first:1){nodes{id}}}}'`
+     (project access) and `gh repo view >/dev/null` (repo access); a non-zero
+     exit whose stderr matches `INSUFFICIENT_SCOPES` or mentions `project`
+     (case-insensitive) = missing scope.
+  Missing `project` -> remedy: `gh auth refresh -s project` *(OAuth login; for a
+  PAT or `GH_TOKEN`, `gh auth refresh` does not apply — re-create the token with
+  the `project` scope instead)*. **Project-scope landmine:** `gh auth login` does
+  NOT grant `project` by default, so a "correctly authed" user still fails board
+  creation without it — this is the specific gap the check exists to catch.
+
 - `$ARGUMENTS` is `--here` -> brownfield.
 - Otherwise auto-detect: working directory contains a codebase -> brownfield
   (treat any pitch text as extra context); empty -> greenfield with
@@ -235,6 +262,7 @@ artifact):
 Walk this checklist and show the result (brownfield: the same checklist that
 produced the gap report in Step 0):
 
+- [ ] gh + git available and authorized — gh authenticated with the repo + project scopes (Step 0 preflight)
 - [ ] Verify is ONE command, runs green, duration recorded in the contract
 - [ ] Bootstrap turns a fresh worktree runnable, proven by running it
 - [ ] Project board exists with `Todo` / `In Progress` / `Done`
