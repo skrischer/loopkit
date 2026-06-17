@@ -49,13 +49,13 @@ blockers, park instead of dying (see If blocked).
 - **Loop terminal state:** if every roadmap phase already has a merged spec
   with a milestone and issues, report "roadmap fully planned — waiting for new
   phases" in one line and end the cycle. Loop-mode iterates **roadmap phases
-  only**; a living-spec milestone (step 6a) is never a roadmap phase, so it is
+  only**; a living-spec milestone (step 7a) is never a roadmap phase, so it is
   excluded from this set and the terminal state is unaffected by it.
 - **Track (the proportional dial, see `docs/workflow.md`):** decide which of
   the contract's three tracks this scope uses before drafting. Most planning is
   **full-spec** (a finite phase: spec + milestone that closes). When the human
   asks to open an **ongoing theme** that accretes work over time rather than a
-  finite phase, plan the **living-spec** track (step 6a): same spec + milestone
+  finite phase, plan the **living-spec** track (step 7a): same spec + milestone
   cycle, but the milestone stays open. A living-spec is **human-initiated** —
   never inferred from the roadmap, never auto-planned in loop mode. The
   `track:adhoc` fast-lane carries no spec or milestone and is not a plan cycle
@@ -68,9 +68,9 @@ blockers, park instead of dying (see If blocked).
 - If a merged spec already covers the scope (with a milestone and issues),
   there is nothing to plan — point at `/loopkit:implement`. A spec still in an
   open PR is in review, not accepted: do not start a second plan against it.
-  Exception: a living-spec milestone (step 6a) is meant to be re-run with the
+  Exception: a living-spec milestone (step 7a) is meant to be re-run with the
   same scope to accrete more issues — there, "already covered" is expected, so
-  skip straight to step 6a's issue-creation, do not short-circuit.
+  skip straight to step 7a's issue-creation, do not short-circuit.
 
 ## 2. Resolve decisions before writing
 
@@ -84,7 +84,7 @@ not actually open:
    or `CLAUDE.md`. Decide it and record the rationale.
 3. **Genuinely open** — neither precedent nor constraint settles it. These are
    the only ones that block acceptance; they are resolved at the
-   spec-acceptance gate (step 5), not guessed now.
+   spec-acceptance gate (step 6), not guessed now.
 
 > Check bucket 2 against the codebase and constitution before declaring anything
 > "open" — most "open" decisions turn out to be already determined.
@@ -99,7 +99,7 @@ not actually open:
   link the relevant entries by concern-heading so `/loopkit:implement` can reach
   them — or record `none relevant` explicitly when it has nothing for the scope.
   This section is a real planning output, checked at the spec-acceptance review
-  (step 5).
+  (step 6).
 - Fill **Human prerequisites** completely: every secret, external
   provisioning, dashboard config, or account only a human can provide for this
   milestone — or `none` explicitly. The implement loop depends on this being
@@ -108,7 +108,30 @@ not actually open:
   is done-criteria, not a progress mirror. Everything in `docs/` is written in
   English.
 
-## 4. Worktree and PR
+## 4. Anticipate implementer questions (pre-mortem — NOT a new gate)
+
+A pre-mortem over the drafted spec — clarification belongs to planning, so the
+spec must leave zero open questions for the implementer (`docs/constitution.md`).
+This is a **sub-step that feeds the existing acceptance gate (step 6)**, never a
+second human stop.
+
+- Ask **"what would an implementer ask while building this?"** Walk the spec's
+  outcomes and verification as if implementing them: name every fork, ambiguous
+  contract, or unstated default a subagent would hit mid-build.
+- **Resolve each from `docs/vision.md`, `docs/constitution.md`, and
+  `docs/prior-art.md`** (the same precedent/constraint inputs as step 2, named
+  explicitly). When one of these settles the question, bake the answer into the
+  spec — a **Prior decisions** row plus a **Decision log** entry — so the
+  implementer never has to ask.
+- **What neither precedent nor constraint settles becomes a genuinely-open
+  item** carried into the acceptance gate (step 6), where `AskUserQuestion`
+  resolves it — exactly like the genuinely-open bucket from step 2. Mark it in
+  the spec (`OPEN — resolved at the spec-acceptance gate`); do not guess.
+- Scope it to questions answerable from vision/constitution/prior-art or
+  genuinely open — not unbounded speculation. A fork that still reaches an
+  implementer is a planning defect this step exists to catch.
+
+## 5. Worktree and PR
 
 - Create a docs worktree off the base branch (paths/branch from `docs/workflow.md`):
   ```
@@ -127,7 +150,7 @@ not actually open:
   ```
 - A `docs:` spec PR closes no issue.
 
-## 5. Review + spec-acceptance gate (STOP — the milestone gate)
+## 6. Review + spec-acceptance gate (STOP — the milestone gate)
 
 - Review the spec with a **fresh context via the Agent tool**
   (`general-purpose` or `code-reviewer`), seeded with the PR diff and the
@@ -152,7 +175,7 @@ not actually open:
   git checkout "$base" && git pull --ff-only
   ```
 
-## 6. Milestone, issues, board (only AFTER the spec merges)
+## 7. Milestone, issues, board (only AFTER the spec merges)
 
 - The spec path must resolve on the **default branch**, so it must be merged
   first. Then create the milestone and one issue per implementable step:
@@ -179,23 +202,23 @@ not actually open:
 - Add every issue to the project board (the contract names it) with status
   `Todo`.
 
-## 6a. Living-spec milestone (only when the human opened an ongoing theme)
+## 7a. Living-spec milestone (only when the human opened an ongoing theme)
 
-A living-spec is the same chain as step 6, with two differences — it is
+A living-spec is the same chain as step 7, with two differences — it is
 **human-initiated** and its milestone **stays open**.
 
-- **Acceptance is the P1 model** — exactly as step 5: a merged spec on the
+- **Acceptance is the P1 model** — exactly as step 6: a merged spec on the
   default branch + an open milestone. The spec carries no lifecycle header to
   flip; the **open milestone is the signal the theme is active**. Nothing about
   acceptance differs from full-spec.
-- Create the milestone (step 6) and **leave it open**; do not plan an end state
+- Create the milestone (step 7) and **leave it open**; do not plan an end state
   for it. **Mark it living-spec** so `/loopkit:implement` can tell the tracks
   apart at the QA gate: put a `Track: living-spec` line in the milestone
   description (a full-spec milestone has no such line). Seed it with the issues
   known now and **keep accreting** issues into the same open milestone as the
   theme grows — re-run this skill with the same scope to add more (the merged
   spec already covers them). Use `Depends on: #N` for ordering as usual.
-- It is **not a roadmap phase:** skip step 7 — do not add it to the roadmap
+- It is **not a roadmap phase:** skip step 8 — do not add it to the roadmap
   overview's phase table, and never fill a current-focus/status marker.
   Loop-mode never sees it (step 1), so the loop terminal state is unaffected.
 - It is **never archived or closed by the QA gate.** Closing one of its issues
@@ -203,14 +226,14 @@ A living-spec is the same chain as step 6, with two differences — it is
   handles the QA-gate behavior (per-batch summary, no archive) — this skill's
   job is to open the milestone and keep accreting issues into it.
 
-## 7. Roadmap (mandatory for full-spec — closes the loop; skip for living-spec, see 6a)
+## 8. Roadmap (mandatory for full-spec — closes the loop; skip for living-spec, see 7a)
 
 - Every plan cycle ends by updating `docs/roadmap.md`: fill the planned
   phase's **Spec** and **Milestone** links in the overview table. That is the
   only change — no current-focus pointer, no status marker. The linked
   milestone is where status lives.
-- Do this via its own `docs:` worktree + PR (step 4 again), **merged
-  autonomously** — no gate. The `#NN` links only exist after step 6, which is
+- Do this via its own `docs:` worktree + PR (step 5 again), **merged
+  autonomously** — no gate. The `#NN` links only exist after step 7, which is
   why this is a separate PR from the spec. The cycle is not done until the
   roadmap reflects it.
 
@@ -220,7 +243,7 @@ A living-spec is the same chain as step 6, with two differences — it is
   `/loopkit:implement`'s milestone QA gate archives the spec and updates the
   roadmap. The closed milestone is the "done" signal — never add a status
   marker to a spec.
-- **Exception — a living-spec milestone (step 6a) never closes out:** its
+- **Exception — a living-spec milestone (step 7a) never closes out:** its
   milestone stays open and accretes issues; the QA gate runs per closed-issue
   batch without archiving the spec or closing the milestone. There is no "done"
   signal for an ongoing theme.
