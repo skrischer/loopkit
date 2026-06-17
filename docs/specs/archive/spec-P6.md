@@ -92,3 +92,11 @@ escalates back to planning instead of parking the issue as a dead end.
 - 2026-06-16: `needs:planning` escalation distinct from `blocked:human`;
   anticipation is a plan sub-step feeding the acceptance gate (from the
   constitution).
+- 2026-06-17: Implementation review caught that the new `needs:planning`
+  exclusion had to be threaded through EVERY place the "unblocked frontier" is
+  defined or the labels are checked — not just the canonical definition. Fixed
+  in: `implement/SKILL.md` §1 frontier, the `track:adhoc` fast-lane pickability
+  check, and the §2 wave loop-exit prose; and in the workflow template's
+  SECOND (Orchestration-section) frontier definition plus its park paragraph.
+  Lesson: a label that gates dispatch must be added to all parallel
+  frontier/pickability definitions at once.
