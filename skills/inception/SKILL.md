@@ -27,8 +27,10 @@ project, first read the codebase and every existing artifact, then diff them
 against the current templates' mandatory fields (the readiness checklist in
 Close out). Present the gap report as the first gate, then run ONLY the steps
 that close gaps — reconcile and extend existing artifacts, never
-blind-overwrite; surface conflicts at the artifact's gate. Idempotent: on a
-fully loop-ready project the result is "all green — nothing to do".
+blind-overwrite; surface conflicts at the artifact's gate. Adding or extending a
+roadmap phase opens a prior-art gap for that phase's concern — close both, not
+just the roadmap. Idempotent: on a fully loop-ready project the result is "all
+green — nothing to do".
 
 ## Artifacts and their character (strict separation, no duplication)
 
@@ -105,7 +107,10 @@ challenge questions from the goal and answer them from the findings:
   the same concerns; what to adopt, what to avoid on purpose.
 
 The challenge answers are an input to the vision (Step 3: USP, non-goals) and
-may spawn roadmap items — prior art is not a passive document.
+may spawn roadmap items — prior art is not a passive document. Conversely, every
+plannable roadmap phase must be backed by at least one prior-art concern (or an
+explicit `greenfield — no prior art` note), because `/loopkit:plan` seeds specs
+from prior art.
 
 **Research mode — ASK, never assume.** Present the choice before researching:
 
@@ -159,6 +164,10 @@ architecture seed — break the work into ordered, plannable phases. From
 
 - A phase-overview table (Phase, Name, Spec, Milestone). Specs and milestones
   are created later by `/loopkit:plan`, so both columns start `—`.
+- Then run a prior-art pass: for any phase concern not already covered in
+  `docs/prior-art.md`, run Step 2's research (same research-mode choice) and add
+  a per-concern entry, indexed by concern and tagged with the phase it feeds — or
+  record an explicit `greenfield — no prior art` note for that phase.
 - A one-line north star tying back to the vision.
 
 No status markers in the roadmap — progress lives in the GitHub issues and
@@ -267,6 +276,8 @@ produced the gap report in Step 0):
 - [ ] Bootstrap turns a fresh worktree runnable, proven by running it
 - [ ] Project board exists with `Todo` / `In Progress` / `Done`
 - [ ] `docs/workflow.md` complete — no placeholders left
+- [ ] Every roadmap phase has prior-art coverage to seed its spec (or an explicit
+      greenfield "no prior art" note)
 - [ ] `.claude/settings.json` deny rules in place
 - [ ] Provisioning: `.env.example` complete and every value the project needs
       is provided — collect missing secrets from the user NOW, not mid-loop
