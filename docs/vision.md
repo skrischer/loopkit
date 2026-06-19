@@ -61,8 +61,11 @@ no schedulers. You stay the engineer; the loop does the typing.
 
 ### In
 
-- The three loop skills (inception, plan, implement) plus the proportional dial
-  (full-spec / living-spec / fast-lane).
+- The four loop skills (inception, plan, implement, design) plus the proportional
+  dial (full-spec / living-spec / fast-lane).
+- An optional, tool-agnostic design phase inside the planning cycle: for a
+  UI-surface change a design is delivered or produced, becomes part of the spec
+  package, and is reviewed at the spec-acceptance gate — non-UI work skips it.
 - GitHub issues, milestones, and the Project board as the sole durable state.
 - The attended producer/orchestrator model: producer `/plan` + per-milestone
   orchestrator `/implement` that fans out in-session subagents/agent-teams along

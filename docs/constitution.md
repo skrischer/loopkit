@@ -13,6 +13,7 @@
 | Plugin manifest | `.claude-plugin/plugin.json` + `marketplace.json` | Claude Code plugin/marketplace spec |
 | Runtime | Claude Code + `gh` + `git` | the only execution substrate; no language runtime, no package manager |
 | State | GitHub issues / milestones / Project board | the single durable state machine — no DB, no local state files |
+| Design contract | `docs/design.md` (the `docs/workflow.md` sibling) | per-project design medium + rules; skills read it, hardcode no tool |
 
 ## Architecture principles
 
@@ -32,6 +33,14 @@ Each one is checkable in review.
 - **Proportional ceremony.** Three tracks, each change uses exactly one:
   full-spec (a feature), a living-spec milestone (an ongoing theme), a
   `track:adhoc` fast-lane (a bug/QoL change — no spec, no milestone).
+- **Optional, tool-agnostic design phase.** Design runs inside the planning
+  cycle and is optional, triggered only by UI surface (proportional ceremony) —
+  a non-UI change carries no design artifact. The mechanism reads the project's
+  `docs/design.md` contract (the `docs/workflow.md` sibling) and hardcodes no
+  tool (grep-verifiable). Its durable form is a file committed to the repo
+  (tokens / exported image / screenshot) referenced from the spec or issue; an
+  external-tool URL (a Figma/v0 share link) is NOT durable state — the tool is
+  an editor, never a second source of truth. (grep-verifiable.)
 - **Dependency representation at two levels.** Milestones carry depends-on info;
   issues carry `Depends on: #N`. The unblocked frontier (everything with no open
   dependency) is by definition the parallelizable set. Representation is the
@@ -55,7 +64,9 @@ Each one is checkable in review.
   planning defect: the implementer escalates it back to the planner (reopen the
   spec), which resolves it at the spec-acceptance gate.
 - **Exactly two human gates.** Spec-acceptance and milestone-QA; everything else
-  is autonomous.
+  is autonomous. When a change has UI surface, its design (delivered or produced
+  during planning) is reviewed AT the spec-acceptance gate as part of the spec
+  package — NOT a third gate.
 
 ## Conventions
 
@@ -85,6 +96,8 @@ Each one is checkable in review.
 - No claim arbitration of any kind — parallelism comes from orchestrator
   ownership.
 - No full-spec ceremony for a one-line change (use the fast-lane).
+- No external-tool URL (Figma/v0 share link) as the durable design form — a
+  committed file only.
 - No spec-as-source / bidirectional code<->spec generation.
 - No reimplementing a native primitive that can be reused.
 - No content duplicated across foundation artifacts.
