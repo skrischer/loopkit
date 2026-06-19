@@ -96,21 +96,28 @@ N" deterministically.
 
 ### Pinned reference strings (issues copy these verbatim)
 
-- Step 2 dual rule (append to the "prior art is not a passive document" sentence):
+- Step 2 dual rule — append as a NEW sentence immediately after the existing
+  "prior art is not a passive document." (keep that sentence's period; start the
+  new one with "Conversely,"):
   "Conversely, every plannable roadmap phase must be backed by at least one
   prior-art concern (or an explicit `greenfield — no prior art` note), because
   `/loopkit:plan` seeds specs from prior art."
-- Step 6 prior-art pass (new bullet/paragraph after the phase-table bullet):
+- Step 6 prior-art pass (new bullet appended after the phase-table bullet, before
+  the north-star bullet):
   "Then run a prior-art pass: for any phase concern not already covered in
   `docs/prior-art.md`, run Step 2's research (same research-mode choice) and add
   a per-concern entry, indexed by concern and tagged with the phase it feeds — or
   record an explicit `greenfield — no prior art` note for that phase."
-- Brownfield rule addition: "Adding or extending a roadmap phase opens a
-  prior-art gap for that phase's concern — close both, not just the roadmap."
+- Brownfield rule addition — append as a NEW sentence at the end of the brownfield
+  paragraph, immediately after "surface conflicts at the artifact's gate.":
+  "Adding or extending a roadmap phase opens a prior-art gap for that phase's
+  concern — close both, not just the roadmap."
 - Close-out checklist item: `[ ] Every roadmap phase has prior-art coverage to
   seed its spec (or an explicit greenfield "no prior art" note).`
-- Tag convention: concern `##` header form `## <Concern> (Phase N)` or
-  `## <Concern> (feature: <slug>)`.
+- Tag convention — concern `##` header form `## <Concern> (Phase N)` or
+  `## <Concern> (feature: <slug>)`. Template (`templates/prior-art.md`) line:
+  change the example header `## <Concern>` to `## <Concern> (Phase N | feature: <slug>)`
+  with a one-line note that the tag names the roadmap phase the concern feeds.
 
 ## Tracking
 
@@ -118,6 +125,8 @@ N" deterministically.
 - Issues: created from this spec — both touch `skills/inception/SKILL.md`, so
   they serialize (issue 2 `Depends on:` issue 1). Milestone-level:
   `Depends on milestone: none` (independent; tooling-preflight is closed).
+  If the gate DEFERS the tag convention, only issue 1 is created — no issue 2,
+  no `Depends on:` edge.
 
 Verify is `none yet`, so the QA gate splits into machine-checkable items
 (read-through + grep) and manual-attended items (a smoke read of the changed skill).
