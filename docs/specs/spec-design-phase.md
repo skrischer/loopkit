@@ -114,8 +114,8 @@ UI-surface changes use it.
 | Production/review reuse Paper MCP + the design skills; no reimplementation | constitution "reuse native primitives" | 2026-06-19 |
 | Bidirectional: accept a delivered design OR generate from the spec — always ending in review at the acceptance gate | prior-art Figma MCP (bidirectional) + Superdesign/v0 (iterate loop) | 2026-06-19 |
 | inception OPTIONALLY produces `docs/design.md` (UI-surface projects) exactly as it produces `docs/workflow.md`; `none` otherwise | proportionality + the workflow.md production pattern | 2026-06-19 |
-| OPEN — **grundform** (both planning-time): (a) a mode of `/loopkit:plan` — it produces/incorporates the design and presents it at its own acceptance gate, keeping three skills; vs (b) a new optional `/loopkit:design` skill the planner invokes within the planning cycle, its output referenced by the spec before the gate (vision goes 3->4 skills; DESIGN.md-style first-class separation). Recommendation: (b). | resolved at THIS spec-acceptance gate and baked into the spec BEFORE merge; it fixes the vision skill-count, the architecture component edit, and whether issue C is a new skill or a `/plan` edit | — |
-| OPEN — confirm the **foundation amendments** (vision scope; constitution gate-fold + design.md/durable-state rules; architecture component) ship in THIS milestone | resolved at the spec-acceptance gate | — |
+| **grundform** = a new optional `/loopkit:design` skill the planner invokes within the planning cycle, its output referenced by the spec before the spec-acceptance gate. Vision goes 3->4 skills; architecture gains a component; issue C is a new `skills/design/SKILL.md`. | chosen at the spec-acceptance gate; DESIGN.md-style first-class separation of design config, modular over growing `/plan` | 2026-06-19 |
+| **Foundation amendments** (vision scope; constitution gate-fold + design.md/durable-state rules; architecture component) ship in THIS milestone (issue A) | confirmed at the spec-acceptance gate | 2026-06-19 |
 
 ## Tracking
 
@@ -123,9 +123,8 @@ UI-surface changes use it.
   inception-prior-art-coupling also edits `skills/inception/SKILL.md`, and the
   design.md production step (issue B) touches the same file, so they serialize.
   The QA gate checks #8 is closed before issue B starts.
-- Issues: the final decomposition is set at the gate once grundform is chosen and
-  baked into this spec. Provisional set (issues touch largely disjoint files, so
-  they parallelize after the foundation issue):
+- Issues: decomposition for the chosen grundform (new `/loopkit:design` skill);
+  issues touch largely disjoint files, so they parallelize after the foundation issue:
   - **A — Foundation amendments** (all three foundation docs, one logical change):
     `docs/vision.md` (scope: the optional planning-time design phase),
     `docs/constitution.md` (design reviewed AT the spec-acceptance gate; the
@@ -138,14 +137,13 @@ UI-surface changes use it.
     `skills/inception/templates/design.md` (new, DESIGN.md-structured: YAML
     tokens + prose + Components + Do's/Don'ts) + a new optional production step in
     `skills/inception/SKILL.md`. `Depends on:` A (+ cross-milestone #8).
-  - **C — the design mechanism** (per grundform): a new `skills/design/SKILL.md`
-    OR a design mode added to `skills/plan/SKILL.md` — orchestrating
-    deliver-or-produce -> review-at-acceptance -> file-in-repo handoff, reading
-    `docs/design.md`. `Depends on:` A.
-  - **D — design-awareness wiring**: `/loopkit:plan` marks UI-surface
-    specs/issues and points at `docs/design.md`; `/loopkit:implement` consumes the
-    committed design artifact. `Depends on:` A, C. (If grundform = plan-mode, C
-    and D both edit `skills/plan/SKILL.md` and merge into one issue.)
+  - **C — the `/loopkit:design` skill**: a new `skills/design/SKILL.md` the
+    planner invokes within the planning cycle, orchestrating deliver-or-produce
+    -> iterate -> file-in-repo handoff, its output referenced by the spec before
+    the acceptance gate; reads `docs/design.md`, hardcodes no tool. `Depends on:` A.
+  - **D — design-awareness wiring**: `/loopkit:plan` invokes `/loopkit:design`
+    for UI-surface scope and references its output in the spec; `/loopkit:implement`
+    consumes the committed design artifact. `Depends on:` A, C.
 
 Verify is `none yet`, so the QA gate splits into machine-checkable (read-through
 + grep) and manual-attended (a dry end-to-end read) items.
@@ -199,3 +197,7 @@ Verify is `none yet`, so the QA gate splits into machine-checkable (read-through
   grundform explicitly resolved at this gate and baked in before merge, not left
   open in the merged spec (B1); architecture amendment moved into issue A;
   design.md-structure and #8-closed checks added.
+- 2026-06-19: Spec-acceptance gate — grundform chosen: a new optional
+  `/loopkit:design` skill (vision 3->4 skills; architecture gains a component).
+  Foundation amendments confirmed to ship in this milestone (issue A). Human
+  prerequisites: none. Re-review APPROVE, no remaining blockers.
