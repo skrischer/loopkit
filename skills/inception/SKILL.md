@@ -1,6 +1,6 @@
 ---
 name: inception
-description: Phase-0 inception dialog that runs BEFORE any spec work — clarify the goal, research prior art, then derive vision, constitution, and architecture artifacts plus roadmap, workflow contract, GitHub project board, project permission settings, and CLAUDE.md wiring, leaving the project loop-ready for /loopkit:plan and /loopkit:implement. On an existing project (--here) it doubles as a loop-readiness check that diffs the project against the contract and closes only the gaps. Only run when the user explicitly invokes it. Arguments: a project pitch (greenfield) or --here (brownfield).
+description: Phase-0 inception dialog that runs BEFORE any spec work — clarify the goal, research prior art, then derive vision, constitution, and architecture artifacts plus roadmap, workflow contract, an optional design contract, GitHub project board, project permission settings, and CLAUDE.md wiring, leaving the project loop-ready for /loopkit:plan and /loopkit:implement. On an existing project (--here) it doubles as a loop-readiness check that diffs the project against the contract and closes only the gaps. Only run when the user explicitly invokes it. Arguments: a project pitch (greenfield) or --here (brownfield).
 ---
 
 # /loopkit:inception — Phase-0 inception (before specs)
@@ -8,8 +8,9 @@ description: Phase-0 inception dialog that runs BEFORE any spec work — clarify
 Codifies the phase BEFORE spec-driven development (constitution -> specify ->
 plan -> tasks). Produces four foundation artifacts in `docs/` (vision,
 constitution, prior-art, architecture), a `docs/roadmap.md` sequencing the work
-into plannable phases, a `docs/workflow.md` operational contract, a GitHub
-Project board, and the project's `.claude/settings.json` permissions — the
+into plannable phases, a `docs/workflow.md` operational contract, an optional
+`docs/design.md` design contract (UI-surface projects), a GitHub Project board,
+and the project's `.claude/settings.json` permissions — the
 hand-off to the `/loopkit:plan` and `/loopkit:implement` sibling skills, which
 then run as two parallel attended loops over GitHub issues, milestones, and the
 board. Strictly separate intent (what/why) from implementation (how); the tech
@@ -17,8 +18,9 @@ stack belongs in the constitution, never in feature specs.
 
 **Interaction model:** guided dialog, never one-shot. Human gates: after the
 goal draft, before finalizing each artifact (prior-art, vision, constitution,
-architecture), before the roadmap, before the workflow contract, and before
-writing the permission settings. At each gate, present the draft and confirm
+architecture), before the roadmap, before the workflow contract, before the
+design contract (UI-surface projects), and before writing the permission
+settings. At each gate, present the draft and confirm
 via AskUserQuestion before writing the final file. Converse in the user's
 language; all artifacts and the CLAUDE.md wiring are written in English.
 
