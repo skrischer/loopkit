@@ -233,6 +233,36 @@ asking where you can:
 
 GATE: present the filled contract before writing `docs/workflow.md`.
 
+## Step 7b — Design contract (gate 7b, OPTIONAL — UI-surface only)
+
+The design sibling of the workflow contract: `/loopkit:design` and the loops
+read `docs/design.md` instead of hardcoding a design tool. Proportional — only a
+project with a UI surface gets it; a non-UI project records `none` and skips
+this step entirely (no `docs/design.md`, no gate).
+
+- **Decide UI surface.** Does this project render a user-facing interface
+  (web/app/CLI-with-rich-output)? No -> record `none` in the Close out checklist
+  and skip to Step 8. Yes -> fill the contract.
+- Fill `templates/design.md` into `docs/design.md`, deriving values from the
+  vision/constitution where you can rather than asking:
+  - **Design tool / MCP** — the editor this project uses (e.g. Paper MCP /
+    Figma / Superdesign / v0 / Claude artifacts); ask the user, pick exactly one
+    primary. The tool is the editor, never the source of truth.
+  - **Where designs live** — the working surface (file/URL) AND the committed
+    token + asset paths in the repo.
+  - **Durable form** — a file committed to the repo (tokens / exported image /
+    screenshot); an external-tool URL is not durable state (constitution:
+    GitHub-only durable state). Leave the template's rule intact.
+  - **Review path** — which reviewer/skill checks the design; it is reviewed AT
+    the spec-acceptance gate, not a third stop.
+  - **Handoff format** — how `/loopkit:implement` consumes the committed
+    artifact.
+  - **Tokens, Components, Do's/Don'ts** — fill the front-matter tokens and the
+    component rules from the design intent.
+
+GATE: present the filled contract before writing `docs/design.md` (skip the gate
+entirely when UI surface is `none`).
+
 ## Step 8 — Project permissions (gate 8)
 
 Fill `templates/settings.json` into the project's `.claude/settings.json` —
@@ -284,6 +314,8 @@ produced the gap report in Step 0):
 - [ ] Bootstrap turns a fresh worktree runnable, proven by running it
 - [ ] Project board exists with `Todo` / `In Progress` / `Done`
 - [ ] `docs/workflow.md` complete — no placeholders left
+- [ ] `docs/design.md` complete (UI-surface project) — no placeholders left; or
+      recorded `none` (non-UI project, no file)
 - [ ] Every roadmap phase has prior-art coverage to seed its spec (or an explicit
       greenfield "no prior art" note)
 - [ ] `.claude/settings.json` in place: `defaultMode: bypassPermissions` with
