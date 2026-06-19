@@ -92,7 +92,7 @@ N" deterministically.
 | Close-out checklist item (verbatim): `[ ] Every roadmap phase has prior-art coverage to seed its spec (or an explicit greenfield "no prior art" note)` | feedback #4; this is the automatic catch in both greenfield and brownfield | 2026-06-19 |
 | Tag convention: prior-art concern `##` headers carry a trailing `(Phase N)` for roadmap P-numbers or `(feature: <slug>)` for Features-table rows; shown in the template | feedback #5; already de-facto used in loopkit's own `docs/prior-art.md`, so codifying is consistent and lets `/plan` resolve "prior art for phase N" | 2026-06-19 |
 | Scope = inception SKILL.md + its prior-art template only; plan/implement untouched | plan already links prior art per spec (constitution) — the missing half is upstream, in inception | 2026-06-19 |
-| OPEN — include the tag convention (proposal #5, flagged "Optional" in the feedback) in this milestone, or defer it? | resolved at the spec-acceptance gate | — |
+| Tag convention (proposal #5) SHIPS in this milestone — 2 issues, issue 2 `Depends on:` issue 1 | accepted at the spec-acceptance gate; the tags are already de-facto used in loopkit's own `docs/prior-art.md`, so codifying is consistent and lets `/plan` resolve "prior art for phase N" | 2026-06-19 |
 
 ### Pinned reference strings (issues copy these verbatim)
 
@@ -165,3 +165,6 @@ Verify is `none yet`, so the QA gate splits into machine-checkable items
   five outcomes map to the feedback's five proposals. Scope held to inception +
   its prior-art template (plan already links prior art per spec). One genuinely-open
   item: whether the optional tag convention (proposal #5) ships in this milestone.
+- 2026-06-19: Spec-acceptance gate — tag convention (proposal #5) accepted INTO
+  this milestone (2 issues). Human prerequisites: none. Review (PR #70) APPROVE
+  with no blockers; four insertion-point findings folded into the pinned strings.
