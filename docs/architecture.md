@@ -23,7 +23,7 @@
 
 - Skills never hardcode project specifics — they read `docs/workflow.md`
   (inception produces it; plan/implement consume it).
-- The three skills do not know each other's internals — handoff is only through
+- The four skills do not know each other's internals — handoff is only through
   GitHub state and `docs/` artifacts.
 - Foundation docs keep strict character separation — no duplicated content.
 - Orchestrator <-> subagents is in-session and ephemeral; orchestrator <->

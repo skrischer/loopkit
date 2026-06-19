@@ -76,7 +76,8 @@ Each one is checkable in review.
 - All artifacts, code, comments, and commits in English. Conventional Commits
   (`feat`/`fix`/`chore`/`docs`/`refactor`).
 - Skill prose is terse, imperative, and gate-marked. No duplication across the
-  three skills — project specifics live in `docs/workflow.md`.
+  four skills — project specifics live in `docs/workflow.md` (or `docs/design.md`
+  for the design skill).
 - One character per foundation artifact (vision normative, constitution binding,
   prior-art descriptive, architecture structural) — no content duplicated across
   them.
