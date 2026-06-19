@@ -113,6 +113,16 @@ not actually open:
 - **No step list inside the spec** — steps live as issues. The `Outcome` list
   is done-criteria, not a progress mirror. Everything in `docs/` is written in
   English.
+- **UI surface (optional, by surface only):** if this scope has UI surface,
+  invoke `/loopkit:design` from within this planning cycle (it reads
+  `docs/design.md` for every tool specific) and **reference its committed design
+  artifact from the spec** by repo path — so the design travels in the spec
+  package and is reviewed AT the spec-acceptance gate (step 6), adding **no new
+  gate**. The referenced artifact's presence in the spec IS the UI-surface
+  signal the implementer reads — no separate label needed. A non-UI scope skips
+  this entirely — no design step, no artifact (proportional ceremony). If
+  `docs/design.md` is missing or records `none`, the project did not enable the
+  design phase: note it and proceed without designing.
 
 ## 4. Anticipate implementer questions (pre-mortem — NOT a new gate)
 
@@ -164,6 +174,9 @@ second human stop.
   it builds on). Ask for a verdict whose first line is `VERDICT: APPROVE` or
   `VERDICT: REQUEST_CHANGES`, with blocking vs non-blocking findings. The Agent
   tool runs in-session — never shell out to a billed CLI. Address the findings.
+  For a UI-surface scope the design artifact the spec references (step 3) is part
+  of the spec package and is reviewed here with the rest of the spec — it is **not**
+  a separate stop.
 - **STOP — the cycle's one human gate:**
   - Resolve each genuinely-open decision via `AskUserQuestion` — do not guess.
     Bake the answer into the spec (Prior decisions row + Decision log entry).
