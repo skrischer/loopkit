@@ -57,8 +57,11 @@
   (+ a template).
 - How specs/milestones/issues are produced -> `skills/plan/`.
 - How a milestone is executed/orchestrated -> `skills/implement/`.
+- How a design step is produced/reviewed (planning-time) -> `skills/design/`.
 - Per-project parameters (commands, board, naming) -> the `workflow.md` template
   (NOT the skill — skills read it).
+- Per-project design parameters (tool, reviewer, handoff form) -> the `design.md`
+  template (NOT the skill — the skill reads it).
 - Shared cross-skill behavior -> the `workflow.md` contract, or the constitution
   if binding; never a single skill.
 - Permission/autonomy -> the `settings.json` template.
