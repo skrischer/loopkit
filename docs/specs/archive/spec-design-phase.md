@@ -201,3 +201,19 @@ Verify is `none yet`, so the QA gate splits into machine-checkable (read-through
   `/loopkit:design` skill (vision 3->4 skills; architecture gains a component).
   Foundation amendments confirmed to ship in this milestone (issue A). Human
   prerequisites: none. Re-review APPROVE, no remaining blockers.
+- 2026-06-19: Implemented via `/loopkit:implement` — #75 (foundation, PR #86),
+  then the parallel frontier #76 (design.md contract + template + inception Step
+  7b, PR #89) and #77 (the `/loopkit:design` skill, PR #88), then #78 (plan +
+  implement design-awareness wiring, PR #90). Review fixes folded: stale "three
+  skills" count corrected in constitution + architecture (#75); inception intro /
+  description / gate-list surface the optional design.md (#76); manifest
+  descriptions register `/design` + architecture "where new code goes" gains the
+  design rows (#77); UI-surface signal + handoff-format wording clarified (#78).
+  One review false-positive dismissed: a per-PR reviewer flagged "B and D missing"
+  unaware the milestone is decomposed across PRs.
+- 2026-06-19: Milestone-QA — human gate WAIVED by the operator for this run.
+  Machine-checkable Verification self-run green (four skills incl. design; two
+  human gates intact; design.md template has the DESIGN.md structure; the design
+  skill + plan + implement reference docs/design.md with zero hardcoded tool
+  literals; durable form = committed file, no external URL; no headless/API key).
+  Spec archived, milestone #9 closed.
