@@ -167,8 +167,7 @@ architecture seed — break the work into ordered, plannable phases. From
 - Then run a prior-art pass: for any phase concern not already covered in
   `docs/prior-art.md`, run Step 2's research (same research-mode choice) and add
   a per-concern entry, indexed by concern and tagged with the phase it feeds — or
-  record an explicit `greenfield — no prior art` note for that phase. Adding or
-  extending a phase opens this gap; close it here, not later.
+  record an explicit `greenfield — no prior art` note for that phase.
 - A one-line north star tying back to the vision.
 
 No status markers in the roadmap — progress lives in the GitHub issues and
