@@ -131,7 +131,7 @@ dispatch). Its steps:
   The spec owns the design; the issue owns the step. A `track:adhoc` issue has no
   spec — skip the spec read; its body is the whole contract. For a UI-surface
   issue, the committed design artifact the spec references is an **input like the
-  spec**: read it (its repo path; consult `docs/design.md` for the handoff form)
+  spec**: read it (its repo path; consult `docs/design.md` for the handoff format)
   and build to it. Consume the committed file only — never reach into a design
   tool or a share link. A non-UI issue has no design artifact (proportionality).
 - **Plan the step.** Lay out a short in-session plan; prefer existing patterns,

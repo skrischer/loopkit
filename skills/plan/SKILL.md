@@ -118,8 +118,9 @@ not actually open:
   `docs/design.md` for every tool specific) and **reference its committed design
   artifact from the spec** by repo path — so the design travels in the spec
   package and is reviewed AT the spec-acceptance gate (step 6), adding **no new
-  gate**. Mark the scope as having UI surface. A non-UI scope skips this
-  entirely — no design step, no artifact (proportional ceremony). If
+  gate**. The referenced artifact's presence in the spec IS the UI-surface
+  signal the implementer reads — no separate label needed. A non-UI scope skips
+  this entirely — no design step, no artifact (proportional ceremony). If
   `docs/design.md` is missing or records `none`, the project did not enable the
   design phase: note it and proceed without designing.
 
