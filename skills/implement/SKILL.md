@@ -116,8 +116,10 @@ parked (`blocked:human`) work remains (the branch after step 5):
    wave. The board may show `Todo`/`In Progress`/`Done` for human visibility, but
    it is **not** a claim or lock — ownership, not claiming, keeps waves correct.
 
-When the milestone's issues are all closed (none escalated or parked), go to §5.
-If any issue is escalated (`needs:planning`) or parked (`blocked:human`), go to §4.
+When the frontier empties, run the **cleanup sweep (§4.5)** to retire any orphan
+worktrees and branches the waves left behind, then branch: if the milestone's
+issues are all closed (none escalated or parked), go to §5; if any issue is
+escalated (`needs:planning`) or parked (`blocked:human`), go to §4.
 
 ## 3. Per-issue subagent contract (what each fan-out subagent does)
 
@@ -183,6 +185,12 @@ dispatch). Its steps:
   The merge auto-closes the issue (`Closes #<n>`); set its board status to `Done`
   (visibility only — not a lock). Add any decisions made during implementation to
   the spec's Decision log (skip for a `track:adhoc` issue).
+- **Clean up on the park/escalate paths too.** Before returning an escalation or
+  a park (the issue does not merge, so the merge step above never runs), remove the
+  issue's own worktree the same way — `git worktree remove "$wt"` if its tree is
+  clean — so a parked/escalated issue leaks no worktree. Never `--force`: if `$wt`
+  has uncommitted changes, leave it and report it (the no-uncommitted-work rule,
+  §4.5). The branch holds no merged PR, so it is **not** deleted here.
 - **Report back** to the orchestrator: **merged** (issue closed), **escalated**
   (`needs:planning` — a design fork; issue number + the question), or **parked**
   (`blocked:human` — a human prerequisite; issue number + reason). The subagent
@@ -214,13 +222,40 @@ In both cases the orchestrator then:
   that `Depends on:` it, directly or indirectly) from further waves.
 - **Finishes the rest** of the reachable frontier (continue §2) — one escalated or
   parked issue never stalls the orchestrator.
-- At the end, **reports the escalated and parked issues** (and their excluded
-  dependents) **instead of running the milestone-QA gate** — escalated and parked
-  issues do **not** count toward milestone completion, so a milestone carrying any
-  is **not** complete. List them with
-  `gh issue list --label needs:planning` and `gh issue list --label blocked:human`.
+- At the end — after the frontier-empty cleanup sweep (§4.5) — **reports the
+  escalated and parked issues** (and their excluded dependents) **instead of
+  running the milestone-QA gate** — escalated and parked issues do **not** count
+  toward milestone completion, so a milestone carrying any is **not** complete.
+  List them with `gh issue list --label needs:planning` and
+  `gh issue list --label blocked:human`.
 
 Never implement workarounds; never add status markers to specs.
+
+## 4.5 Cleanup sweep — no orphans, no force
+
+The orchestrator runs this **once per run, after the frontier empties** —
+**before** the §5 QA gate and **before** the §4 escalate/park report. Per-issue
+subagents already remove their own worktree (on merge, and on park/escalate, §3);
+this sweep retires what the run still left behind. **Bound it strictly to
+loopkit's worktree-path convention** (`../<repo>-worktrees/...`, per
+`docs/workflow.md`) — never touch worktrees or branches outside it.
+
+- **List the project's worktrees:** `git worktree list --porcelain`; consider
+  only paths under `../<repo>-worktrees/`.
+- **Remove each merged-or-gone worktree (clean only):** for a worktree whose
+  branch's PR has merged or whose branch is gone, `git worktree remove "$wt"`.
+- **Dirty worktree -> report, never force.** If a worktree has uncommitted
+  changes, **leave it and surface it** in the report — never `git worktree remove
+  --force` (the deny rules forbid destroying uncommitted work). The sweep reports
+  what it could not clean rather than forcing it.
+- **Prune:** `git worktree prune` to clear stale administrative entries.
+- **Delete stale local branches whose PR has merged:** for a local branch whose PR
+  is merged, `git branch -d <branch>` (safe delete only — `-d`, never `-D`; an
+  unmerged branch refuses deletion and is reported instead). Leave remote branches
+  to `--delete-branch` at merge.
+
+Report any worktree or branch the sweep could **not** clean (dirty / unmerged) so
+the human can resolve it; nothing is force-removed.
 
 ## 5. Milestone QA gate (STOP — the human gate)
 
@@ -235,7 +270,8 @@ merges. A **living-spec** milestone (description carries `Track: living-spec`) i
 always-open — it accretes issues and is never archived or closed by this gate; run
 the gate on the **closed-issue batch** (the issues that closed since the last QA).
 
-Run the gate:
+The frontier-empty cleanup sweep (§4.5) has already run, so no orphan worktrees or
+branches survive into QA. Run the gate:
 
 - Derive concrete QA scenarios from the spec's **Verification** section — it is the
   QA script — including every acceptance item no machine check covers (the
