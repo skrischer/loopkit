@@ -168,3 +168,13 @@ Verify is `none yet`, so the QA gate splits into machine-checkable items
 - 2026-06-19: Spec-acceptance gate — tag convention (proposal #5) accepted INTO
   this milestone (2 issues). Human prerequisites: none. Review (PR #70) APPROVE
   with no blockers; four insertion-point findings folded into the pinned strings.
+- 2026-06-19: Implemented via `/loopkit:implement` — #71 (PR #80) then #72
+  (PR #81), serialized on `skills/inception/SKILL.md`. Two review notes resolved:
+  dropped a Step 6 sentence not in the pinned string (#71); the template shows one
+  tag form, not the combined `(Phase N | feature: <slug>)` pipe, since real
+  entries carry exactly one tag (#72) — a deliberate deviation from the pinned
+  template string, which would have propagated a wrong pattern to target projects.
+- 2026-06-19: Milestone-QA — human gate WAIVED by the operator for this run.
+  Machine-checkable Verification self-run green (all four pinned edits present;
+  tag convention in SKILL.md + template; greenfield escape in both Step 2 and the
+  Step 6 pass; no drift). Spec archived, milestone #8 closed.
