@@ -128,7 +128,10 @@ Look for exemplary, preferably OSS projects that solve the problem or its
 sub-problems. Fill `docs/prior-art.md` from the template: per entry concern,
 repo + concrete path, license, verdict (reuse / reference-only / avoid + why),
 date, and the harvest notes (adopt / avoid) in Notes. Living document — gaps
-are fine.
+are fine. Tag each concern's `##` header with the phase it feeds —
+`## <Concern> (Phase N)` for a roadmap P-number or `## <Concern> (feature: <slug>)`
+for a Features-table row — so `/loopkit:plan` can resolve "prior art for phase N"
+deterministically.
 
 GATE: present the challenge answers (existence, USP, differentiation, harvest)
 and the per-entry verdicts before finalizing.
