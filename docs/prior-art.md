@@ -219,3 +219,123 @@ not as a pattern to copy.
 - Notes: ADOPT — bounded retry that fails safe with an actionable resume state
   (loopkit already has "same failure twice -> stop"; formalize it). AVOID — a
   local task store as the source of truth (breaks GitHub-only).
+
+## Research-to-plan coupling — every plannable phase backed by prior art (feature: inception-prior-art-coupling)
+
+Dogfooding `/loopkit:inception` on Rack (2026-06-17) surfaced a one-directional
+coupling: prior art *could* spawn roadmap items, but extending the roadmap did
+not pull prior art for the new phases — a phase reached `/plan` with nothing to
+seed its spec. The fix makes the coupling bidirectional: every plannable roadmap
+phase must be backed by >=1 prior-art concern (or an explicit "greenfield — no
+prior art" note). The references below are the external practice this generalizes.
+
+### loopkit dogfooding finding (Rack) — the originating evidence
+
+- Path: `docs/feedback/2026-06-17-prior-art-roadmap-coupling.md` (this repo);
+  evidence in `../rack`: `docs/roadmap.md` (`b45c408`) + `docs/prior-art.md` (`1d6c70b`).
+- License: n/a (in-house)
+- Verdict: reuse — the concrete gap report + the 5 proposed `SKILL.md` changes
+  this feature implements.
+- Date: 2026-06-17
+- Notes: ADOPT — the dual coupling rule + a per-phase prior-art pass in Step 6 +
+  a Close-out readiness item + the `(Phase N)` / `(feature: <slug>)` concern tag.
+  AVOID — treating "extend the roadmap" as done while the prior-art gap it opens
+  stays open.
+
+### Dual-track agile — discovery feeds the delivery backlog
+
+- Path: https://www.svpg.com/dual-track-agile/ ; https://www.productplan.com/glossary/dual-track-agile
+- License: n/a (article/practice)
+- Verdict: reference-only — the canonical practice: a continuous discovery track
+  feeds *validated* items into the delivery backlog with explicit handoff
+  criteria. loopkit's prior-art->roadmap coupling is the same shape one level up.
+- Date: 2026-06-19
+- Notes: ADOPT — research gates entry to the plannable queue (a phase is ready
+  only once its concern is researched). DIFFERENTIATE — dual-track is user/market
+  discovery; loopkit's concern is technical prior-art seeding specs, kept in ONE
+  living doc, not a separate discovery backlog (which would be a second source of
+  truth).
+
+### github/spec-kit — per-feature `research.md` (Phase 0)
+
+- Path: https://github.com/github/spec-kit/blob/main/templates/plan-template.md
+- License: unverified (MIT likely — verify)
+- Verdict: reference-only — closest tool prior art: the `plan` command emits a
+  Phase-0 `research.md` per feature, making research a first-class artifact
+  before implementation.
+- Date: 2026-06-19
+- Notes: ADOPT — research as an explicit Phase-0 artifact gating the spec.
+  DIFFERENTIATE — spec-kit regenerates research per feature at plan time and
+  stores it in the feature folder; loopkit seeds a shared, concern-indexed living
+  prior-art doc at inception/roadmap time, so `/plan` *reads* it across phases
+  instead of regenerating per feature.
+
+## Design phase in the loop — optional, tool-agnostic design anchored to the spec (feature: design-phase)
+
+For UI work, delivering or generating a design alongside the spec and reviewing
+it before code lifts quality. The open question is placement and agnosticism:
+loopkit wants an OPTIONAL design step (only when a change has UI surface), tool-
+agnostic (Paper MCP / Figma / Superdesign / v0 / Claude artifacts), with the
+design's durable form living in GitHub — the medium named in a project
+`docs/design.md` contract, never in the skill.
+
+### Superdesign `DESIGN.md` — the design-contract precedent
+
+- Path: https://www.superdesign.dev/blog/what-is-design-md ; repo https://github.com/superdesigndev/superdesign
+- License: OSS (verify); article n/a
+- Verdict: reuse — the closest analog to loopkit's proposed `docs/design.md`:
+  "tsconfig.json for your design system", repo-versioned markdown read by any
+  agent (Claude Code, Cursor, v0). Tool-agnostic by being portable text.
+- Date: 2026-06-19
+- Notes: ADOPT — the contract structure: YAML token front-matter (colors, type,
+  spacing, radii) + prose rationale + Components + Do's/Don'ts; loaded each
+  session. loopkit's `docs/design.md` = `workflow.md`'s sibling: names the tool,
+  where designs live, the review path, the handoff format. AVOID — coupling it to
+  one generator.
+
+### W3C Design Tokens (DTCG) — agnostic interchange = durable state
+
+- Path: https://www.designtokens.org/tr/drafts/format/ ; https://tokens.studio/
+- License: W3C Community spec / Tokens Studio OSS core
+- Verdict: reuse — the platform-agnostic, vendor-neutral token format (first
+  stable 2025.10): "the contract between design and development". A token file in
+  the repo is the durable, GitHub-storable design state; the canvas is the editor.
+- Date: 2026-06-19
+- Notes: ADOPT — tokens as the durable form that satisfies GitHub-only state and
+  tool-agnosticism in one move. AVOID — letting tool-specific token dialects leak
+  past the contract.
+
+### Spec-kit / Kiro — Requirements -> Design -> Tasks (design reviewed before code)
+
+- Path: https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html (cross-ref existing entries)
+- License: n/a (article) / proprietary (Kiro)
+- Verdict: reference-only — validates placement: design is a documented artifact
+  reviewed before code, where humans keep architectural control.
+- Date: 2026-06-19
+- Notes: ADOPT — design-before-code as a reviewed artifact. DIFFERENTIATE — fold
+  the design review into loopkit's existing spec-acceptance gate (no third gate);
+  keep it OPTIONAL (Kiro forces it -> over-production loopkit's proportionality
+  rejects).
+
+### Figma Dev Mode MCP + Code Connect — designer->agent handoff (one tool option)
+
+- Path: https://www.figma.com/blog/the-figma-agent-is-here/ ; https://blog.logrocket.com/ux-design/design-to-code-with-figma-mcp/
+- License: proprietary
+- Verdict: reference-only — the bidirectional design<->code handoff: agents read
+  variables/tokens/components as machine-readable context; code-to-canvas and
+  back. One concrete `docs/design.md` tool option, not the orchestration.
+- Date: 2026-06-19
+- Notes: ADOPT — bidirectional (matches "design from spec" AND "spec from design")
+  + tokens/Code Connect as structured handoff over screenshots. AVOID — Figma
+  lock-in; the agnostic skill selects the tool MCP via the contract.
+
+### Superdesign + Vercel v0 — agentic UI generation + iterate loop (OSS option)
+
+- Path: https://github.com/superdesigndev/superdesign ; https://v0.dev
+- License: OSS (verify) / proprietary (v0)
+- Verdict: reference-only — generate UI from natural-language/spec, iterate in a
+  review loop, derive a design-system file from the existing repo.
+- Date: 2026-06-19
+- Notes: ADOPT — the generate->review->iterate loop as the design step's inner
+  cycle; "derive design system from the repo" for brownfield UIs. AVOID — direct
+  code output bypassing the spec/issue (keep the design artifact, not just code).

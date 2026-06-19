@@ -46,6 +46,8 @@ The P1–P6 redesign is complete; new work is planned directly via
 | Feature | Spec | Milestone |
 |---|---|---|
 | tooling-preflight — fail fast when git/gh are missing or unauthorized | [spec](specs/archive/spec-tooling-preflight.md) | [#7](https://github.com/skrischer/loopkit/milestone/7) |
+| inception-prior-art-coupling — bidirectional prior-art↔roadmap coupling: every plannable phase backed by prior art (Step 2 ↔ Step 6) | — | — |
+| design-phase — optional, tool-agnostic design step anchored to the spec (project docs/design.md contract); reviewed at the spec-acceptance gate | — | — |
 
 Unlike the P1–P6 chain, this feature's issues touch **disjoint files** — the
 first real parallel frontier, the orchestrator payoff the chain's own narrative
