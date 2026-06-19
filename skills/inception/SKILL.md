@@ -239,10 +239,15 @@ Fill `templates/settings.json` into the project's `.claude/settings.json` —
 plugins cannot ship permission rules, so the loops' autonomy must be granted
 per project:
 
-- Broad allows; deny rules for `rm -rf`, force-push, and hard reset.
+- Ships `defaultMode: bypassPermissions` so the loops run autonomously. Deny
+  rules apply in EVERY mode, bypassPermissions included — deny always wins.
+  (Under bypassPermissions the `allow` list has no effect; deny/ask stay
+  enforced.) The template's deny list covers the constitution hard limits:
+  `rm -rf`, force-push, hard reset, `git clean -f`, `git branch -D`,
+  `git checkout .`, `git restore .`.
 - Extend the deny list with the stack's destructive commands against shared
   state (e.g. `supabase db reset`, `prisma migrate reset` — replace the
-  template's examples with what this stack actually has).
+  template's example with what this stack actually has).
 - The contract's Autonomy section is the human-readable counterpart: it
   explicitly grants autonomous commits, pushes, merges, dependency installs,
   and `.env` edits to the skills, overriding any stricter global user rules.
@@ -281,7 +286,8 @@ produced the gap report in Step 0):
 - [ ] `docs/workflow.md` complete — no placeholders left
 - [ ] Every roadmap phase has prior-art coverage to seed its spec (or an explicit
       greenfield "no prior art" note)
-- [ ] `.claude/settings.json` deny rules in place
+- [ ] `.claude/settings.json` in place: `defaultMode: bypassPermissions` with
+      deny rules covering every constitution hard limit (deny wins in all modes)
 - [ ] Provisioning: `.env.example` complete and every value the project needs
       is provided — collect missing secrets from the user NOW, not mid-loop
 - [ ] Initial commit exists on the base branch. If the branch is unborn,
