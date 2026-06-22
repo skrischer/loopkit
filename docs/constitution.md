@@ -56,8 +56,14 @@ Each one is checkable in review.
   worktrees rather than reimplementing them.
 - **Bounded retry.** The identical failure twice in a row stops the loop with a
   resumable report; loops never grind.
-- **Prior art is consulted and linked.** `/plan` checks `docs/prior-art.md` per
-  spec and links the relevant entries so `/implement` can reach them.
+- **Prior art is consulted and linked — to source when it earns it.** `/plan`
+  checks `docs/prior-art.md` per spec and links the relevant entries so
+  `/implement` can reach them. When the distilled verdict does not settle a
+  decision, `/plan` is encouraged to check out the referenced source — a public
+  repo, read-only, into an ephemeral location outside this repo — and analyse the
+  specific implementation. The checkout is a transient read, discarded after:
+  never retained state, never copied in; the spec's recorded decision is the
+  durable output.
 - **Clarification belongs to planning.** The implementer never asks the human.
   The spec — informed by vision, constitution, and prior art — must leave zero
   open questions for implementation. A fork that reaches an implementer is a
