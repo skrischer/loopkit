@@ -85,7 +85,14 @@ not actually open:
 
 1. **Precedent-decided** — backed by reference implementations in
    `docs/prior-art.md`. Consult it for the scope unconditionally; adopt and
-   record in the spec.
+   record in the spec. When a `docs/prior-art.md` verdict is too coarse to
+   settle the decision and the entry points at real source (a repo `Path:`),
+   you are encouraged to check that source out and read the specific
+   implementation — a read-only, ephemeral clone outside the repo
+   (e.g. `../loopkit-priorart/<project>`), discarded when done. Record the
+   concrete finding (file/approach) in the spec's Prior decisions + Decision
+   log; never commit the external code into this repo. Proportional: do this
+   only when it hardens a real decision, not for every entry.
 2. **Constraint-determined** — derivable from this codebase, `docs/constitution.md`,
    or `CLAUDE.md`. Decide it and record the rationale.
 3. **Genuinely open** — neither precedent nor constraint settles it. These are
