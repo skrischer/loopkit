@@ -96,47 +96,13 @@ research starts.
 
 ## Step 2 — Prior-art challenge (gate 2)
 
-Prior art is not just catalogued — it CHALLENGES the project. Derive the
-challenge questions from the goal and answer them from the findings:
+Run the prior-art challenge per `skills/shared/iteration-steps.md` — the
+challenge lens (existence, USP, differentiation, idea harvest), the ASK-first
+research-mode choice, and filling `docs/prior-art.md`. Inception framing: the
+challenge answers are the direct input to the vision (Step 3: USP, non-goals) —
+research runs here so Step 3 can consume it.
 
-- **Existence** — does an existing tool already solve this well enough to make
-  the project redundant? The honest output may be "reuse X, don't build."
-- **USP** — in one sharp sentence, what justifies this project that prior art
-  does not already cover?
-- **Differentiation / non-goals** — where does this project deliberately stop
-  where others go on? Feeds the vision's scope and non-goals.
-- **Idea harvest** — per reference: what works, what fails, did we account for
-  the same concerns; what to adopt, what to avoid on purpose.
-
-The challenge answers are an input to the vision (Step 3: USP, non-goals) and
-may spawn roadmap items — prior art is not a passive document. Conversely, every
-plannable roadmap phase must be backed by at least one prior-art concern (or an
-explicit `greenfield — no prior art` note), because `/loopkit:plan` seeds specs
-from prior art.
-
-**Research mode — ASK, never assume.** Present the choice before researching:
-
-- **deep-research** — the deep-research skill: deep, multi-source. COST: it
-  fans out ~100 subagents that inherit the session model — run on a
-  cost-appropriate model (e.g. Opus); a heavy model (Fable) multiplies the cost
-  ~100x and can exhaust the session limit. Switch the session model before
-  triggering, not during.
-- **websearch** — a handful of focused WebSearch/WebFetch lookups; cheap, fast,
-  enough for a landscape comparison.
-- **none** — offer ONLY when `docs/prior-art.md` already exists with relevant
-  entries: reuse what is there, skip fresh research.
-
-Look for exemplary, preferably OSS projects that solve the problem or its
-sub-problems. Fill `docs/prior-art.md` from the template: per entry concern,
-repo + concrete path, license, verdict (reuse / reference-only / avoid + why),
-date, and the harvest notes (adopt / avoid) in Notes. Living document — gaps
-are fine. Tag each concern's `##` header with the phase it feeds —
-`## <Concern> (Phase N)` for a roadmap P-number or `## <Concern> (feature: <slug>)`
-for a Features-table row — so `/loopkit:plan` can resolve "prior art for phase N"
-deterministically.
-
-GATE: present the challenge answers (existence, USP, differentiation, harvest)
-and the per-entry verdicts before finalizing.
+GATE: present the challenge answers and the per-entry verdicts before finalizing.
 
 ## Step 3 — Sharpen the vision (gate 3)
 
@@ -155,30 +121,14 @@ GATE before finalizing.
 
 ## Step 5 — Seed the architecture (gate 5)
 
-Component map, responsibilities and boundaries, the most important
-data/control flows, a "where does new code go" guide ->
-`docs/architecture.md`. Greenfield: this is a seed, not a final design.
-GATE before finalizing.
+Seed the architecture per `skills/shared/iteration-steps.md` ->
+`docs/architecture.md`. GATE before finalizing.
 
 ## Step 6 — Seed the roadmap (gate 6)
 
-The roadmap is the content hand-off to `/loopkit:plan`: the sequenced queue of
-phases it picks the next one from. Derive it from the vision scope and the
-architecture seed — break the work into ordered, plannable phases. From
-`templates/roadmap.md` into `docs/roadmap.md`:
-
-- A phase-overview table (Phase, Name, Spec, Milestone). Specs and milestones
-  are created later by `/loopkit:plan`, so both columns start `—`.
-- Then run a prior-art pass: for any phase concern not already covered in
-  `docs/prior-art.md`, run Step 2's research (same research-mode choice) and add
-  a per-concern entry, indexed by concern and tagged with the phase it feeds — or
-  record an explicit `greenfield — no prior art` note for that phase.
-- A one-line north star tying back to the vision.
-
-No status markers in the roadmap — progress lives in the GitHub issues and
-milestones each phase links to; specs carry no lifecycle state either, a spec
-is accepted once merged on the default branch with a milestone. Living
-document; `/loopkit:plan` keeps the links current. GATE before finalizing.
+Seed the roadmap per `skills/shared/iteration-steps.md`, filling this skill's
+`templates/roadmap.md` into `docs/roadmap.md` and deriving the phases from the
+vision scope and the architecture seed. GATE before finalizing.
 
 ## Step 7 — Establish the workflow contract (gate 7)
 
