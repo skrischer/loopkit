@@ -5,7 +5,7 @@
     {
       "name": "loopkit",
       "source": "./",
-      "description": "The proportional loop for Claude Code: ceremony scales with change size — full spec -> milestone -> dependency-ordered issues for features, a track:adhoc fast-lane for bugs/QoL, a living-spec track for ongoing themes. /inception bootstraps loop-readiness; /plan produces, /implement orchestrates one milestone via in-session subagent fan-out, /design adds an optional planning-time UI design step — all on GitHub issues/milestones/board, attended and subscription-auth."
+      "description": "The proportional loop for Claude Code: ceremony scales with change size — full spec -> milestone -> dependency-ordered issues for features, a track:adhoc fast-lane for bugs/QoL, a living-spec track for ongoing themes. /inception bootstraps loop-readiness; /roadmap spars raw ideas into seeded roadmap phases; /plan produces, /implement orchestrates one milestone via in-session subagent fan-out, /design adds an optional planning-time UI design step — all on GitHub issues/milestones/board, attended and subscription-auth."
     }
   ]
 }

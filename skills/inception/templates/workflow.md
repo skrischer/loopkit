@@ -215,17 +215,29 @@ destructive database commands).
 
 ## Loops
 
-Two attended interactive sessions, synchronized only through GitHub state — no
+Three attended interactive sessions, synchronized only through GitHub state — no
 headless mode, no API keys, no detached schedulers. Start each in its own
 terminal from the main checkout:
+
+- Roadmap loop (idea sparring):
+
+  ```
+  /loopkit:roadmap <idea...> — spar each raw idea against prior art (research
+  mode asked per idea) and seed 1..n roadmap phases with their backing prior-art
+  entries; no loop-readiness sweep. A foundation-doc impact is recorded onto the
+  seeded phase, authored later in that phase's /loopkit:plan spec PR — never
+  edited here. Ceiling: <N> iterations.
+  ```
 
 - Plan loop:
 
   ```
-  /loop /loopkit:plan — plan the roadmap's next unplanned phase to a merged spec
-  with milestone, issues, and board entries; stop at the spec-acceptance gate;
-  when no unplanned phase remains, report and end. Ceiling: <N> iterations;
-  stop when the same blocker repeats twice.
+  /loop /loopkit:plan [phase...] — plan the roadmap's next unplanned phase, or a
+  human-named set of one-or-many phases in that order, to a merged spec with
+  milestone, issues, and board entries; stop at the spec-acceptance gate; when no
+  unplanned phase remains, report and end. A multi-phase run writes each new
+  milestone's `Depends on milestone:` edge as it goes and never auto-picks the
+  set. Ceiling: <N> iterations; stop when the same blocker repeats twice.
   ```
 
 - Implement loop:

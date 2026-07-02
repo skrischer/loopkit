@@ -119,16 +119,29 @@ dependency installs, and `.env` edits. Hard limits live in
 
 ## Loops
 
-Two attended interactive sessions, synchronized only through GitHub state — no
+Three attended interactive sessions, synchronized only through GitHub state — no
 headless mode, no API keys, no detached schedulers. Start each in its own
 terminal from the main checkout.
+
+- Roadmap loop (idea sparring):
+
+  ```
+  /loopkit:roadmap <idea...> — spar each raw idea against prior art (research
+  mode asked per idea) and seed 1..n roadmap phases with their backing prior-art
+  entries; no loop-readiness sweep. A foundation-doc impact is recorded onto the
+  seeded phase, never edited here — its `/loopkit:plan` cycle authors it.
+  Ceiling: 10 iterations.
+  ```
 
 - Plan loop (producer):
 
   ```
-  /loopkit:plan <phase> — draft the phase's spec with milestone, issues
-  (two-level depends-on), and board entries; stop at the spec-acceptance gate.
-  Ceiling: 10 iterations; stop when the same blocker repeats twice.
+  /loopkit:plan <phase[, phase...]> — draft each named phase's spec with
+  milestone, issues (two-level depends-on), and board entries; stop at the
+  spec-acceptance gate. Plans one or many phases per run in the human-named
+  order, writing each new milestone's `Depends on milestone:` edge as it goes
+  (never auto-picks the set). Ceiling: 10 iterations; stop when the same blocker
+  repeats twice.
   ```
 
 - Implement loop (milestone orchestrator):
@@ -145,6 +158,7 @@ terminal from the main checkout.
   never grind.
 - Iteration ceiling default: 10 per loop run.
 
-**Usage:** plan a scope with `/loopkit:plan <scope>`, then orchestrate its
-milestone with `/loopkit:implement <milestone>`. Run independent milestones as
-separate orchestrators.
+**Usage:** seed phases with `/loopkit:roadmap <idea>`, plan one or many with
+`/loopkit:plan <phase[, phase...]>`, then orchestrate each milestone with
+`/loopkit:implement <milestone>`. Run independent milestones as separate
+orchestrators.
