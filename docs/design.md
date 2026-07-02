@@ -49,8 +49,8 @@ visualisation carries no design artifact.
 
 - Medium: **committed SVG** (primary). loopkit deliberately does NOT use
   **Mermaid** — the GitHub-native alternative — because its diagrams (the
-  "Skills im Detail" cards, the "prior-art als substrat" panels) need richer
-  layout than Mermaid renders.
+  per-skill cards in the "Skills" section, the "Prior-Art = Substrat" panel)
+  need richer layout than Mermaid renders.
 - Where diagrams live: `docs/design/` as committed `.svg`.
 - Render-surface caveat (honest): a committed SVG renders in GitHub's **file /
   rich-diff view** and in local file explorers, **NOT** in the raw PR text diff
