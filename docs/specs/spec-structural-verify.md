@@ -27,10 +27,11 @@ fails to parse, so they load with empty metadata at runtime.
 - [ ] `docs/workflow.md` Commands sets `Verify: bash scripts/verify.sh` (no longer
       `none yet`), and its Gates section reflects that the per-PR machine gate now
       runs Verify (its checks no longer "fall to milestone-QA").
-- [ ] The gate prose is wired: `skills/implement/SKILL.md`'s per-issue **Verify**
-      step and milestone-QA default check run `scripts/verify.sh`; any
-      `none yet`/`Verify is none yet` caveat in `skills/implement/SKILL.md` /
-      `skills/plan/SKILL.md` is updated.
+- [ ] The gate wiring holds: because `skills/implement/SKILL.md` §3/§5 already read
+      the Verify command from `docs/workflow.md` (parameterized), changing
+      `docs/workflow.md` is what wires both gates; `skills/implement/SKILL.md` /
+      `skills/plan/SKILL.md` are edited only where a stale `none yet` caveat remains
+      (may be a no-op).
 - [ ] The marketplace `description` warning is cleared (add a `description` to
       `.claude-plugin/marketplace.json`); `claude plugin validate .` runs
       warning-clean. The advisory CLAUDE.md-root warning is **tolerated** (non-strict).
@@ -122,14 +123,19 @@ Reference `docs/constitution.md` / `docs/prior-art.md` rather than restating.
 | Fix the 4 broken skills' frontmatter IN this phase, preserving description text (block scalar / quoting) | Verify cannot be green while `plan`/`implement`/`inception`/`roadmap` error; the fix is the dogfood payoff (a real runtime bug: skills load with empty metadata). `design` already parses | 2026-07-02 |
 | Verify lives in a committed `scripts/verify.sh`, invoked by both gates and humans | Two invocations + a companion check referenced in two places → one DRY script; shell is within the allowed runtime | 2026-07-02 |
 | Clear the marketplace `description` warning; tolerate the advisory CLAUDE.md-root warning | The marketplace description is a trivial, real improvement; the CLAUDE.md-root note is intentional (loopkit's CLAUDE.md is project context, not plugin-shipped) and non-fatal under non-strict | 2026-07-02 |
-| `Depends on milestone: none` | roadmap-iteration (#10) and prior-art-elevation (#11) are closed; design-in-the-loop is not yet a milestone. No cross-milestone file collision at plan time | 2026-07-02 |
+| `Depends on milestone: #12`; issue 1 (frontmatter) also `Depends on: #117, #118, #119` | Re-verified at the gate: design-in-the-loop (#12) is now an OPEN milestone whose issues edit the same skill files this phase's frontmatter fix touches — #117 (`plan/SKILL.md`), #118 (`roadmap/SKILL.md`), #119 (`inception/SKILL.md`). Shared files serialise (loopkit's own rule); serialise after the in-flight milestone, exactly as #11 followed #10 | 2026-07-02 |
 | No inception-template change, no CI workflow (out of scope) | Proportional: target projects are not all plugins; Verify runs in-loop, not on a scheduler | 2026-07-02 |
+| `implement`/`plan` `SKILL.md` gate prose is edited ONLY if a stale `none yet` caveat exists — the substantive wiring is in `docs/workflow.md` | `implement/SKILL.md` §3 already says "Run the contract's Verify command" and §5 "The default check type is in `docs/workflow.md`" (already parameterized); once `workflow.md` changes those resolve automatically. The real edit is `workflow.md` Commands + the Gates line "Verify is `none yet`, so its checks fall to milestone-QA" | 2026-07-02 |
 | OPEN — the thin companion check's exact scope/altitude (what invariant it asserts + how it stays false-positive-free) | resolved at the spec-acceptance gate | — |
 
 ## Tracking
 
-- Milestone: [structural-verify](<milestone-url>) — created once this spec merges
-- Issues: created from this spec once merged (one per implementable step)
+- Milestone: [structural-verify](<milestone-url>) — created once this spec merges;
+  `Depends on milestone: #12` (design-in-the-loop, shared skill files).
+- Issues: created from this spec once merged. Issue 1 = fix the 4 skills'
+  frontmatter (`Depends on: #117, #118, #119` — the #12 issues editing the same
+  files); issue 2 = adopt Verify (`scripts/verify.sh` + wiring), `Depends on:`
+  issue 1.
 
 ## Verification
 
@@ -176,3 +182,12 @@ milestone-QA script.
   that non-strict already reports the real errors while `--strict` fails on
   advisory warnings (aligning with prior-art #25380). One genuinely-open item
   carried to the gate: the thin companion check's scope.
+- 2026-07-02: In-session spec review (code-reviewer) returned REQUEST_CHANGES, one
+  blocking finding: `Depends on milestone: none` went stale mid-draft —
+  design-in-the-loop was planned into milestone #12 (open), whose issues
+  #117/#118/#119 edit `plan`/`roadmap`/`inception` `SKILL.md`, the same files this
+  phase's frontmatter fix touches. Re-verified against GitHub and corrected to
+  `Depends on milestone: #12` + issue-level edges. Non-blocking INFO folded in:
+  `implement`/`plan` SKILL.md gate prose is already parameterized, so the wiring is
+  really a `docs/workflow.md` edit (SKILL.md edits only if a stale `none yet`
+  caveat remains).
