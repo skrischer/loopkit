@@ -46,10 +46,10 @@ result by adopting its own `docs/design.md` (medium: committed SVG).
       principle (broadened trigger + the agnostic durable-medium requirement, two
       gates intact); `docs/architecture.md` (design woven into sparring; the design
       component covers non-UI concept design).
-- [ ] loopkit **dogfoods** the broadened phase: it adopts its own
-      `docs/design.md` (`kind: concept`, medium: committed SVG) and commits the
-      loopkit-interpretation diagram as its first design artifact, referenced from
-      the contract.
+- [ ] loopkit **dogfoods** the broadened phase: the loopkit-interpretation diagram
+      is committed **in this spec PR** (`docs/design/loopkit-interpretation.svg`)
+      as this concept-design spec's own clarifying artifact, and loopkit adopts its
+      own `docs/design.md` (`kind: concept`, medium: committed SVG) referencing it.
 
 ## Scope
 
@@ -74,7 +74,11 @@ result by adopting its own `docs/design.md` (medium: committed SVG).
   capability→surface coverage enforcement, state-variant enumeration, coverage
   review, `Design:`-line back-write). That is a **distinct axis** (design
   *completeness*, not the *trigger/medium*) and earns its own roadmap phase via
-  `/loopkit:roadmap` — folding it here would violate proportional scope.
+  `/loopkit:roadmap` — folding it here would violate proportional scope. NOTE the
+  interaction: `skills/design/SKILL.md` still hard-bails when `docs/design.md` is
+  missing, and broadening the trigger routes more (concept-design) projects to a
+  "a diagram would clarify" moment without a contract — sharpening the value of
+  that deferred retrofit/bootstrap phase, but not resolved here.
 - Shipping or mandating a specific diagram tool — the project picks the medium in
   `docs/design.md`; loopkit orchestrates when/how design enters the loop
   (unchanged from `design-phase`).
@@ -136,37 +140,42 @@ result by adopting its own `docs/design.md` (medium: committed SVG).
 | Trigger broadens to "UI surface OR a visualisation would materially clarify a decision"; still optional, proportional | roadmap row; the interpretation diagram is the existence proof (non-UI, yet a design that drove alignment) | 2026-07-02 |
 | Sparring may produce an **exploratory** visualisation to sharpen an idea, but commits **no** durable design artifact; the durable, reviewed artifact is produced in the `/loopkit:plan` cycle and reviewed at spec-acceptance | constitution "exactly two human gates" — sparring is a dialog, not a gate; the roadmap seed stays roadmap+prior-art only | 2026-07-02 |
 | Constitution stays **medium-agnostic**: names Mermaid / committed SVG / exported image as *examples* of GitHub-native durable media (as it already names Paper/Figma/v0 for tools), not a mandate; the design mechanism hardcodes no medium | constitution "tool-agnostic design phase" (grep-verifiable); resolves the prior-art (Mermaid-default) ↔ operator (SVG) tension | 2026-07-02 |
-| loopkit's **own** `docs/design.md` picks `kind: concept`, medium **committed SVG**; the interpretation SVG is committed as the first artifact | the operator chose SVG empirically for loopkit (richer layout than Mermaid for the "Skills im Detail" cards); dogfood | 2026-07-02 |
-| `docs/design.md` template gains a `kind: ui \| concept \| both` switch; UI tokens only for ui/both; concept names the diagram medium + location, no UI tokens | "broaden from UI-only" requires a non-UI contract shape; the current template is UI-token-only | 2026-07-02 |
-| Foundation edits (vision/constitution/architecture) ship in THIS spec PR, ratified at the gate — NOT an implement issue | constitution corollary (roadmap-iteration #10): foundation edits belong to planning | 2026-07-02 |
-| Milestone-level: `Depends on milestone: #11` (prior-art-elevation) | both milestones edit the vision+constitution foundation spine; #11 is in-flight (issue #107 still edits vision/constitution) — serialize to avoid a foundation-doc merge race (roadmap's documented "shared spine" reality) | 2026-07-02 |
-| CONFIRM at the gate — SVG-vs-Mermaid framing (agnostic constitution + loopkit picks SVG), the `#11` serialization, and the loopkit-`design.md` dogfood scope + SVG location | these three touch operator intent / the prior-art verdict — surfaced for confirmation, not guessed | 2026-07-02 |
+| loopkit's **own** `docs/design.md` picks `kind: concept`, medium **committed SVG**; the interpretation SVG is committed **in this spec PR** (`docs/design/loopkit-interpretation.svg`) as this spec's own clarifying design artifact | the operator chose SVG empirically for loopkit (richer layout than Mermaid for the "Skills im Detail" cards); committing it in the spec PR makes it reviewable at the gate and reachable by every future worktree (dogfood: the design rides in the spec package) | 2026-07-02 |
+| `docs/design.md` template gains a top-level `kind: ui \| concept \| both` field; the UI-token YAML front-matter is kept but a "How to fill" note prunes it on fill — for `kind: concept`, delete the color/type/spacing/radii/shadow blocks and fill a **Diagram medium** section (medium = Mermaid \| committed SVG \| exported image; where diagrams live) instead | YAML front-matter cannot be conditional, so the switch is prune-on-fill in ONE template; pinning the representation here lets the template author and the inception-filling prose (same issue, I3) converge | 2026-07-02 |
+| Foundation edits (vision/constitution/architecture) ship in THIS spec PR, ratified at the gate — NOT an implement issue | constitution corollary (roadmap-iteration #10): foundation edits belong to planning. This phase is the first to apply it | 2026-07-02 |
+| Milestone-level: `Depends on milestone: none` (independent) | #11 (prior-art-elevation) **closed** while this was planned; its vision+constitution edits are already on `main` (merged in #112), so the foundation-spine merge-race is gone and the milestone is independent | 2026-07-02 |
+| The durable medium "renders in the review surface" means the GitHub **file view / rich diff** and a local file explorer — for a committed SVG, NOT the raw PR text diff (which shows XML). Mermaid renders inline in markdown; SVG needs the file/rich view. The roadmap row's "renders inline in the PR" is imprecise and is corrected in the Step-8 roadmap update | honest reconciliation of the prior-art (Mermaid renders in-review; SVG diffs noisily) ↔ operator SVG choice; the constitution keeps both valid | 2026-07-02 |
+| CONFIRM at the gate — the SVG-vs-Mermaid framing (agnostic constitution + loopkit picks SVG, with the render-surface caveat above) and the loopkit-`design.md` dogfood scope | these touch operator intent / the prior-art verdict — surfaced for confirmation, not guessed. (#11 serialization is moot: #11 is closed.) | 2026-07-02 |
 
 ## Tracking
 
-- Milestone: design-in-the-loop. Milestone-level: `Depends on milestone: #11`
-  (prior-art-elevation — shared vision+constitution spine, in-flight).
-- Issues (created after this spec merges). The foundation edits are in the spec PR,
-  so the issues are only the skill/template/dogfood changes; they touch **largely
-  disjoint files** — the parallel frontier:
-  - **I1 — Broaden the design trigger** across `skills/design/SKILL.md`,
-    `skills/plan/SKILL.md` (Step 3), `skills/inception/SKILL.md` (Step 7b): the
+- Milestone: design-in-the-loop. Milestone-level: `Depends on milestone: none`
+  (#11 closed; its foundation-spine edits are already on `main`).
+- Issues (created after this spec merges). The foundation edits **and** the
+  clarifying SVG are in the spec PR, so the issues are only the skill/template/
+  contract changes; they touch **disjoint files** — the parallel frontier is
+  I1, I2, I3 (all `Depends on: none`), then I4 after I3:
+  - **I1 — Broaden the per-change design trigger**: `skills/design/SKILL.md` (the
     trigger becomes "UI surface OR a visualisation would materially clarify a
-    decision"; the design skill's deliver-or-produce loop generalizes to a non-UI
-    concept diagram. `Depends on:` none.
+    decision"; the deliver-or-produce loop generalizes to a non-UI concept
+    diagram) + `skills/plan/SKILL.md` (Step 3, the per-change invocation site).
+    `Depends on:` none.
   - **I2 — Weave design into the sparring**: `skills/shared/iteration-steps.md`
     (the challenge/harvest may sketch an exploratory visualisation) +
-    `skills/roadmap/SKILL.md` (Step 1 names it; no new gate; durable artifact
-    deferred to `/plan`). `Depends on:` none. (Disjoint from I1.)
-  - **I3 — Generalize the `docs/design.md` template**:
-    `skills/inception/templates/design.md` gains the `kind` switch (ui/concept/
-    both); concept names the diagram medium (Mermaid / committed SVG) + location,
-    omits UI tokens. `Depends on:` none. (Disjoint.)
+    `skills/roadmap/SKILL.md` (Step 1 names it; no new gate; the durable artifact
+    is deferred to `/plan`). `Depends on:` none. (Disjoint from I1.)
+  - **I3 — Generalize the design contract (template + its inception filling
+    step)**: `skills/inception/templates/design.md` (the prune-on-fill `kind`
+    switch pinned in Prior decisions) + `skills/inception/SKILL.md` (Step 7b: the
+    project-level design-surface decision broadens to "UI or recurring
+    decision-clarifying visualisations", and the filling prose sets `kind` /
+    prunes UI tokens for `concept`). Template + the prose that fills it live in
+    ONE issue so they converge. `Depends on:` none. (Disjoint.)
   - **I4 — Dogfood loopkit's design contract**: create `docs/design.md`
-    (`kind: concept`, medium committed SVG) + commit the interpretation SVG into
-    the repo (`docs/design/loopkit-interpretation.svg`) + reference it from the
-    contract. `Depends on:` I3 (follows the generalized template), I1 (reflects the
-    broadened trigger).
+    (`kind: concept`, medium committed SVG) referencing the already-committed
+    `docs/design/loopkit-interpretation.svg`. `Depends on:` I3 (follows the
+    generalized template). The SVG itself is committed in the spec PR, so I4 only
+    authors the contract that points at it.
 
 ## Verification
 
@@ -188,11 +197,14 @@ grep) and manual-attended (a dry end-to-end read) items.
       broadened trigger + the agnostic durable-medium requirement.
 - [ ] `docs/vision.md` scope names the broadened (not UI-only) design trigger.
 - [ ] `docs/architecture.md` maps design-in-the-sparring + non-UI concept design.
-- [ ] `skills/inception/templates/design.md` has the `kind: ui | concept | both`
-      switch; UI tokens conditional; concept path names a diagram medium + location.
+- [ ] `skills/inception/templates/design.md` has the top-level `kind: ui | concept
+      | both` field + the prune-on-fill "How to fill" note; concept path names a
+      diagram medium + location. `skills/inception/SKILL.md` Step 7b sets `kind`
+      and broadens the project-level design-surface decision.
+- [ ] `docs/design/loopkit-interpretation.svg` is tracked in the repo (committed in
+      the spec PR; no longer untracked) — verifiable now.
 - [ ] `docs/design.md` exists (`kind: concept`, medium committed SVG) and
-      references the committed interpretation SVG; the SVG file is tracked in the
-      repo (no longer untracked).
+      references `docs/design/loopkit-interpretation.svg` (I4).
 
 **Manual-attended (dry end-to-end read at the QA gate):**
 
@@ -202,11 +214,11 @@ grep) and manual-attended (a dry end-to-end read) items.
       `/implement` — with the medium named only in `docs/design.md`, no second stop.
 - [ ] A change that needs no visualisation reads as skipping design entirely
       (proportionality holds).
-- [ ] The committed interpretation SVG renders in the review surface (GitHub file
-      view + a local file explorer), confirming committed SVG is a valid durable
-      medium for loopkit.
-- [ ] `#11` (prior-art-elevation) is closed before this milestone's implement runs
-      (foundation-spine serialization).
+- [ ] The committed interpretation SVG renders in the GitHub **file view / rich
+      diff** + a local file explorer (NOT the raw PR text diff, which shows XML) —
+      confirming committed SVG is a valid durable medium for loopkit.
+- [ ] The Step-8 roadmap update corrects the `design-in-the-loop` row's imprecise
+      "renders inline in the PR" to the accurate render-surface (file/rich view).
 
 ## Risks and mitigations
 
@@ -215,7 +227,7 @@ grep) and manual-attended (a dry end-to-end read) items.
 | Broadened trigger erodes proportionality (design on everything) | trigger is "a visualisation would *materially* clarify a decision" — still optional; Verification asserts a no-visual change skips design |
 | Weaving design into sparring adds a covert third gate | sparring is a dialog; the durable artifact is produced+reviewed in `/plan` at spec-acceptance; two-gates Verification item |
 | Constitution hardcodes a medium (breaks tool-agnosticism) | constitution names Mermaid/SVG as examples only; grep item asserts the design mechanism carries no mandated medium literal |
-| Foundation-doc merge race with #11 (shared vision/constitution spine) | `Depends on milestone: #11`; the spec-PR foundation edits target the **design** sections (disjoint from #11's prior-art sections), so low conflict risk even landing first |
+| Foundation-doc merge race with #11 (shared vision/constitution spine) | Moot — #11 closed; its edits merged (#112) before this spec's foundation edits were authored, and those target the disjoint **design** sections. `Depends on milestone: none` |
 | SVG chosen where Mermaid would render better in the PR diff | constitution keeps both valid; loopkit picks SVG for its richer layout; the prior-art caution is recorded so a future project can choose Mermaid |
 | Scope creep into the Flowmate coverage findings | explicit out-of-scope; routed to a separate `/loopkit:roadmap` phase |
 
@@ -226,5 +238,19 @@ grep) and manual-attended (a dry end-to-end read) items.
   (Mermaid-default) ↔ operator (committed-SVG) tension by keeping the constitution
   medium-agnostic and letting loopkit's own `docs/design.md` pick SVG. Foundation
   edits placed in the spec PR per the roadmap-iteration corollary (first phase to
-  apply it). Three items flagged for gate confirmation (SVG/Mermaid framing, #11
-  serialization, dogfood scope + SVG location).
+  apply it).
+- 2026-07-02: Spec review (PR #115) REQUEST_CHANGES resolved before the gate:
+  (B1) the foundation edits (vision/constitution/architecture) were actually
+  authored onto the spec branch — not just described — so the gate ratifies the
+  diff, not a promise; (B2/NB5) the interpretation SVG is committed into the spec
+  PR at `docs/design/loopkit-interpretation.svg` (reachable by future worktrees,
+  reviewed at the gate, dogfooding "the design rides in the spec package"), so I4
+  only authors the contract; (NB1) #11 closed mid-planning — its edits are on
+  `main` (#112), so the milestone edge is `none` and the merge-race is moot;
+  (NB3/NB6) inception Step 7b moved into I3 with the template so the `kind` switch
+  representation converges, and the switch is pinned prune-on-fill in Prior
+  decisions; (NB2) the "renders in the review surface" wording is made precise
+  (SVG = file/rich view, not the raw diff) and the roadmap row's imprecise claim
+  is slated for correction at Step 8; (NB7) a cross-ref to the deferred
+  coverage/retrofit phase added. Remaining gate items: the SVG-vs-Mermaid framing
+  and the dogfood scope.

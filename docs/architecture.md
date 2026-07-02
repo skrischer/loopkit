@@ -13,7 +13,7 @@
 | `skills/inception/` | Phase-0 dialog -> foundation artifacts + workflow contract + board + settings + CLAUDE.md; includes the challenge lens |
 | `skills/plan/` | Producer: roadmap phase -> spec (+ prior-art links) -> milestone + issues with two-level `depends-on` |
 | `skills/implement/` | Milestone orchestrator: plan the issue DAG -> fan out in-session subagents/agent-teams along the frontier -> QA gate |
-| `skills/design/` | The optional `/loopkit:design` skill, planning-time: reads `docs/design.md`, delivers/produces a design, hands off a committed file referenced by the spec |
+| `skills/design/` | The optional `/loopkit:design` skill, planning-time: for a UI surface OR a decision-clarifying visualisation (flow/architecture/concept), reads `docs/design.md`, delivers/produces a design, hands off a committed file (that renders in the review surface) referenced by the spec |
 | `skills/roadmap/` | Iteration entry point: raw idea -> prior-art sparring -> seeds 1..n roadmap rows + backing prior-art (no readiness sweep); reads `skills/shared/iteration-steps.md` |
 | `skills/shared/` | Plugin-shipped shared reference (`iteration-steps.md`): the prior-art challenge / architecture-seed / roadmap-seeding steps inception and roadmap both read — not a skill |
 | `skills/*/templates/` | Pure artifact blueprints, filled into target projects by inception |
@@ -41,15 +41,16 @@
    CLAUDE.md -> loop-ready.
 2. **Roadmap iteration:** raw idea -> [per idea: research mode ASKED —
    websearch / deep / none] -> prior-art sparring (challenge + sharpen, per
-   `skills/shared/iteration-steps.md`) -> seed 1..n roadmap rows + backing
-   prior-art; a foundation-doc impact is recorded onto the seeded phase (edited
-   later in that phase's plan cycle), never here.
+   `skills/shared/iteration-steps.md`; an exploratory visualisation may sharpen a
+   design-shaped idea here — no durable artifact, that is the plan cycle) -> seed
+   1..n roadmap rows + backing prior-art; a foundation-doc impact is recorded onto
+   the seeded phase (edited later in that phase's plan cycle), never here.
 3. **Plan cycle (producer):** roadmap phase (human-pointed) -> sort decisions
-   (+ prior-art) -> spec (with prior-art links) -> [if UI surface: `/loopkit:design`
-   delivers/produces a design per `docs/design.md`, committed as a file and
-   referenced by the spec] -> in-session review -> **spec-acceptance gate (human,
-   reviews the design too)** -> merge -> milestone + issues with two-level
-   `depends-on` -> roadmap links.
+   (+ prior-art) -> spec (with prior-art links) -> [if UI surface OR a
+   decision-clarifying visualisation: `/loopkit:design` delivers/produces a design
+   per `docs/design.md`, committed as a file and referenced by the spec] ->
+   in-session review -> **spec-acceptance gate (human, reviews the design too)** ->
+   merge -> milestone + issues with two-level `depends-on` -> roadmap links.
 4. **Implement cycle (orchestrator):** human points it at one milestone -> read
    spec + issues -> compute the issue DAG -> fan out in-session subagents along
    the frontier (each: worktree -> implement -> Verify -> review -> merge) ->
