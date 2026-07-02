@@ -68,7 +68,10 @@ Each one is checkable in review.
   The spec — informed by vision, constitution, and prior art — must leave zero
   open questions for implementation. A fork that reaches an implementer is a
   planning defect: the implementer escalates it back to the planner (reopen the
-  spec), which resolves it at the spec-acceptance gate.
+  spec), which resolves it at the spec-acceptance gate. Corollary: foundation-doc
+  edits (vision/constitution/architecture) belong to planning too — authored in a
+  `/loopkit:plan` spec PR and ratified at the spec-acceptance gate, never in
+  `/loopkit:implement`, never left as a dangling draft.
 - **Exactly two human gates.** Spec-acceptance and milestone-QA; everything else
   is autonomous. When a change has UI surface, its design (delivered or produced
   during planning) is reviewed AT the spec-acceptance gate as part of the spec
@@ -82,8 +85,8 @@ Each one is checkable in review.
 - All artifacts, code, comments, and commits in English. Conventional Commits
   (`feat`/`fix`/`chore`/`docs`/`refactor`).
 - Skill prose is terse, imperative, and gate-marked. No duplication across the
-  four skills — project specifics live in `docs/workflow.md` (or `docs/design.md`
-  for the design skill).
+  five skills — project specifics live in `docs/workflow.md` (or `docs/design.md`
+  for the design skill); shared toolkit method lives in `skills/shared/`.
 - One character per foundation artifact (vision normative, constitution binding,
   prior-art descriptive, architecture structural) — no content duplicated across
   them.

@@ -1,6 +1,6 @@
 # loopkit
 
-Spec-driven loop engineering for Claude Code. Three skills take a project from
+Spec-driven loop engineering for Claude Code. Five skills take a project from
 zero to two parallel, attended development loops — tech-stack-agnostic, with
 GitHub issues, milestones, and a project board as the mandatory state machine.
 
@@ -14,6 +14,13 @@ GitHub issues, milestones, and a project board as the mandatory state machine.
 - `/loopkit:implement` — one issue: select/claim -> bootstrapped worktree ->
   implement -> verify -> PR -> in-session agent review -> autonomous merge.
   One human stop: the milestone QA gate, when a milestone completes.
+- `/loopkit:design` — optional planning-time design step: reads `docs/design.md`,
+  accepts or produces a design, hands off one committed file referenced by the
+  spec and reviewed at the spec-acceptance gate. Skipped for non-UI work.
+- `/loopkit:roadmap` — prior-art-driven idea-sparring loop on an already-loop-ready
+  project: per idea offers a research mode, spars the idea against prior art, then
+  seeds one or more roadmap phases with backing prior-art. Records any
+  foundation-doc impact onto the seeded phase; runs no readiness sweep.
 
 ## The loop model
 
