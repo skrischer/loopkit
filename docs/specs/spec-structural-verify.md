@@ -21,9 +21,13 @@ fails to parse, so they load with empty metadata at runtime.
       `claude plugin validate .claude-plugin/plugin.json` (plugin manifest + all
       skills). It uses no npm/ajv/python — only `claude` (always present in the
       Claude Code runtime), `git`, and shell.
-- [ ] `scripts/verify.sh` also runs a **thin companion check** for the loopkit
-      invariant(s) the native validator does not cover (exact scope resolved at the
-      spec-acceptance gate), false-positive-free on the current tree.
+- [ ] `scripts/verify.sh` also runs a **config-surface auth/state guard**: it greps
+      only the non-prose surfaces (`.claude-plugin/`, `skills/**/templates/*.json`,
+      `scripts/`, any hooks) for actual forbidden usage (`claude -p`,
+      `--dangerously-skip-permissions`, `GH_TOKEN=`, `cron`, `scheduler`) and fails
+      on a match, and asserts no committed local-state second-source file
+      (`*.sqlite`, root `state.json`). It never scans instructional Markdown →
+      false-positive-free on the current tree.
 - [ ] `docs/workflow.md` Commands sets `Verify: bash scripts/verify.sh` (no longer
       `none yet`), and its Gates section reflects that the per-PR machine gate now
       runs Verify (its checks no longer "fall to milestone-QA").
@@ -126,7 +130,7 @@ Reference `docs/constitution.md` / `docs/prior-art.md` rather than restating.
 | `Depends on milestone: #12`; issue 1 (frontmatter) also `Depends on: #117, #118, #119` | Re-verified at the gate: design-in-the-loop (#12) is now an OPEN milestone whose issues edit the same skill files this phase's frontmatter fix touches — #117 (`plan/SKILL.md`), #118 (`roadmap/SKILL.md`), #119 (`inception/SKILL.md`). Shared files serialise (loopkit's own rule); serialise after the in-flight milestone, exactly as #11 followed #10 | 2026-07-02 |
 | No inception-template change, no CI workflow (out of scope) | Proportional: target projects are not all plugins; Verify runs in-loop, not on a scheduler | 2026-07-02 |
 | `implement`/`plan` `SKILL.md` gate prose is edited ONLY if a stale `none yet` caveat exists — the substantive wiring is in `docs/workflow.md` | `implement/SKILL.md` §3 already says "Run the contract's Verify command" and §5 "The default check type is in `docs/workflow.md`" (already parameterized); once `workflow.md` changes those resolve automatically. The real edit is `workflow.md` Commands + the Gates line "Verify is `none yet`, so its checks fall to milestone-QA" | 2026-07-02 |
-| OPEN — the thin companion check's exact scope/altitude (what invariant it asserts + how it stays false-positive-free) | resolved at the spec-acceptance gate | — |
+| Companion check = a **config-surface auth/state guard**: (1) grep only the NON-prose surfaces — `.claude-plugin/`, `skills/**/templates/*.json`, `scripts/` (and any future hooks) — for actual forbidden usage (`claude -p`, `--dangerously-skip-permissions`, `GH_TOKEN=`, `cron`, `scheduler`) and fail on a match; (2) assert no committed local-state second-source file (e.g. `*.sqlite`, root `state.json`). It **never** scans instructional Markdown | resolved at the gate: enforces loopkit's subscription-auth + GitHub-only-state identity (the invariants the native validator misses) while staying false-positive-free — the prohibition prose lives only in Markdown, which is never scanned | 2026-07-02 |
 
 ## Tracking
 
@@ -191,3 +195,7 @@ milestone-QA script.
   `implement`/`plan` SKILL.md gate prose is already parameterized, so the wiring is
   really a `docs/workflow.md` edit (SKILL.md edits only if a stale `none yet`
   caveat remains).
+- 2026-07-02: Spec-acceptance gate — companion check resolved to a config-surface
+  auth/state guard (scan only `.claude-plugin/` + template JSON + `scripts/`/hooks,
+  never Markdown; plus a no-local-state-file assertion). Human prerequisites
+  confirmed none. Spec accepted.
