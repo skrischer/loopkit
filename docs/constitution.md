@@ -34,13 +34,20 @@ Each one is checkable in review.
   full-spec (a feature), a living-spec milestone (an ongoing theme), a
   `track:adhoc` fast-lane (a bug/QoL change — no spec, no milestone).
 - **Optional, tool-agnostic design phase.** Design runs inside the planning
-  cycle and is optional, triggered only by UI surface (proportional ceremony) —
-  a non-UI change carries no design artifact. The mechanism reads the project's
-  `docs/design.md` contract (the `docs/workflow.md` sibling) and hardcodes no
-  tool (grep-verifiable). Its durable form is a file committed to the repo
-  (tokens / exported image / screenshot) referenced from the spec or issue; an
-  external-tool URL (a Figma/v0 share link) is NOT durable state — the tool is
-  an editor, never a second source of truth. (grep-verifiable.)
+  cycle and is optional, triggered when a change has UI surface OR when a
+  visualisation (a flow, a state machine, an architecture, a mental model) would
+  materially clarify a decision — a change needing neither carries no design
+  artifact (proportional ceremony). It may be sketched exploratorily during the
+  roadmap/plan sparring, but the durable, reviewed artifact is produced in the
+  planning cycle and reviewed AT the spec-acceptance gate — sparring is a dialog,
+  not a gate. The mechanism reads the project's `docs/design.md` contract (the
+  `docs/workflow.md` sibling) and hardcodes no tool or medium (grep-verifiable).
+  Its durable form is a committed file that renders in the project's review
+  surface — a Mermaid diagram (GitHub-native), a committed SVG, an exported
+  image, or a tokens file — chosen per project in `docs/design.md` and referenced
+  from the spec or issue; an external-tool URL (a Figma/v0 share link) is NOT
+  durable state — the tool is an editor, never a second source of truth.
+  (grep-verifiable.)
 - **Dependency representation at two levels.** Milestones carry depends-on info;
   issues carry `Depends on: #N`. The unblocked frontier (everything with no open
   dependency) is by definition the parallelizable set. Representation is the
@@ -76,9 +83,10 @@ Each one is checkable in review.
   `/loopkit:plan` spec PR and ratified at the spec-acceptance gate, never in
   `/loopkit:implement`, never left as a dangling draft.
 - **Exactly two human gates.** Spec-acceptance and milestone-QA; everything else
-  is autonomous. When a change has UI surface, its design (delivered or produced
-  during planning) is reviewed AT the spec-acceptance gate as part of the spec
-  package — NOT a third gate.
+  is autonomous. When a change carries a design (UI or a decision-clarifying
+  visualisation), that design — delivered or produced during planning — is
+  reviewed AT the spec-acceptance gate as part of the spec package — NOT a third
+  gate.
 
 ## Conventions
 

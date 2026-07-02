@@ -65,9 +65,11 @@ no schedulers. You stay the engineer; the loop does the typing.
 
 - The five loop skills (inception, plan, implement, design, roadmap) plus the
   proportional dial (full-spec / living-spec / fast-lane).
-- An optional, tool-agnostic design phase inside the planning cycle: for a
-  UI-surface change a design is delivered or produced, becomes part of the spec
-  package, and is reviewed at the spec-acceptance gate — non-UI work skips it.
+- An optional, tool-agnostic design phase inside the planning cycle: when a
+  change has UI surface OR a decision a visualisation would clarify (a flow,
+  architecture, or concept), a design is delivered or produced, becomes part of
+  the spec package, and is reviewed at the spec-acceptance gate — work needing
+  neither skips it.
 - GitHub issues, milestones, and the Project board as the sole durable state.
 - The attended producer/orchestrator model: producer `/plan` + per-milestone
   orchestrator `/implement` that fans out in-session subagents/agent-teams along
