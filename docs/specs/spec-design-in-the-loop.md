@@ -254,3 +254,9 @@ grep) and manual-attended (a dry end-to-end read) items.
   is slated for correction at Step 8; (NB7) a cross-ref to the deferred
   coverage/retrofit phase added. Remaining gate items: the SVG-vs-Mermaid framing
   and the dogfood scope.
+- 2026-07-02: Spec-acceptance gate — re-review APPROVE, no remaining blockers.
+  Operator decisions: (1) loopkit's own `docs/design.md` medium = **committed
+  SVG** (confirmed with the corrected render facts on the table — SVG renders in
+  the file/rich view, not the raw PR diff; chosen for its richer layout, the
+  constitution staying medium-agnostic); (2) dogfood scope confirmed (loopkit
+  adopts its own design contract, I4). Human prerequisites: none. Spec accepted.
