@@ -111,7 +111,7 @@ Reference `docs/constitution.md` / `docs/architecture.md` rather than restating.
 | `/loopkit:plan` multi-phase loop processes the **human-named** sequence, writing each new milestone's `Depends on milestone:` as it goes (nothing pre-existing to order by on a first-time batch) | Preserves "never auto-picks"; the milestone-level edge is authored during the batch, not read from thin air | 2026-07-02 |
 | `/loopkit:roadmap` (generative idea-sparring, seeds NEW phases) and `/loopkit:inception --here` (readiness audit/repair against the contract) are complementary, not overlapping; inception's existing prior-art↔roadmap gap-closure stays a repair path | Two distinct jobs; avoids collapsing the new front door into the audit sweep | 2026-07-02 |
 | roadmap counted as a loop skill — "five loop skills (inception, plan, implement, design, roadmap)" across all mentions | Producer-side loop skill in the same family; count is descriptive | 2026-07-02 |
-| OPEN — the shared reference's home + naming: a new `skills/shared/…` steps file shipping with the plugin (leading option) vs. another skills-space location. NOT `docs/workflow.md` — `docs/architecture.md`'s "Where new code goes" nominally points cross-skill behavior there, but that file is a per-project parameter contract inception copies fresh into each project; invariant plugin methodology (the step prose) would be a category mismatch | resolved at the spec-acceptance gate | — |
+| The shared reference lives in `skills/shared/` (a new plugin-shipped steps artifact, e.g. `skills/shared/iteration-steps.md`); both inception and roadmap read it — neither owns the other's internals. NOT `docs/workflow.md` (per-project parameter contract; category mismatch with invariant plugin methodology). Final filename is the implementer's | resolved at the spec-acceptance gate — a neutral shared home ships with the plugin and keeps the architecture boundary | 2026-07-02 |
 
 ## Tracking
 
@@ -163,3 +163,8 @@ Verify is `none yet`; this list is the human milestone-QA script.
   scope; (3) specified the foundation-doc mechanism (record-onto-phase; `/plan`
   authors + ratifies); (4) added the inception **template** workflow.md so the
   feature propagates. Single genuinely-open item now: the shared reference's home.
+- 2026-07-02: Spec-acceptance gate — the one open decision (the shared reference's
+  home) resolved to `skills/shared/`: a new plugin-shipped steps artifact both
+  inception and roadmap read, keeping the "skills don't know each other's
+  internals" boundary. Human prerequisites confirmed none. Spec accepted;
+  re-review returned APPROVE.
