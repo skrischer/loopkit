@@ -21,8 +21,8 @@
   <rect x="0" y="0" width="1440" height="2160" fill="#181825"/>
 
   <!-- HEADER -->
-  <text x="48" y="58" font-size="30" font-weight="700" fill="#cdd6f4">loopkit — Interpretation &amp; Entscheidungen (neuester Stand)</text>
-  <text x="48" y="90" font-size="15" fill="#a6adc8">Als committete SVG — genau die Form, die GitHub im PR/Issue via &lt;img&gt; rendert. Bitte Optik + Vollständigkeit prüfen.</text>
+  <text x="48" y="58" font-size="30" font-weight="700" fill="#cdd6f4">loopkit — Interpretation &amp; Modell</text>
+  <text x="48" y="90" font-size="15" fill="#a6adc8">IST-Zustand der Funktionsweise — keine Statusmarker. Medium: committed SVG unter docs/design/ (kind: concept).</text>
 
   <!-- A -->
   <text x="48" y="150" font-size="19" font-weight="700" fill="#b4befe">A · Lebenszyklus</text>
@@ -58,7 +58,7 @@
   <rect x="580" y="336" width="58" height="16" rx="8" fill="#89dceb" fill-opacity="0.20" stroke="#89dceb" stroke-width="1"/>
   <text x="609" y="348" font-size="9.5" font-weight="600" fill="#89dceb" text-anchor="middle">loop-bar</text>
   <text x="551" y="376" font-size="13.5" font-weight="600" fill="#cdd6f4" text-anchor="middle">/loopkit:roadmap</text>
-  <text x="551" y="395" font-size="10.5" fill="#a6adc8" text-anchor="middle">NEU · Sparring</text>
+  <text x="551" y="395" font-size="10.5" fill="#a6adc8" text-anchor="middle">Idee-Sparring</text>
   <line x1="644" y1="370" x2="676" y2="370" stroke="#6c7086" stroke-width="1.6" marker-end="url(#ar)"/>
 
   <!-- plan -->
@@ -142,7 +142,7 @@
   <rect x="320" y="806" width="256" height="162" rx="12" fill="#1e1e2e" stroke="#89b4fa" stroke-width="1.2" stroke-dasharray="6 4"/>
   <rect x="320" y="806" width="256" height="4" rx="2" fill="#89b4fa"/>
   <text x="336" y="838" font-size="14" font-weight="700" fill="#89b4fa">/loopkit:roadmap</text>
-  <text x="336" y="858" font-size="11.5" fill="#a6adc8">NEU · Idee-Sparring + Design</text>
+  <text x="336" y="858" font-size="11.5" fill="#a6adc8">Idee-Sparring + Design</text>
   <rect x="336" y="870" width="66" height="17" rx="8" fill="#89dceb" fill-opacity="0.18" stroke="#89dceb" stroke-width="1"/>
   <text x="369" y="882" font-size="10" font-weight="600" fill="#89dceb" text-anchor="middle">loop-bar</text>
   <text x="336" y="912" font-size="11.5" fill="#cdd6f4">nutzt · inception-Steps · design</text>
@@ -220,21 +220,20 @@
   <text x="720" y="1603" font-size="11" fill="#a6adc8" text-anchor="middle">(später · dependency-geordnet)</text>
 
   <!-- D -->
-  <text x="48" y="1645" font-size="19" font-weight="700" fill="#b4befe">D · Entscheidungen (neuester Stand) &amp; Prior-Art-Substrat</text>
+  <text x="48" y="1645" font-size="19" font-weight="700" fill="#b4befe">D · Kernprinzipien &amp; Prior-Art-Substrat</text>
 
   <rect x="48" y="1668" width="770" height="440" rx="12" fill="#1e1e2e" stroke="#313244" stroke-width="1.2"/>
-  <text x="66" y="1698" font-size="14" font-weight="700" fill="#fab387">Festgeklopft im Sparring:</text>
-  <text x="66" y="1728" font-size="12.5" fill="#cdd6f4">· roadmap &amp; plan = Multi-Milestone-Loops (1..n pro Lauf).</text>
-  <text x="66" y="1760" font-size="12.5" fill="#cdd6f4">· Foundation-Edits: in Planung, ratifiziert am Gate, nie in implement.</text>
-  <text x="66" y="1792" font-size="12.5" fill="#cdd6f4">· Design = Teil des Sparrings, synchron mit Planung (UI + Nicht-UI).</text>
-  <text x="66" y="1824" font-size="12.5" fill="#cdd6f4">· Design-Trigger: "Visualisierung klärt die Entscheidung" — optional.</text>
-  <text x="66" y="1856" font-size="12.5" fill="#cdd6f4">· design.md-Medium: committed SVG (rendert im PR); Mermaid/PNG optional.</text>
-  <text x="66" y="1888" font-size="12.5" fill="#cdd6f4">· HTML rendert nicht inline auf GitHub (sanitized) — SVG schon, via img.</text>
-  <text x="66" y="1920" font-size="12.5" fill="#cdd6f4">· inception klärt Design-Relevanz + Medium (Step 7b, auf Konzept erweitert).</text>
-  <text x="66" y="1958" font-size="14" font-weight="700" fill="#f38ba8">Noch offen:</text>
-  <text x="66" y="1988" font-size="12.5" fill="#cdd6f4">· prior-art-elevation: eigene Phase oder Zweizeiler in constitution+implement?</text>
-  <text x="66" y="2018" font-size="12.5" fill="#cdd6f4">· Artefakt-Umfang pro Idee: Roadmap-Zeile vs. kurzer Stub.</text>
-  <text x="66" y="2048" font-size="12.5" fill="#cdd6f4">· Bau von roadmap-iteration + prior-art-elevation via /loopkit:plan.</text>
+  <text x="66" y="1698" font-size="14" font-weight="700" fill="#fab387">Kernprinzipien:</text>
+  <text x="66" y="1730" font-size="12.5" fill="#cdd6f4">· roadmap &amp; plan = Multi-Milestone-Loops (1..n pro Lauf).</text>
+  <text x="66" y="1762" font-size="12.5" fill="#cdd6f4">· Genau zwei Human-Gates: spec-acceptance · milestone-QA.</text>
+  <text x="66" y="1794" font-size="12.5" fill="#cdd6f4">· Foundation-Edits: in Planung, ratifiziert am Gate, nie in implement.</text>
+  <text x="66" y="1826" font-size="12.5" fill="#cdd6f4">· Design = Teil des Sparrings, synchron mit Planung (UI + Nicht-UI).</text>
+  <text x="66" y="1858" font-size="12.5" fill="#cdd6f4">· Design-Trigger: "Visualisierung klärt die Entscheidung" — optional.</text>
+  <text x="66" y="1890" font-size="12.5" fill="#cdd6f4">· Medium-agnostisch in constitution; Projekt wählt in docs/design.md.</text>
+  <text x="66" y="1922" font-size="12.5" fill="#cdd6f4">· loopkit-Medium: committed SVG (rendert in File-/Rich-View, nicht im rohen Diff).</text>
+  <text x="66" y="1954" font-size="12.5" fill="#cdd6f4">· inception klärt Design-Surface + Medium (Step 7b · UI oder Konzept).</text>
+  <text x="66" y="1986" font-size="12.5" fill="#cdd6f4">· Proportionale Ceremony: full-spec / living-spec / track:adhoc — eine pro Change.</text>
+  <text x="66" y="2018" font-size="12.5" fill="#cdd6f4">· Durable State nur GitHub — kein lokaler DB/JSON/Daemon; Subscription-Auth.</text>
 
   <rect x="838" y="1668" width="554" height="440" rx="12" fill="url(#mv)" stroke="#cba6f7" stroke-width="1.2"/>
   <text x="862" y="1701" font-size="14" font-weight="700" fill="#b4befe">Prior-Art = Substrat</text>
@@ -250,5 +249,5 @@
   <text x="862" y="2002" font-size="11.5" fill="#a6adc8">inception (Seed) · roadmap (Discovery)</text>
   <text x="862" y="2020" font-size="11.5" fill="#a6adc8">plan (Impl. + Source-Checkout) · implement (Checkout)</text>
 
-  <text x="48" y="2138" font-size="11.5" fill="#6c7086">Committed SVG — inline-Attribute, kein Script/foreignObject. Prüfe: Optik, Vollständigkeit, ob als design.md-Standard tauglich.</text>
+  <text x="48" y="2138" font-size="11.5" fill="#6c7086">Committed SVG — inline-Attribute, kein Script/foreignObject; rendert in GitHubs File-/Rich-View. loopkits docs/design.md-Medium (kind: concept).</text>
 </svg>
