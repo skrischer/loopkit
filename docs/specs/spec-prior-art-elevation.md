@@ -188,3 +188,6 @@ Verify is `none yet`; this list is the human milestone-QA script.
 - 2026-07-02: Spec-acceptance gate — the one open item (elevation prominence)
   resolved to a reframe + one vision line (no new principle/section; ~1-page
   budget preserved). Human prerequisites confirmed none. Spec accepted.
+- 2026-07-02: #107 — reframed the constitution prior-art principle to substrate
+  framing + generalised the checkout clause to both loops; added one vision.md
+  substrate line.
