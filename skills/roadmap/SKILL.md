@@ -15,7 +15,10 @@ roadmap.
 It shares three steps with inception — the prior-art challenge, the architecture
 seed, and roadmap seeding — which both skills read from
 **`skills/shared/iteration-steps.md`**; this skill supplies only its own framing,
-gates, and ordering and never reaches into inception's internals.
+gates, and ordering and never reaches into inception's internals. Iteration
+framing: unlike inception's bootstrap, roadmap applies the architecture-seed
+method only to detect a phase's foundation impact (Step 3) — it never writes
+`docs/architecture.md`.
 
 **Complementary to `/loopkit:inception --here`, not overlapping:** inception
 audits an existing project against the contract and repairs gaps (a readiness
@@ -62,10 +65,10 @@ differentiation, idea harvest), the ASK-first research-mode choice
 - **This is the sparring.** Apply the challenge lens as an interactive dialog:
   challenge the idea and sharpen it *with* the human using the findings — what to
   adopt, what to avoid, the sources behind each. Not a gate, a conversation.
-- **Research mode is ASKED per idea** (default to the cheapest mode that settles
-  the idea; the shared reference details `deep-research`'s ~100-subagent fan-out
-  cost, so reserve it). `none` only when `docs/prior-art.md` already has relevant
-  entries for the idea.
+- **Research mode is ASKED per idea** (per the shared reference's ASK-first
+  choice) — default to the cheapest mode that settles the idea; the reference
+  details when `none` applies and `deep-research`'s ~100-subagent fan-out cost,
+  so reserve the heavy mode.
 - The **existence** check may honestly conclude "reuse X, don't build" — record
   that verdict in `docs/prior-art.md` and drop the idea from seeding. Every idea
   that survives seeds at least one phase in Step 2.
@@ -79,11 +82,10 @@ start `—`, `/loopkit:plan` fills them later):
 
 - One idea seeds **1..n** phases — break it into ordered, plannable rows when it
   is more than one phase of work.
-- **Uphold the coupling:** every seeded phase must be backed by ≥1 prior-art
-  concern. Run the shared reference's per-concern prior-art pass for any phase
-  concern not already covered in `docs/prior-art.md`, tagging each entry with the
-  phase it feeds — or record an explicit `greenfield — no prior art` note for
-  that phase. No seeded row without backing.
+- **Uphold the coupling:** run the shared reference's per-concern prior-art pass
+  so every seeded phase is backed by ≥1 prior-art concern (or carries the
+  reference's explicit `greenfield — no prior art` note). No seeded row without
+  backing.
 - Multiple ideas in one run append multiple rows; the roadmap keeps its ordering
   and north star intact.
 
