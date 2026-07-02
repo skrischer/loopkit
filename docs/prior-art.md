@@ -270,6 +270,99 @@ prior art" note). The references below are the external practice this generalize
   prior-art doc at inception/roadmap time, so `/plan` *reads* it across phases
   instead of regenerating per feature.
 
+## Bootstrap vs iteration — separate one-time inception from ongoing prior-art-driven planning (feature: roadmap-iteration)
+
+After inception a project is feature-complete; further features are an
+*iteration* loop, not a re-bootstrap. The value that loop must inject each time is
+prior-art research — "who has built this already, well or badly" — as inspiration
+and an adopt/avoid filter, so new features reuse the best existing patterns
+instead of being reinvented. The open shape: a dedicated iteration entry point
+running the prior-art + architecture-seed + roadmap steps without inception's
+one-time loop-readiness sweep, delegating to the shared inception steps (DRY).
+
+### github/spec-kit — command topology separates setup from iteration
+
+- Path: https://github.com/github/spec-kit (commands: /constitution vs /specify + /plan)
+- License: unverified (MIT likely — verify)
+- Verdict: reference-only — spec-kit already splits the one-time project step
+  (`/constitution`) from the per-feature iteration steps (`/specify` + `/plan`):
+  direct precedent for extracting loopkit's roadmap/iteration planning out of the
+  one-time inception dialog into its own `/loopkit:roadmap` entry point.
+- Date: 2026-07-02
+- Notes: ADOPT — the bootstrap-vs-iteration command split; run readiness once, not
+  per feature. DIFFERENTIATE — loopkit's iteration step centres prior-art research
+  (adopt/avoid/sources), not just spec drafting, and reuses the shared inception
+  steps rather than duplicating them.
+
+## Prior-art as the substrate for every artifact — research + adopt/avoid + sources (feature: prior-art-elevation)
+
+loopkit's own thesis, sharpened: every artifact it produces — vision,
+constitution, architecture, each spec, and the implementation itself — is
+downstream of a thick prior-art pass answering "who has done this well or badly".
+The constitution today frames prior art as one principle among many ("consulted
+and linked"); this concern elevates it toward the substrate the other artifacts
+derive from, and carries the source-level analysis already granted to `/plan`
+(an ephemeral read-only checkout of the referenced OSS) into the implement loop
+as a template for when a supposedly simple change is struggling.
+
+### loopkit source-checkout precedent (PR #93) — read the OSS, don't guess
+
+- Path: `docs/constitution.md` (Prior-art principle) + `skills/plan/SKILL.md` (Step 2); this repo. Cross-ref the Loop engineering entries above (Osmani/Cherny: design the system around what already exists).
+- License: n/a (in-house)
+- Verdict: reuse — planning already encourages an ephemeral, read-only checkout of
+  a referenced OSS repo to analyse a specific implementation when the distilled
+  verdict is too coarse; generalise the same move to the implement loop.
+- Date: 2026-07-02
+- Notes: ADOPT — source-level prior-art analysis as a first-class loop input, not
+  just a distilled verdict. AVOID — retaining or copying in the external code (a
+  transient read only; the recorded decision is the durable output).
+
+### Clean-room design (ReactOS, Coherent) + MALUS "Clean Room as a Service" (satire) — the boundary loopkit must not cross
+
+- Path: https://en.wikipedia.org/wiki/Clean_room_design ; https://malus.sh/ (satire)
+- License: n/a (concept / satirical site)
+- Verdict: reference-only (adversarial) — clean-room design is the *inverse* of
+  loopkit's move: it forbids looking at the source (reimplement from specs only)
+  to avoid copyright contamination. MALUS lampoons the degenerate case — "robots
+  that never see a single line of source code" laundering OSS into
+  zero-attribution proprietary code. Names the line loopkit's source-checkout
+  stays on the right side of.
+- Date: 2026-07-02
+- Notes: ADOPT — the licensing discipline clean-room encodes: keep the checkout
+  transient and read-only, harvest ideas/approaches (facts), never copy
+  copyrightable expression into this repo. AVOID — becoming a reimplementation
+  shop; loopkit reads source for *analysis feeding a recorded decision*, not to
+  reproduce it. The durable output is the decision, not the code.
+
+### Manus — per-execution isolated, temporary sandbox (the disposable analysis environment)
+
+- Path: https://gist.github.com/renschni/4fbc70b31bad8dd57f3370239dccd58f ; https://www.bunnyshell.com/guides/sandboxed-environments-ai-coding/
+- License: n/a (article / product analysis)
+- Verdict: reference-only — Manus runs each task in an isolated, temporary Ubuntu
+  VM (Docker-isolated, independent per execution); the broader sandbox ecosystem
+  clones a branch, works, and auto-destroys after review. Validates loopkit's
+  "ephemeral checkout outside the repo, discarded after" as the standard shape.
+- Date: 2026-07-02
+- Notes: ADOPT — disposable-by-default: the source-analysis environment is created
+  for the read and torn down after, never retained state. DIFFERENTIATE — loopkit
+  needs no VM/daemon; a read-only git checkout outside the repo is the whole
+  mechanism (no headless infra, staying subscription-only).
+
+### Repo-of-Repos — a manifest that stages reference repos for cross-reference
+
+- Path: https://raffertyuy.com/raztype/repo-of-repos-pattern/
+- License: unverified (OSS template)
+- Verdict: reference-only — a `repos.yaml` manifest clones multiple repos into one
+  workspace so an agent can "grep, read, and cross-reference ... as if they were
+  one codebase"; each inner repo keeps its own origin so commits never flow into
+  the outer workspace. Concrete mechanism for holding OSS references beside the work.
+- Date: 2026-07-02
+- Notes: ADOPT — the isolation guarantee (inner repos keep their own origin -> no
+  accidental commit of reference code into loopkit) and the cross-reference value.
+  AVOID / DIFFERENTIATE — a persistent multi-repo manifest would be a second source
+  of truth; loopkit's checkout stays transient and outside the repo, so the
+  reference cannot ossify into retained state.
+
 ## Design phase in the loop — optional, tool-agnostic design anchored to the spec (feature: design-phase)
 
 For UI work, delivering or generating a design alongside the spec and reviewing
@@ -339,3 +432,62 @@ design's durable form living in GitHub — the medium named in a project
 - Notes: ADOPT — the generate->review->iterate loop as the design step's inner
   cycle; "derive design system from the repo" for brownfield UIs. AVOID — direct
   code output bypassing the spec/issue (keep the design artifact, not just code).
+
+## Non-UI concept design + the durable diagram medium (feature: design-in-the-loop)
+
+Design is not only UI: a flow, a state machine, an architecture, a mental model
+can be "designed" too — drawn to settle a decision (exactly what the loopkit
+interpretation diagram did: no UI, yet a design artifact that drove alignment).
+This broadens the design phase from "UI surface only" to "a visual would clarify
+the decision", still optional and proportional, and woven INTO the prior-art
+sparring (e.g. "how did others build a date-range picker" -> sketch variants ->
+pick one). The open question the research settles: which durable, git-committable,
+tool-agnostic, agent-authorable medium — and whether hand-authored HTML still
+earns its place.
+
+### Mermaid — diagrams-as-code, rendered natively where loopkit reviews
+
+- Path: https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/ ; https://github.com/mermaid-js/mermaid ; https://microsoft.github.io/genaiscript/reference/scripts/diagrams/
+- License: MIT (verify)
+- Verdict: reuse — text-based diagrams GitHub renders natively in Markdown, Issues,
+  PRs and wikis (since Feb 2022); diffs cleanly in git, reviewable line-by-line in
+  a PR, and LLMs author it well. It lands the design artifact exactly in loopkit's
+  own durable state (the issue/PR/spec markdown), rendered at the spec-acceptance
+  review — no external tool, no second source of truth.
+- Date: 2026-07-02
+- Notes: ADOPT — Mermaid as the DEFAULT non-UI concept medium; the diagram lives in
+  the committed markdown and renders in-review. Guard the known failure mode: LLM
+  Mermaid syntax is fragile — validate/repair (GenAIScript ships a repairer). AVOID
+  — bespoke HTML/SVG as the default: committable but it does NOT render in a GitHub
+  PR review and diffs noisily; keep it only for the rare diagram Mermaid cannot
+  express. (D2 has nicer auto-layout, PlantUML is the UML standard — both
+  reference-only here: not GitHub-native, so they need a render step.)
+
+### C4 model — tool-agnostic notation for architecture-level design
+
+- Path: https://c4model.com/ ; https://structurizr.com/
+- License: n/a (model) / Structurizr proprietary DSL
+- Verdict: reference-only — a notation- and tooling-INDEPENDENT hierarchy (context /
+  container / component / code) that renders via Mermaid, PlantUML or Structurizr
+  DSL. Matches loopkit's "hardcode no tool" rule: the notation is portable, the
+  renderer swappable.
+- Date: 2026-07-02
+- Notes: ADOPT — C4 as the shared vocabulary when a design is architectural, on top
+  of the Mermaid medium. DIFFERENTIATE — loopkit needs only the lightest C4 levels
+  its change touches, not the full model (proportional).
+
+### Architecture Decision Records (ADR) — design-as-decision, minus the lifecycle markers
+
+- Path: https://adr.github.io/ ; https://martinfowler.com/bliki/ArchitectureDecisionRecord.html ; https://aws.amazon.com/blogs/architecture/master-architecture-decision-records-adrs-best-practices-for-effective-decision-making/
+- License: n/a (practice)
+- Verdict: reference-only — the canonical "capture a decision as a short in-repo
+  artifact": one decision, one page, context + decision + consequences, written
+  DURING the decision, stored beside the code. Direct precedent for treating a
+  non-UI design as a reviewable decision artifact in sync with planning.
+- Date: 2026-07-02
+- Notes: ADOPT — the ADR shape (context / alternatives / decision / consequences,
+  authored at decision time) as the prose skeleton beside the diagram; it already
+  lives in loopkit's spec Prior-decisions + Decision-log. AVOID — the ADR lifecycle:
+  its Proposed/Accepted/Deprecated/Superseded status headers + append-only log clash
+  with loopkit's "specs carry no lifecycle state / no DRAFT-READY" rule. loopkit's
+  accepted-state is the merge + git history, not a status marker.

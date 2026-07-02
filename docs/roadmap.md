@@ -48,6 +48,9 @@ The P1–P6 redesign is complete; new work is planned directly via
 | tooling-preflight — fail fast when git/gh are missing or unauthorized | [spec](specs/archive/spec-tooling-preflight.md) | [#7](https://github.com/skrischer/loopkit/milestone/7) |
 | inception-prior-art-coupling — bidirectional prior-art↔roadmap coupling: every plannable phase backed by prior art (Step 2 ↔ Step 6) | [spec](specs/archive/spec-inception-prior-art-coupling.md) | [#8](https://github.com/skrischer/loopkit/milestone/8) |
 | design-phase — optional, tool-agnostic design step anchored to the spec (project docs/design.md contract); reviewed at the spec-acceptance gate | [spec](specs/archive/spec-design-phase.md) | [#9](https://github.com/skrischer/loopkit/milestone/9) |
+| roadmap-iteration — extract ongoing feature/phase planning into `/loopkit:roadmap`: prior-art-driven idea sparring that seeds one or many phases per loop, may revise foundation docs (vision/constitution/architecture — ratified at spec-acceptance, never in implement), no readiness sweep, delegates to inception (DRY); `/loopkit:plan` gains the matching multi-milestone loop | — | — |
+| prior-art-elevation — raise prior-art research to loopkit's core substrate (more weight in vision/constitution) + carry `/plan`'s OSS source-checkout into the implement loop as a template | — | — |
+| design-in-the-loop — broaden design from UI-only to "a visualisation clarifies the decision" (UI + concept/flow/architecture), woven into the roadmap+plan sparring; durable medium = committed SVG (renders inline in the PR), Mermaid/PNG optional; extends inception Step 7b + the constitution design principle. Depends on roadmap-iteration | — | — |
 
 Unlike the P1–P6 chain, this feature's issues touch **disjoint files** — the
 first real parallel frontier, the orchestrator payoff the chain's own narrative
