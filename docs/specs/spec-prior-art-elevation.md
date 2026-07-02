@@ -87,10 +87,14 @@ Reference `docs/constitution.md` / `docs/vision.md` rather than restating.
   source-checkout aids a **technical** struggle only; a genuine **design** fork
   still escalates to planning via `needs:planning`. The step must not read as a
   way to settle open design questions by copying OSS.
-- **No duplication across skills** — the mechanism + licensing rule live once in
-  the constitution's prior-art principle (the shared home); `/plan` and
-  `/implement` each state their own trigger and point to it, they do not restate
-  the rule.
+- **No duplication across skills** — the binding **licensing rule** (transient /
+  read-only / outside the repo / discarded / never copied in) lives once in the
+  constitution's prior-art principle; each loop states its own **trigger** and a
+  brief context-specific operational note (`/plan`: harden a planning decision,
+  record in Prior decisions; `/implement`: unstick a technique struggle, record in
+  the Decision log). The scope does **not** re-author `/plan`'s already-shipped
+  Step 2 — the no-duplication check applies to the prose **this diff introduces**,
+  not to `/plan`'s pre-existing text.
 - **Shared-file serialisation** — this scope edits `docs/vision.md` +
   `docs/constitution.md`, which the in-flight roadmap-iteration milestone (`#10`,
   issue `#98`) also edits. Per loopkit's own dogfood rule (shared files serialise
@@ -120,7 +124,7 @@ Reference `docs/constitution.md` / `docs/vision.md` rather than restating.
 | Decision | Rationale | Date |
 |---|---|---|
 | Elevation is a **reframe** of the existing constitution prior-art principle + one vision statement — no new top-level principle, no new section | Foundation docs are permanently loaded, ~1-page budget; "elevate" means weight, not bulk (mirrors roadmap-iteration's accepted one-line-corollary discipline) | 2026-07-02 |
-| The source-checkout mechanism + licensing rule stay in the constitution's prior-art principle (shared home); `/implement`'s §3 states only its own trigger + points to it | "No duplication across skills"; the constitution already owns the rule for `/plan` — generalise it once rather than restate the mechanism in the skill | 2026-07-02 |
+| The binding licensing rule stays once in the constitution's prior-art principle (shared home); `/implement`'s §3 states its own trigger + a brief operational note and points to the principle — it does not restate the rule | "No duplication across skills"; the constitution already owns the rule — generalise it once. `/plan`'s already-shipped Step 2 carries its own operational note too, so the no-duplication check is scoped to this diff, not a re-audit of `/plan` | 2026-07-02 |
 | The `/implement` source-checkout is **optional (MAY)** and tried **before** the no-progress park | Proportionality — it is an available technique aid, not a mandatory step; it does not replace the identical-failure-twice park | 2026-07-02 |
 | The step aids a **technical** struggle only; a **design** fork still escalates to planning (`needs:planning`); a `track:adhoc` issue has no linked source so it does not apply | "Clarification belongs to planning" — the checkout must not become a way to resolve open design questions by copying OSS | 2026-07-02 |
 | `Depends on milestone: #10`; the foundation-doc issue `Depends on: #98` | This scope shares `vision.md` + `constitution.md` with the in-flight roadmap-iteration milestone; shared files serialise (loopkit's own dogfood rule) | 2026-07-02 |
@@ -152,8 +156,11 @@ Verify is `none yet`; this list is the human milestone-QA script.
 - [ ] grep guardrails pass: no headless flag (`claude -p`,
       `--dangerously-skip-permissions`), API key, scheduler/cron, or retained local
       state introduced by the diff.
-- [ ] No prose is duplicated between the constitution principle and the two skills'
-      triggers (the mechanism/rule lives once in the constitution).
+- [ ] The prose **this diff introduces** does not restate the constitution's
+      licensing rule: the constitution owns the rule; `/implement`'s new §3 step
+      states only its trigger + a brief operational note and points to the
+      principle. (Scoped to the diff — `/plan`'s pre-existing Step 2 is not
+      re-audited.)
 
 ## Risks and mitigations
 
@@ -171,3 +178,10 @@ Verify is `none yet`; this list is the human milestone-QA script.
   from the `prior-art-elevation` concern (PR #93, Clean-room/MALUS, Manus,
   Repo-of-Repos). One genuinely-open item carried to the gate: the prominence of
   the foundation-doc elevation.
+- 2026-07-02: In-session spec review (code-reviewer) returned APPROVE, no blocking
+  findings. Two non-blocking: (1) the "no duplication" claim/Verification was
+  unfalsifiable because `/plan`'s shipped Step 2 already carries operational
+  detail — scoped the claim + Verification item 6 to the prose THIS diff
+  introduces; (2) `docs/roadmap.md`'s "disjoint files" Features note is now stale —
+  corrected in this milestone's Step-8 roadmap PR (a one-line honesty fix, not a
+  status marker).
