@@ -200,3 +200,4 @@ milestone-QA script.
   never Markdown; plus a no-local-state-file assertion). Human prerequisites
   confirmed none. Spec accepted.
 - 2026-07-02: #125 — quoted the description: frontmatter in plan/implement/inception/roadmap SKILL.md (were unquoted `: ` → YAML parse error); text preserved; `claude plugin validate` now reports zero errors.
+- 2026-07-02: #126 — added scripts/verify.sh (two non-strict claude plugin validate invocations + config-surface auth/state guard, self-exclusion to avoid matching its own patterns), added marketplace top-level description, wired Verify into docs/workflow.md Commands + Gates.

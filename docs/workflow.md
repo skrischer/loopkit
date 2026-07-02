@@ -39,10 +39,15 @@ truth, milestones and issues are created on GitHub from them.
 
 - Bootstrap: `none` — loopkit has no dependencies; a fresh worktree is runnable
   as-is (Markdown skills + JSON manifests).
-- Verify: `none yet` — no build/test system. Consequence: every change is
-  verified at the milestone-QA gate (review + a smoke run of the changed skill).
-  A structural Verify (JSON validity + `SKILL.md` frontmatter) is an easy future
-  add if iteration cost rises.
+- Verify: `bash scripts/verify.sh` — the per-PR machine gate. Runs the native
+  `claude plugin validate` twice, non-strict: `claude plugin validate .`
+  (marketplace manifest) and `claude plugin validate .claude-plugin/plugin.json`
+  (plugin manifest + every skill), plus a config-surface auth/state guard (greps
+  the non-prose surfaces — `.claude-plugin/`, template JSON, `scripts/`, hooks —
+  for forbidden auth/scheduler usage and asserts no committed local-state second
+  source). Exits non-zero on any failure. No new dependency — only `claude`,
+  `git`, and shell. Behavioural acceptance a structural check cannot cover is
+  still verified at the milestone-QA gate.
 - Test: `none yet`.
 - Build: `none`.
 
@@ -98,9 +103,10 @@ never lists steps; the issues never restate the design.
 
 ## Gates
 
-- **Per PR — machine gate, no human stop:** in-session agent review
+- **Per PR — machine gate, no human stop:** the Verify command
+  (`bash scripts/verify.sh`) runs green, then in-session agent review
   (`VERDICT: APPROVE`, via the Agent tool — never a billed CLI) -> autonomous
-  squash-merge. (Verify is `none yet`, so its checks fall to milestone-QA.)
+  squash-merge.
 - **Per milestone — human gates:**
   - Planning: the spec-acceptance gate — genuinely-open decisions
     (AskUserQuestion, never guess) + human-prerequisites handover.
