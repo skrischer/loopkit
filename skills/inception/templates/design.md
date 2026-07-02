@@ -116,7 +116,7 @@ as a committed file at the location above, not as a link.
   e.g. token file imported by the build | exported image referenced from the
   issue | Figma Code Connect mapping | screenshot annotated in the spec>`.
 - `/loopkit:implement` consumes the committed artifact referenced from the
-  UI-surface issue; it never reaches into the design tool.
+  design-surface issue; it never reaches into the design tool.
 
 ## Components
 
