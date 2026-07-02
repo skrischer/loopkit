@@ -9,7 +9,7 @@ Codifies the phase BEFORE spec-driven development (constitution -> specify ->
 plan -> tasks). Produces four foundation artifacts in `docs/` (vision,
 constitution, prior-art, architecture), a `docs/roadmap.md` sequencing the work
 into plannable phases, a `docs/workflow.md` operational contract, an optional
-`docs/design.md` design contract (UI-surface projects), a GitHub Project board,
+`docs/design.md` design contract (design-surface projects), a GitHub Project board,
 and the project's `.claude/settings.json` permissions — the
 hand-off to the `/loopkit:plan` and `/loopkit:implement` sibling skills, which
 then run as two parallel attended loops over GitHub issues, milestones, and the
@@ -19,7 +19,7 @@ stack belongs in the constitution, never in feature specs.
 **Interaction model:** guided dialog, never one-shot. Human gates: after the
 goal draft, before finalizing each artifact (prior-art, vision, constitution,
 architecture), before the roadmap, before the workflow contract, before the
-design contract (UI-surface projects), and before writing the permission
+design contract (design-surface projects), and before writing the permission
 settings. At each gate, present the draft and confirm
 via AskUserQuestion before writing the final file. Converse in the user's
 language; all artifacts and the CLAUDE.md wiring are written in English.
@@ -185,35 +185,44 @@ asking where you can:
 
 GATE: present the filled contract before writing `docs/workflow.md`.
 
-## Step 7b — Design contract (gate 7b, OPTIONAL — UI-surface only)
+## Step 7b — Design contract (gate 7b, OPTIONAL — design-surface only)
 
 The design sibling of the workflow contract: `/loopkit:design` and the loops
 read `docs/design.md` instead of hardcoding a design tool. Proportional — only a
-project with a UI surface gets it; a non-UI project records `none` and skips
-this step entirely (no `docs/design.md`, no gate).
+project with a design surface gets it; a project with neither records `none` and
+skips this step entirely (no `docs/design.md`, no gate).
 
-- **Decide UI surface.** Does this project render a user-facing interface
-  (web/app/CLI-with-rich-output)? No -> record `none` in the Close out checklist
-  and skip to Step 8. Yes -> fill the contract.
+- **Decide design surface.** Does this project render a user-facing interface
+  (web/app/CLI-with-rich-output) **OR** would a visualisation
+  (flow / state / architecture / concept) materially clarify recurring
+  decisions? Neither -> record `none` in the Close out checklist and skip to
+  Step 8. Either -> fill the contract.
 - Fill `templates/design.md` into `docs/design.md`, deriving values from the
   vision/constitution where you can rather than asking:
+  - **kind** — set the front-matter `kind` (`ui` / `concept` / `both`). Per the
+    template's "How to fill" note this is prune-on-fill: for `concept`, DELETE
+    the color/type/spacing/radii/shadow token blocks and fill the **Diagram
+    medium** section (medium + where diagrams live) instead; for `ui`/`both`,
+    keep the token blocks.
   - **Design tool / MCP** — the editor this project uses (e.g. Paper MCP /
-    Figma / Superdesign / v0 / Claude artifacts); ask the user, pick exactly one
-    primary. The tool is the editor, never the source of truth.
+    Figma / Superdesign / v0 / Claude artifacts, or a diagram tool for a concept
+    project); ask the user, pick exactly one primary. The tool is the editor,
+    never the source of truth.
   - **Where designs live** — the working surface (file/URL) AND the committed
-    token + asset paths in the repo.
+    token / asset / diagram paths in the repo.
   - **Durable form** — a file committed to the repo (tokens / exported image /
-    screenshot); an external-tool URL is not durable state (constitution:
-    GitHub-only durable state). Leave the template's rule intact.
+    screenshot / committed diagram); an external-tool URL is not durable state
+    (constitution: GitHub-only durable state). Leave the template's rule intact.
   - **Review path** — which reviewer/skill checks the design; it is reviewed AT
     the spec-acceptance gate, not a third stop.
   - **Handoff format** — how `/loopkit:implement` consumes the committed
     artifact.
-  - **Tokens, Components, Do's/Don'ts** — fill the front-matter tokens and the
-    component rules from the design intent.
+  - **Tokens / Diagram medium, Components, Do's/Don'ts** — for `ui`/`both` fill
+    the front-matter tokens and the component rules; for `concept` fill the
+    Diagram medium instead. Derive from the design intent.
 
 GATE: present the filled contract before writing `docs/design.md` (skip the gate
-entirely when UI surface is `none`).
+entirely when the design surface is `none`).
 
 ## Step 8 — Project permissions (gate 8)
 
@@ -266,8 +275,8 @@ produced the gap report in Step 0):
 - [ ] Bootstrap turns a fresh worktree runnable, proven by running it
 - [ ] Project board exists with `Todo` / `In Progress` / `Done`
 - [ ] `docs/workflow.md` complete — no placeholders left
-- [ ] `docs/design.md` complete (UI-surface project) — no placeholders left; or
-      recorded `none` (non-UI project, no file)
+- [ ] `docs/design.md` complete (design-surface project) — no placeholders left;
+      or recorded `none` (neither surface, no file)
 - [ ] Every roadmap phase has prior-art coverage to seed its spec (or an explicit
       greenfield "no prior art" note)
 - [ ] `.claude/settings.json` in place: `defaultMode: bypassPermissions` with

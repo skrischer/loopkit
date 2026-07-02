@@ -1,6 +1,16 @@
 ---
-# Design tokens — the durable, agent-readable contract for this project's UI.
-# Placeholders only; inception fills them for a UI-surface project. The values
+# kind — which design surface this project needs; set exactly one. How to fill
+# (YAML cannot be conditional, so the switch is prune-on-fill):
+#   ui      — renders a UI: KEEP the color / type / spacing / radii / shadow
+#             token blocks below.
+#   concept — no UI, but a visualisation clarifies recurring decisions
+#             (flow / state / architecture): DELETE those token blocks and fill
+#             the "Diagram medium" section in the body instead.
+#   both    — UI plus concept diagrams: KEEP the token blocks AND fill "Diagram
+#             medium".
+kind: "<ui | concept | both>"
+# Design tokens — the durable, agent-readable contract for this project's UI
+# (kind ui / both only). Placeholders only; inception fills them. The values
 # below are the single source of truth for design — the design tool is the
 # editor, this file is the state.
 color:
@@ -35,9 +45,11 @@ shadow:
 
 > Design contract for the loopkit skills (`/loopkit:design`, `/loopkit:plan`,
 > `/loopkit:implement`) — the single source for this project's design medium,
-> rules, and handoff. Filled during inception for a UI-surface project; the
-> skills read it instead of hardcoding any tool. The sibling of
-> `docs/workflow.md`. A non-UI project records `none` and has no `docs/design.md`.
+> rules, and handoff. Filled during inception for a design-surface project — one
+> that renders a UI, or where a visualisation would materially clarify recurring
+> decisions; the skills read it instead of hardcoding any tool. The sibling of
+> `docs/workflow.md`. A project with neither surface records `none` and has no
+> `docs/design.md`.
 
 ## Overview
 
@@ -66,6 +78,19 @@ the values, this prose carries the rationale.>`
   design/tokens.json (W3C DTCG) | src/styles/tokens.css>`.
 - Committed assets: `<repo path for exported images / screenshots — e.g.
   docs/design/assets/ | design/exports/>`.
+
+## Diagram medium
+
+`<kind: concept | both only — DELETE this section for kind: ui.>`
+
+- Medium: `<the git-committable diagram medium — Mermaid (GitHub-native, diffs
+  cleanly) | committed SVG (richer layout) | exported image>`. Pick one that
+  renders in the review surface; the design mechanism hardcodes no medium.
+- Where diagrams live: `<repo path — e.g. docs/design/*.svg | inline Mermaid in
+  the spec / issue | docs/design/assets/>`. The committed diagram is the durable
+  state, never an external editor's link.
+- Decisions it clarifies: `<the recurring decisions this project draws to settle
+  — e.g. flow / state machine / architecture / concept>`.
 
 ## Durable form
 
