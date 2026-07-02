@@ -1,16 +1,18 @@
 ---
 name: plan
-description: Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop ONCE at the spec-acceptance gate (open decisions + prerequisites handover), merge autonomously (the merge is acceptance), then create the GitHub milestone, issues with dependencies, board entries, and update the roadmap. Loop-capable: without an argument it reports the roadmap's unplanned phases and asks the human which to plan (it does not auto-pick), and reports "fully planned" when none remains. Reads docs/workflow.md for project specifics.
+description: Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop once per phase at the spec-acceptance gate (open decisions + prerequisites handover), merge autonomously (the merge is acceptance), then create the GitHub milestone, issues with dependencies, board entries, and update the roadmap. Loop-capable: without an argument it reports the roadmap's unplanned phases and asks the human which to plan (it does not auto-pick), and reports "fully planned" when none remains. Multi-phase: the human may name one phase or an ordered set; plan drives each as its own cycle in the named order, writing each new milestone's `Depends on milestone:` edge as it goes (it never auto-picks the set). Reads docs/workflow.md for project specifics.
 ---
 
 # /loopkit:plan — drive one planning cycle to a merged spec + issues
 
 Orchestrates the readiness -> merged spec -> milestone + issues + board cycle.
 Specs are the **local single source of truth**; milestones and issues are
-created on GitHub from them. The argument is the scope to plan
-(`/loopkit:plan dashboard-kpis`) — or empty, in loop mode: then the cycle
-reports the roadmap's unplanned phases and asks the human which one to plan
-(it never auto-picks the unit of work).
+created on GitHub from them. The argument is the scope to plan — one phase
+(`/loopkit:plan dashboard-kpis`) or an ordered set
+(`/loopkit:plan auth-core auth-ui`), each driven as its own cycle in the named
+order — or empty, in loop mode: then the cycle reports the roadmap's unplanned
+phases and asks the human which one(s) to plan (it never auto-picks the unit of
+work).
 
 This is the planning-side sibling to `/loopkit:implement`. Both read
 **`docs/workflow.md`** (the workflow contract, produced by
@@ -19,9 +21,10 @@ gates, and loop rules — never hardcode them. If `docs/workflow.md` is missing,
 stop and tell the user to run `/loopkit:inception` first.
 
 **Autonomy:** survey, draft the spec, open the PR, run the review, merge, and
-create milestone/issues/board entries autonomously. **The one human stop is
-the spec-acceptance gate** — the milestone gate: genuinely-open decisions
-(AskUserQuestion, never guess) plus the human-prerequisites handover. On
+create milestone/issues/board entries autonomously. **The one human stop per
+phase is the spec-acceptance gate** — the milestone gate: genuinely-open
+decisions (AskUserQuestion, never guess) plus the human-prerequisites handover
+(a multi-phase run stops once per phase, never a whole-run single stop). On
 blockers, park instead of dying (see If blocked).
 
 ## Preconditions
@@ -45,13 +48,26 @@ blockers, park instead of dying (see If blocked).
 
 ## 1. Readiness
 
-- Scope comes from the argument — the human passes it explicitly
-  (`/loopkit:plan dashboard-kpis`). `docs/roadmap.md` is the queue of sequenced
-  phases (it carries no current-focus or status marker); orient on it first.
+- Scope comes from the argument — the human passes it explicitly: one phase
+  (`/loopkit:plan dashboard-kpis`) or an ordered set
+  (`/loopkit:plan auth-core auth-ui`). `docs/roadmap.md` is the queue of
+  sequenced phases (it carries no current-focus or status marker); orient on it
+  first.
+- **Multi-phase run:** when the human names a set, drive each phase as its own
+  full cycle in the given order — re-run this readiness step's already-covered
+  check and track decision for it, then steps 2–8 (its own spec, spec-acceptance
+  gate with open decisions + prerequisites resolved per phase, merge, milestone,
+  issues, board, roadmap update) — before starting the next. Never reorder the
+  set or add a phase the human did not name. A phase's milestone-level edge may
+  depend on a **sibling phase planned earlier in the same run** — step 7 writes
+  that `Depends on milestone:` edge to the just-created sibling milestone as the
+  batch proceeds. A multi-phase run may exceed the loop's iteration ceiling
+  (`docs/workflow.md`) — split it across runs when it would (each phase's own
+  cycle is independent, so a split loses nothing).
 - **No argument:** list the phases that have no merged spec with a milestone
-  and issues yet, then ASK the human which one to plan (`AskUserQuestion` /
+  and issues yet, then ASK the human which one(s) to plan (`AskUserQuestion` /
   in-session question). Never auto-advance to "the next phase without a Spec
-  link" — the human names the unit of work.
+  link" — the human names the unit of work (one phase or the set).
 - **Loop terminal state:** if every roadmap phase already has a merged spec
   with a milestone and issues, report "roadmap fully planned — waiting for new
   phases" in one line and end the cycle. Loop-mode iterates **roadmap phases
@@ -221,10 +237,13 @@ second human stop.
 - **Milestone-level depends-on:** record which milestones this one depends on as
   a parseable `Depends on milestone: #<n>[, #<m>]` line in the milestone
   description — e.g. a roadmap phase that must follow a prior phase, or a feature
-  that builds on another milestone. When the milestone is independent (depends on
-  no other), write `Depends on milestone: none`. `/loopkit:implement` and humans
-  read this token to tell which milestones are independent and can run as
-  parallel orchestrators.
+  that builds on another milestone. In a multi-phase run the depended-on
+  milestone may be a **sibling phase planned earlier in the same run** — write
+  the edge to that just-created milestone number as you go (there is nothing
+  pre-existing to order by on a first-time batch). When the milestone is
+  independent (depends on no other), write `Depends on milestone: none`.
+  `/loopkit:implement` and humans read this token to tell which milestones are
+  independent and can run as parallel orchestrators.
 - Add every issue to the project board (the contract names it) with status
   `Todo`.
 
