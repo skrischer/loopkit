@@ -199,3 +199,4 @@ milestone-QA script.
   auth/state guard (scan only `.claude-plugin/` + template JSON + `scripts/`/hooks,
   never Markdown; plus a no-local-state-file assertion). Human prerequisites
   confirmed none. Spec accepted.
+- 2026-07-02: #125 — quoted the description: frontmatter in plan/implement/inception/roadmap SKILL.md (were unquoted `: ` → YAML parse error); text preserved; `claude plugin validate` now reports zero errors.

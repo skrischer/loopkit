@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Orchestrate one milestone end-to-end — pointed at a milestone, build the issue DAG from the Depends on lines, and fan out in-session subagents along the unblocked frontier in waves (dispatch, await, recompute) until every issue is merged, then stop for a human only at the milestone QA gate. No claiming — the orchestrator owns its milestone. Also drives a single explicit issue or a track:adhoc fast-lane issue solo. Loop-capable: without an argument it orchestrates the appropriate milestone or picks an adhoc issue, and reports "waiting for plan" when nothing is workable. Reads docs/workflow.md for project specifics.
+description: "Orchestrate one milestone end-to-end — pointed at a milestone, build the issue DAG from the Depends on lines, and fan out in-session subagents along the unblocked frontier in waves (dispatch, await, recompute) until every issue is merged, then stop for a human only at the milestone QA gate. No claiming — the orchestrator owns its milestone. Also drives a single explicit issue or a track:adhoc fast-lane issue solo. Loop-capable: without an argument it orchestrates the appropriate milestone or picks an adhoc issue, and reports \"waiting for plan\" when nothing is workable. Reads docs/workflow.md for project specifics."
 ---
 
 # /loopkit:implement — orchestrate one milestone to merged
