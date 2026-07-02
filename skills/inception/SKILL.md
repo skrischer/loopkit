@@ -1,6 +1,6 @@
 ---
 name: inception
-description: Phase-0 inception dialog that runs BEFORE any spec work — clarify the goal, research prior art, then derive vision, constitution, and architecture artifacts plus roadmap, workflow contract, an optional design contract, GitHub project board, project permission settings, and CLAUDE.md wiring, leaving the project loop-ready for /loopkit:plan and /loopkit:implement. On an existing project (--here) it doubles as a loop-readiness check that diffs the project against the contract and closes only the gaps. Only run when the user explicitly invokes it. Arguments: a project pitch (greenfield) or --here (brownfield).
+description: "Phase-0 inception dialog that runs BEFORE any spec work — clarify the goal, research prior art, then derive vision, constitution, and architecture artifacts plus roadmap, workflow contract, an optional design contract, GitHub project board, project permission settings, and CLAUDE.md wiring, leaving the project loop-ready for /loopkit:plan and /loopkit:implement. On an existing project (--here) it doubles as a loop-readiness check that diffs the project against the contract and closes only the gaps. Only run when the user explicitly invokes it. Arguments: a project pitch (greenfield) or --here (brownfield)."
 ---
 
 # /loopkit:inception — Phase-0 inception (before specs)
