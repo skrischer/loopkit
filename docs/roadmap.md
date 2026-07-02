@@ -50,17 +50,21 @@ The P1–P6 redesign is complete; new work is planned directly via
 | design-phase — optional, tool-agnostic design step anchored to the spec (project docs/design.md contract); reviewed at the spec-acceptance gate | [spec](specs/archive/spec-design-phase.md) | [#9](https://github.com/skrischer/loopkit/milestone/9) |
 | roadmap-iteration — extract ongoing feature/phase planning into `/loopkit:roadmap`: prior-art-driven idea sparring that seeds one or many phases per loop, may revise foundation docs (vision/constitution/architecture — ratified at spec-acceptance, never in implement), no readiness sweep, delegates to inception (DRY); `/loopkit:plan` gains the matching multi-milestone loop | [spec](specs/archive/spec-roadmap-iteration.md) | [#10](https://github.com/skrischer/loopkit/milestone/10) |
 | prior-art-elevation — raise prior-art research to loopkit's core substrate (more weight in vision/constitution) + carry `/plan`'s OSS source-checkout into the implement loop as a template | [spec](specs/archive/spec-prior-art-elevation.md) | [#11](https://github.com/skrischer/loopkit/milestone/11) |
-| design-in-the-loop — broaden design from UI-only to "a visualisation clarifies the decision" (UI + concept/flow/architecture), woven into the roadmap+plan sparring; durable medium = committed SVG (renders inline in the PR), Mermaid/PNG optional; extends inception Step 7b + the constitution design principle. Depends on roadmap-iteration | — | — |
+| design-in-the-loop — broaden design from UI-only to "a visualisation clarifies the decision" (UI + concept/flow/architecture), woven into the roadmap+plan sparring; durable medium = committed SVG (renders in GitHub's file/rich view, not the raw PR diff), Mermaid the GitHub-native alternative; extends inception Step 7b + the constitution design principle. Constitution stays medium-agnostic; loopkit's own docs/design.md picks committed SVG | [spec](specs/spec-design-in-the-loop.md) | [#12](https://github.com/skrischer/loopkit/milestone/12) |
 | structural-verify — set loopkit's `Verify` (currently `none`) to the native `claude plugin validate` (JSON validity + skill/agent/command frontmatter + duplicate names + path traversal — no new deps); wire it into the per-PR + milestone-QA gates; add a thin shell/git check only for loopkit invariants the native validator misses | — | — |
 
 Unlike the P1–P6 chain, some of these features touch **disjoint files** — the
 first real parallel frontier, the orchestrator payoff the chain's own narrative
-anticipated. But not all: planning `prior-art-elevation` surfaced an honest
-correction — it edits `docs/vision.md` + `docs/constitution.md`, which
-`roadmap-iteration` (#10) also edits, so it serialises behind it
-(`Depends on milestone: #10`). `design-in-the-loop` likewise depends on
-`roadmap-iteration`. The parallel frontier is real but narrower than first
-assumed — the foundation docs are a shared spine several features touch.
+anticipated. But not all: the foundation docs are a shared spine several features
+touch, which serialised the early ones — `prior-art-elevation` edited
+`docs/vision.md` + `docs/constitution.md` behind `roadmap-iteration` (#10), and
+`design-in-the-loop` was seeded depending on `roadmap-iteration` for the same
+reason. In practice that spine discharged itself in order: #10 then #11 both
+closed before `design-in-the-loop` (#12) was planned, so #12's foundation edits
+(the broadened design principle) landed on a clean base and its milestone runs
+**independently** (`Depends on milestone: none`). The lesson held — a
+shared-spine dependency is real, but on an attended cadence it often resolves by
+sequencing rather than blocking.
 
 ## North star
 
