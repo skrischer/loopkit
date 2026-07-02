@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop ONCE at the spec-acceptance gate (open decisions + prerequisites handover), merge autonomously (the merge is acceptance), then create the GitHub milestone, issues with dependencies, board entries, and update the roadmap. Loop-capable: without an argument it reports the roadmap's unplanned phases and asks the human which to plan (it does not auto-pick), and reports "fully planned" when none remains. Multi-phase: the human may name one phase or an ordered set; plan drives each as its own cycle in the named order, writing each new milestone's `Depends on milestone:` edge as it goes (it never auto-picks the set). Reads docs/workflow.md for project specifics.
+description: Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop once per phase at the spec-acceptance gate (open decisions + prerequisites handover), merge autonomously (the merge is acceptance), then create the GitHub milestone, issues with dependencies, board entries, and update the roadmap. Loop-capable: without an argument it reports the roadmap's unplanned phases and asks the human which to plan (it does not auto-pick), and reports "fully planned" when none remains. Multi-phase: the human may name one phase or an ordered set; plan drives each as its own cycle in the named order, writing each new milestone's `Depends on milestone:` edge as it goes (it never auto-picks the set). Reads docs/workflow.md for project specifics.
 ---
 
 # /loopkit:plan — drive one planning cycle to a merged spec + issues
@@ -21,9 +21,10 @@ gates, and loop rules — never hardcode them. If `docs/workflow.md` is missing,
 stop and tell the user to run `/loopkit:inception` first.
 
 **Autonomy:** survey, draft the spec, open the PR, run the review, merge, and
-create milestone/issues/board entries autonomously. **The one human stop is
-the spec-acceptance gate** — the milestone gate: genuinely-open decisions
-(AskUserQuestion, never guess) plus the human-prerequisites handover. On
+create milestone/issues/board entries autonomously. **The one human stop per
+phase is the spec-acceptance gate** — the milestone gate: genuinely-open
+decisions (AskUserQuestion, never guess) plus the human-prerequisites handover
+(a multi-phase run stops once per phase, never a whole-run single stop). On
 blockers, park instead of dying (see If blocked).
 
 ## Preconditions
@@ -53,16 +54,16 @@ blockers, park instead of dying (see If blocked).
   sequenced phases (it carries no current-focus or status marker); orient on it
   first.
 - **Multi-phase run:** when the human names a set, drive each phase as its own
-  full cycle (steps 2–8) in the given order — its own spec, spec-acceptance gate
-  (open decisions + prerequisites resolved per phase), merge, milestone, issues,
-  board, and roadmap update — before starting the next. Never reorder the set or
-  add a phase the human did not name. A phase's milestone-level edge (step 7) may
-  point at a **sibling phase planned earlier in the same run**: on a first-time
-  batch there is nothing pre-existing to order by, so write the `Depends on
-  milestone:` edge to the just-created sibling milestone as you go. A multi-phase
-  run may exceed the loop's iteration ceiling (`docs/workflow.md`) — split it
-  across runs when it would (each phase's own cycle is independent, so a split
-  loses nothing).
+  full cycle in the given order — re-run this readiness step's already-covered
+  check and track decision for it, then steps 2–8 (its own spec, spec-acceptance
+  gate with open decisions + prerequisites resolved per phase, merge, milestone,
+  issues, board, roadmap update) — before starting the next. Never reorder the
+  set or add a phase the human did not name. A phase's milestone-level edge may
+  depend on a **sibling phase planned earlier in the same run** — step 7 writes
+  that `Depends on milestone:` edge to the just-created sibling milestone as the
+  batch proceeds. A multi-phase run may exceed the loop's iteration ceiling
+  (`docs/workflow.md`) — split it across runs when it would (each phase's own
+  cycle is independent, so a split loses nothing).
 - **No argument:** list the phases that have no merged spec with a milestone
   and issues yet, then ASK the human which one(s) to plan (`AskUserQuestion` /
   in-session question). Never auto-advance to "the next phase without a Spec
