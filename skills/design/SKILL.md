@@ -1,27 +1,29 @@
 ---
 name: design
-description: Optional planning-time design step the planner invokes WITHIN the planning cycle for a UI-surface change — accept a delivered design OR produce one from the spec, iterate to a reviewed result, and hand off a single durable file committed to the repo and referenced by the spec. Reviewed AT the spec-acceptance gate as part of the spec package — never a third human stop. Skip entirely for non-UI work. Reads docs/design.md for every tool specific (medium, where designs live, the reviewer, the handoff form); hardcodes no tool.
+description: Optional planning-time design step the planner invokes WITHIN the planning cycle when a change has UI surface OR a visualisation would materially clarify a decision (flow / state / architecture / concept) — accept a delivered design OR produce one from the spec, iterate to a reviewed result, and hand off a single durable file committed to the repo and referenced by the spec. Reviewed AT the spec-acceptance gate as part of the spec package — never a third human stop. Skip when neither applies. Reads docs/design.md for every tool specific (medium, where designs live, the reviewer, the handoff form); hardcodes no tool.
 ---
 
 # /loopkit:design — produce a reviewed design, committed and spec-referenced
 
 A sub-step of the planning cycle, invoked by `/loopkit:plan` when a scope has
-**UI surface**. It owns only the design step: deliver-or-produce a design ->
-iterate -> hand off a committed file referenced by the spec. It adds **no human
+**UI surface OR a visualisation would materially clarify a decision** (flow /
+state / architecture / concept). It owns only the design step: deliver-or-produce
+a design -> iterate -> hand off a committed file referenced by the spec. It adds **no human
 gate** — the design rides in the spec package and is reviewed AT the existing
 spec-acceptance gate. `/loopkit:implement` later consumes the committed artifact.
 
 This is the design-side sibling to `/loopkit:plan` and `/loopkit:implement`.
 Like them it reads a **contract, never hardcodes specifics** — here
 **`docs/design.md`** (the `docs/workflow.md` sibling, produced by
-`/loopkit:inception` for UI-surface projects): the medium (tool / MCP), where
+`/loopkit:inception` for projects that enabled the design phase): the medium (tool / MCP), where
 designs live, the reviewer, and the handoff form all come from it. If
 `docs/design.md` is missing or records `none`, the project did not enable the
 design phase: report that and return to `/loopkit:plan` without designing — do
 not invent a tool.
 
-**Optional, by UI surface only.** A non-UI change never reaches this skill (no
-design artifact — proportional ceremony). The planner decides UI surface and
+**Optional, by design surface.** A change with neither UI surface nor a decision
+a visualisation would materially clarify never reaches this skill (no design
+artifact — proportional ceremony). The planner decides the design surface and
 points here; this skill does not re-litigate scope.
 
 **Autonomy:** run the whole step autonomously — read the contract, produce or
@@ -30,9 +32,9 @@ the one human review is the spec-acceptance gate `/loopkit:plan` already owns.
 
 ## Preconditions
 
-- Invoked from within a planning cycle for a UI-surface scope — `/loopkit:plan`
-  is the caller, the spec for the scope is being drafted (or exists in its docs
-  worktree).
+- Invoked from within a planning cycle for a scope with UI surface or a
+  decision-clarifying visualisation — `/loopkit:plan` is the caller, the spec for
+  the scope is being drafted (or exists in its docs worktree).
 - `docs/design.md` resolves and names a tool. Missing or `none` -> report and
   return to the planner; never hardcode a medium.
 
@@ -54,9 +56,12 @@ Resolve the design through whichever path applies; both end at step 3's review:
   durable form: export it down to the committed file.
 - **Produced from the spec:** no design exists -> generate one from the spec's
   intent using the contract's medium, in-session (subscription auth — never
-  `claude -p`, a headless flag, or an API key). Generation reuses the project's
-  design tooling and review primitives named in `docs/design.md`; this skill
-  orchestrates the loop, it does not reimplement a generator.
+  `claude -p`, a headless flag, or an API key). This is not UI-only: when the
+  scope is a flow, state machine, architecture, or concept, produce a **concept
+  diagram** that settles the decision, in whatever medium `docs/design.md` names.
+  Generation reuses the project's design tooling and review primitives named in
+  `docs/design.md`; this skill orchestrates the loop, it does not reimplement a
+  generator.
 
 ## 3. Iterate to a reviewed design
 
@@ -79,7 +84,7 @@ Resolve the design through whichever path applies; both end at step 3's review:
   editor, the committed file is the source of truth.
 - Return control to `/loopkit:plan`: the design is now part of the spec package
   and is reviewed **at the spec-acceptance gate** with the rest of the spec.
-  `/loopkit:implement` consumes the committed artifact for the UI-surface issues.
+  `/loopkit:implement` consumes the committed artifact for the issues it informs.
 
 ## If blocked — report, don't die
 
