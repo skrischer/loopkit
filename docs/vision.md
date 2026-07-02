@@ -20,7 +20,9 @@ human the engineer.
 Osmani, Steinberger — going viral). Claude Code ships the primitives natively
 (`/plan`, `/loop`, `/batch`, skills, worktrees, sub-agents). The building blocks
 exist; what is missing is an opinionated, attended methodology that binds them
-to durable GitHub state and matches process weight to change size.
+to durable GitHub state and matches process weight to change size. Prior-art
+research — who has done this well or badly — is the substrate every loopkit
+artifact derives from, not a one-time survey.
 
 ## Target users
 
