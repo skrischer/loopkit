@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# loopkit structural Verify.
+#
+# Reuses the native `claude plugin validate` (non-strict) as the structural
+# check, plus a config-surface auth/state guard for the loopkit invariants the
+# validator does not cover (subscription-auth only, GitHub-only durable state).
+# No new dependency: only `claude`, `git`, and shell (the allowed runtime).
+#
+# Run from anywhere; the script resolves the repo root itself:
+#   bash scripts/verify.sh
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+fail=0
+
+echo "== loopkit Verify =="
+
+# 1. Marketplace manifest — validates only the marketplace, does NOT recurse
+#    into skills. Non-strict (advisory warnings stay non-fatal).
+echo "-- claude plugin validate . (marketplace manifest) --"
+if claude plugin validate .; then
+  echo "  marketplace: OK"
+else
+  echo "  marketplace: FAILED"
+  fail=1
+fi
+
+# 2. Plugin manifest + every skill. Non-strict.
+echo "-- claude plugin validate .claude-plugin/plugin.json (plugin + skills) --"
+if claude plugin validate .claude-plugin/plugin.json; then
+  echo "  plugin+skills: OK"
+else
+  echo "  plugin+skills: FAILED"
+  fail=1
+fi
+
+# 3. Config-surface auth/state guard — scan ONLY the non-prose config surfaces
+#    for actual forbidden usage. Instructional Markdown is deliberately NOT
+#    scanned: loopkit's skills legitimately name these tokens as prohibitions,
+#    and a settings.json may name them in deny rules.
+#
+#    Surfaces: .claude-plugin/ (JSON), skills/**/templates/*.json, scripts/*.sh,
+#    hooks/. THIS script names the forbidden tokens as its own grep patterns, so
+#    it MUST exclude itself from the scan (self-match guard).
+echo "-- config-surface auth/state guard --"
+
+self="scripts/verify.sh"
+surface_files=()
+while IFS= read -r f; do
+  [ "$f" = "$self" ] && continue
+  surface_files+=("$f")
+done < <(
+  {
+    find .claude-plugin -type f 2>/dev/null || true
+    find skills -path '*/templates/*.json' -type f 2>/dev/null || true
+    find scripts -type f -name '*.sh' 2>/dev/null || true
+    { [ -d hooks ] && find hooks -type f 2>/dev/null; } || true
+  } | sort -u
+)
+
+forbidden=(
+  'claude -p'
+  '--dangerously-skip-permissions'
+  'GH_TOKEN='
+  'cron'
+  'scheduler'
+)
+
+guard_hit=0
+if [ "${#surface_files[@]}" -gt 0 ]; then
+  for pat in "${forbidden[@]}"; do
+    if grep -n -F -e "$pat" -- "${surface_files[@]}"; then
+      echo "  FORBIDDEN token '$pat' found in a config surface (above)"
+      guard_hit=1
+    fi
+  done
+fi
+if [ "$guard_hit" -eq 0 ]; then
+  echo "  config-surface guard: OK (no forbidden auth/scheduler usage)"
+else
+  fail=1
+fi
+
+# 4. No committed local-state second source — GitHub is the only durable state.
+echo "-- local-state second-source guard --"
+state_hits="$(git ls-files -- '*.sqlite' '*.db' 'state.json' 2>/dev/null || true)"
+if [ -n "$state_hits" ]; then
+  echo "  FORBIDDEN tracked local-state file(s):"
+  echo "$state_hits"
+  fail=1
+else
+  echo "  local-state guard: OK (no tracked *.sqlite/*.db or root state.json)"
+fi
+
+echo
+if [ "$fail" -eq 0 ]; then
+  echo "PASS: loopkit Verify — all checks green"
+  exit 0
+else
+  echo "FAIL: loopkit Verify — see failures above"
+  exit 1
+fi

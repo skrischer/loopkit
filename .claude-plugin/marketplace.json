@@ -1,5 +1,6 @@
 {
   "name": "loopkit",
+  "description": "Spec-driven loop engineering for Claude Code — the proportional loop where planning ceremony scales with change size, with all work state on GitHub issues/milestones/board, attended and subscription-auth.",
   "owner": { "name": "Sebastian Krischer" },
   "plugins": [
     {
