@@ -538,3 +538,366 @@ impact: the native validator fits the existing runtime.
 - Notes: ADOPT — validate the required fields (`name`, `description`; `name` matches
   the folder) and treat extended-field warnings as non-fatal. AVOID — failing Verify
   on extended-frontmatter false-positives until the issue is resolved.
+
+## Orchestrator loop exit states & bounded review retry (feature: implement-frontier-exits)
+
+The wave loop branches only on "all closed" vs "escalated/parked": an issue left
+open without a label by a subagent that reports none of the three §3 states
+re-enters the frontier and re-dispatches each wave — an undefined exit state in
+the core orchestration loop (2026-07-02 codebase analysis). The bounded-retry
+rule already exists at contract level (`docs/workflow.md`); the review loops in
+implement/plan must consult it by reference, not restate it.
+
+### Claude Code agent teams — shared task list with dependency auto-unblocking
+
+- Path: https://code.claude.com/docs/en/agent-teams
+- License: n/a (first-party docs)
+- Verdict: reference-only — the native task list supports task dependencies with
+  auto-unblocking, but the docs name the same failure class loopkit must define
+  away: "task status can lag/block dependents"; team state is local and
+  ephemeral (`~/.claude/tasks`, deleted at session end) — not durable state.
+- Date: 2026-07-02
+- Notes: ADOPT — explicit terminal states per dispatched unit: every subagent
+  exit MUST map to exactly one of merged / escalated / parked, with a defined
+  default (failed dispatch: one retry, then auto-park `blocked:human`) when it
+  maps to none. AVOID — a frontier whose membership is defined only by the
+  happy path; relying on status that can lag.
+
+### eyaltoledano/claude-task-master — DAG frontier filters
+
+- Path: https://github.com/eyaltoledano/claude-task-master (v0.42.0 `--ready` / `--blocking`)
+- License: unverified (OSS)
+- Verdict: reference-only — shipped explicit DAG frontier filters (2026-01-15):
+  the frontier is a first-class queryable set with total membership, not an
+  emergent condition of the loop.
+- Date: 2026-07-02
+- Notes: ADOPT — frontier membership as a total function of issue state (every
+  open issue is exactly one of: unblocked, dependency-blocked,
+  cross-milestone-blocked, parked, escalated). AVOID — the rest of Task Master's
+  model (local tasks.json, Docker/API-key loops — constitution don'ts).
+
+## Worktree resume & merge-conflict recovery (feature: implement-resume-safety)
+
+The orchestrator's autonomous-merge core has no defined behavior for its two
+most likely mid-run failures (2026-07-02 codebase analysis): a prior run's
+leftover branch/worktree (`git worktree add -b` collides) and a conflicting
+squash-merge between frontier siblings. The field names this unsolved — shipping
+a defined recovery path is differentiating because nobody else has one.
+
+### CoAgent / InfoWorld — worktrees do not solve semantic conflicts
+
+- Path: https://arxiv.org/pdf/2606.15376 (CoAgent); https://www.infoworld.com/article/4035926
+- License: n/a (paper / article)
+- Verdict: reference-only — the named 2026 gap: worktrees "only provide low-level
+  workspace isolation and do not solve task decomposition, dependency tracking,
+  semantic conflicts, or merge selection"; agents edit related files under
+  incompatible assumptions and errors appear only at integration.
+- Date: 2026-07-02
+- Notes: ADOPT — a defined conflict path: rebase onto the updated base ->
+  re-run Verify -> re-merge once; a second conflict routes to `needs:planning`
+  (a missed serialization edge is a planning defect under "clarification belongs
+  to planning"). AVOID — hard file locks or claim-like arbitration (constitution
+  don't).
+
+### automazeio/ccpm — `conflicts_with` task metadata
+
+- Path: https://github.com/automazeio/ccpm
+- License: unverified
+- Verdict: reference-only — CCPM tasks carry `depends_on` / `parallel` /
+  `conflicts_with` metadata: file-overlap risk is representable at plan time
+  instead of discovered at merge time.
+- Date: 2026-07-02
+- Notes: ADOPT — a soft, advisory file-overlap pass in /plan (predict touched
+  files per issue; add `Depends on:` edges or an overlap note on intersection)
+  and soften implement's same-file serialization claim, which plan never
+  establishes. AVOID — turning overlap hints into hard locks.
+
+### Claude Code background agents — resume is re-derived, not restored
+
+- Path: https://code.claude.com/docs/en/changelog (v2.1.144+); https://code.claude.com/docs/en/agent-teams
+- License: n/a (first-party)
+- Verdict: reference-only — background sessions persist and resume, but the
+  native `/resume` explicitly does NOT restore in-process teammates: even
+  first-party resume re-derives rather than restores agent state.
+- Date: 2026-07-02
+- Notes: ADOPT — re-derive resume state from GitHub (existing branch? open PR
+  for the issue? -> re-attach and continue from Verify) — the GitHub-only-state
+  principle applied to recovery. AVOID — any local resume file.
+
+## Process-PR overhead — ceremony telemetry (feature: ceremony-overhead)
+
+The loudest criticism of every SDD leader is ceremony (Spec Kit: "a permit
+application to move a chair", ~800 artifact lines per run; Kiro: one bug -> 4
+user stories / 16 acceptance criteria). loopkit's own telemetry exhibits the
+same failure at PR granularity (2026-07-02 analysis: 3 fixed process PRs per
+full-spec milestone; milestone #11 delivered 2 issues at the cost of 5 PRs; 44
+of 86 merged PRs carried no behavior change). The proportionality pitch must be
+backed by loopkit's own numbers. Also internal: the post-merge Decision-log
+instruction writes to a branch the merge already deleted — unexecutable as
+ordered.
+
+### Scott Logic / OpenSpec — overhead without qualitative benefit
+
+- Path: https://blog.scottlogic.com (2025-11-26); https://codemyspec.com/blog/openspec-vs-spec-kit; https://github.com/Fission-AI/OpenSpec
+- License: n/a (articles); OpenSpec unverified (OSS)
+- Verdict: reference-only — documented verdicts on Spec Kit: "heavyweight for
+  anything other than really big features", "no qualitative benefit to justify
+  the overhead"; OpenSpec won ~52k stars by June 2026 on delta specs producing
+  ~250 lines where Spec Kit produces ~800 — lighter ceremony is a proven
+  adoption driver.
+- Date: 2026-07-02
+- Notes: ADOPT — measure ceremony as a first-class number (process PRs per
+  milestone, artifact lines per change) and drive it down: fold the roadmap-link
+  commit onto the accepted spec branch, keep one QA close-out PR. AVOID —
+  fixing ceremony by introducing a new artifact type (the meta-failure).
+
+## Gate evidence & review-payload compression (feature: gate-evidence)
+
+The two human gates currently leave no GitHub trace beyond a closed milestone —
+the #12 QA gate passed an SVG violating loopkit's own no-status-marker rule and
+no audit trail caught it (fixed post-hoc in #132). The field's consensus #1 pain
+is review, not authorship; per-gate comprehension cost is the honest
+justification for keeping exactly two gates.
+
+### Addy Osmani — "Comprehension debt"
+
+- Path: https://addyosmani.com/blog/comprehension-debt/; https://www.oreilly.com/radar/comprehension-debt-the-hidden-cost-of-ai-generated-code/
+- License: n/a (articles)
+- Verdict: reference-only — agents generate 140–200 lines/min against 20–40
+  lines/min human comprehension; PR volume +29% YoY; review is the 2026
+  bottleneck.
+- Date: 2026-07-02
+- Notes: ADOPT — post the derived QA scenarios + the human verdict as a
+  milestone comment before closing (a comment on an existing GitHub object — no
+  new state; the living-spec batch summary gets the same durable home) + a QA
+  handover mapping each spec Verification item to the PRs/commits implementing
+  it. AVOID — a third human gate; duplicating spec-acceptance decisions into PR
+  comments (the merged spec's Decision log is already the durable record).
+
+### AlphaSignal — "The wall is review, not authorship"
+
+- Path: https://alphasignalai.substack.com/p/most-developers-do-not-need-agent
+- License: n/a (article)
+- Verdict: reference-only — a 2025 study: 68% of production agents run ten steps
+  or fewer before humans intervene; loops pay off only where verification is
+  cheap and gates are hard.
+- Date: 2026-07-02
+- Notes: ADOPT — invest in per-gate payload compression; it is the binding
+  constraint on attended loops. AVOID — gates that rubber-stamp (six
+  spec-acceptance gates in a 20-minute window is the dogfood symptom to design
+  against).
+
+## Design coverage enforcement (feature: design-coverage)
+
+loopkit dogfooding finding (Flowmate): /design designs but does not enforce
+coverage — an entire flow shipped undesigned and caused a real bug. The parallel
+Rack feedback (2026-06-17) shipped as milestone #8 within 2 days once committed;
+the Flowmate write-up sat untracked on local disk for 13 days — the intake loop
+works only when the file is committed.
+
+### loopkit dogfooding finding (Flowmate) — the originating evidence
+
+- Path: docs/feedback/2026-06-19-design-skill-retrofit.md (untracked at seed
+  time; committed by this phase)
+- License: n/a (internal)
+- Verdict: reuse — derive the spec's user-facing capabilities and assert each
+  maps to a surface or state; enumerate per-surface states the spec's
+  Outcome/Verification implies; write back a complete `Design:` line per spec;
+  split the design review into craft + coverage passes under bounded retry.
+- Date: 2026-07-02
+- Notes: ADOPT — coverage as a machine-checkable planning-cycle assertion, not a
+  third gate; a missing docs/design.md routes to inception --here (which owns
+  the design-contract bootstrap). AVOID — growing a second bootstrap inside
+  /design (duplication); a feedback watcher/automation — /roadmap recognizes
+  docs/feedback/ files as raw-idea inputs when invoked (attended model).
+
+## Attended-loop permission guardrails (feature: permission-template-hardening)
+
+The shipped inception settings template defaults generated projects to
+bypassPermissions with a leaky deny list and hardcoded Supabase rules —
+violating loopkit's own "templates contain no project-specific values" quality
+gate on exactly the surface a skeptical adopter inspects first.
+
+### AlphaSignal / skills audit — unattended loops as attack surface
+
+- Path: https://alphasignalai.substack.com/p/most-developers-do-not-need-agent
+- License: n/a (article)
+- Verdict: reference-only — an audit of 17,022 agent skills found 520 leaking
+  credentials (~74% via debug logging); "a loop running unattended is an attack
+  surface running unattended" — the security half of the attended stance.
+- Date: 2026-07-02
+- Notes: ADOPT — cite this in the positioning; close the cheap deny-list gaps
+  (`rm -r`/`-fr` spellings, `+refspec` force-push, `git -C` variants of guarded
+  commands); extend verify.sh to assert the template placeholder is intact.
+  AVOID — claiming airtightness: prefix-match deny rules cannot stop `bash -c`
+  wrapping; the honest claim is deny-wins + human gates.
+
+### Boris Cherny — auto mode over permission fatigue
+
+- Path: https://howborisusesclaudecode.com
+- License: n/a (compilation)
+- Verdict: reference-only — "more safe than reading every single permission
+  prompt": permission fatigue is the real-world failure mode; a curated bypass
+  with hard deny rules beats prompt-per-call in attended loops.
+- Date: 2026-07-02
+- Notes: ADOPT — document WHY bypassPermissions is the attended default; offer a
+  stricter acceptEdits variant as an explicit inception choice. AVOID —
+  defaulting strangers into bypass silently, without the rationale in front of
+  them.
+
+## Positioning vocabulary — attended, spec-anchored, agentic engineering (feature: repositioning)
+
+Karpathy's "agentic engineering" won the umbrella-term war (2026-02-04, vibe
+coding declared passé); the 2026 SDD consensus is "spec-anchored is where the
+value is today" — loopkit's exact tier. Plan-before-code approval is table
+stakes at every big vendor, and attended operation is everywhere an option,
+nowhere a principle: the principle is the pitch. README/plugin.json must carry
+this vocabulary and stop contradicting the constitution ("READY spec",
+"select/claim").
+
+### Karpathy / SDD tier consensus — the winning vocabulary
+
+- Path: https://www.ibm.com/think/topics/agentic-engineering; https://dev.to/krlz (spec-driven development in 2026); https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html
+- License: n/a (articles)
+- Verdict: reference-only — the tier model (spec-first / spec-anchored /
+  spec-as-source) with spec-anchored as the consensus sweet spot; Thoughtworks
+  keeps SDD at "Assess" insisting executable code remains the source of truth.
+- Date: 2026-07-02
+- Notes: ADOPT — "attended, spec-anchored loop engineering" as the one-line
+  self-description; justify the two gates via the review bottleneck,
+  comprehension debt, and security — never via model unreliability (which
+  improves and would date the stance); reframe no-scheduler as the positive
+  claim "attended orchestration between exactly two human gates" in prose while
+  the grep-verifiable constitution rule stays untouched. AVOID — "vibe"
+  vocabulary; pitching "a human reviews a plan" as differentiation (table
+  stakes everywhere).
+
+### Big-vendor aggregate — attended is nowhere a principle
+
+- Path: vendor docs/changelogs (Codex scheduled reminders + proactive
+  delegation; Copilot autopilot/fleet; Jules `requirePlanApproval` defaulting
+  off + proactive tasks; Antigravity scheduled background tasks; Devin
+  unattended API) — 2026-07-02 research pass
+- License: n/a (products)
+- Verdict: reference-only — every vendor ships unattended options; none computes
+  a dependency-ordered execution frontier from issue-level relations; parallel
+  dispatch is human-curated in mission-control UIs.
+- Date: 2026-07-02
+- Notes: ADOPT — a documented multi-harness/Codex FAQ stance (the most common
+  adoption objection; wshobson/agents grew ~37k stars on portability). AVOID —
+  scope-creeping into actual multi-harness support (constitution: Runtime =
+  Claude Code + gh + git).
+
+## Prior-art freshness & the single-entry USP section (feature: prior-art-backfill)
+
+This file defends the headline USP ("GitHub-only durable state") with exactly
+one entry (CCPM) and carries fast-decaying claims propagated across research
+passes: the spec-kit entry's "GitHub Issues integration closed not planned"
+predates `/speckit.taskstoissues` + `/speckit.converge`; the native-primitive
+inventory (2026-06-16) predates Routines; "MIT likely — verify" TODOs sit
+unresolved. The most direct first-party occupants of the GitHub-native cell are
+absent entirely (2026-07-02 analysis).
+
+### GitHub Copilot coding agent + Agent HQ — the missing first-party occupant
+
+- Path: https://docs.github.com/copilot/concepts/agents/coding-agent/about-coding-agent; https://github.blog/news-insights/company-news/welcome-home-agents/
+- License: n/a (product)
+- Verdict: reference-only (full assessment is this phase's work) — issue-assigned,
+  Actions-powered, explicitly unattended-capable ("continues even if your
+  computer is off"); Agent HQ mission control holds session/orchestration state
+  outside issues/milestones/boards. Occupies the GitHub-native cell WITHOUT the
+  issues-as-only-state discipline — sharpens, not refutes, loopkit's USP.
+- Date: 2026-07-02
+- Notes: ADOPT — backfill full entries (also: OpenAI Codex/AGENTS.md, BMAD,
+  OpenSpec, GSD, one parallel-orchestration UI — Conductor or Vibe Kanban) each
+  under its matching concern with adopt/avoid verdicts; add `Verified: <date>`
+  distinct from creation date, a volatility flag on product-feature claims, and
+  a staleness check in inception --here's readiness sweep. AVOID — a scheduler
+  for freshness (non-goal); append-only growth without index repair (untagged
+  legacy sections, stale header, "Point 3" references).
+
+## Dogfooding the untested tracks (feature: dogfood-untested-claims)
+
+Two headline claims have zero exercised evidence after 13 milestones
+(2026-07-02 analysis): the living-spec track (one of the constitution's three)
+and "two independent milestones run as two orchestrators" (a literal vision
+success criterion). Undogfooded tracks are where the proportionality claim gets
+caught out publicly — BMAD v6 markets "scale-adaptive planning" at ~49k stars.
+
+### Boris Cherny — parallel attended sessions as daily practice
+
+- Path: https://howborisusesclaudecode.com
+- License: n/a (compilation)
+- Verdict: reference-only — 5–10 parallel worktree sessions attended by one
+  engineer is demonstrated daily practice; two concurrent orchestrators is a
+  modest, realistic test of the vision claim.
+- Date: 2026-07-02
+- Notes: ADOPT — run the two-orchestrator test on genuinely disjoint spec-worthy
+  phases (verify file-set disjointness at plan time against the known shared
+  spines) and record the outcome in the roadmap like the P1–P6 serialization
+  finding. AVOID — inflating a trivial change into a spec to force the test
+  (manufactured ceremony); deferring is better than fabricating.
+
+### Gas Town (Steve Yegge) — the unattended contrast
+
+- Path: https://github.com/gastownhall/gastown; https://steve-yegge.medium.com/welcome-to-gas-town-4f25ee16dd04
+- License: unverified
+- Verdict: avoid — colonies of 20–30 parallel agents over git-tracked JSON issue
+  records, largely autonomous, with reported ~$100/hour token burn: the
+  cost/comprehension failure mode the attended model exists to avoid.
+- Date: 2026-07-02
+- Notes: ADOPT — the living-spec milestone for the ongoing correction/feedback
+  stream (exercises the never-used QA batch-summary path) as the attended answer
+  to "ongoing themes". AVOID — colony-scale parallelism; unattended issue
+  factories.
+
+## Launch playbook — methodology-plugin distribution (feature: launch-playbook)
+
+The category-defining precedent is Superpowers: shipped 2025-10-09 (the day
+plugins launched), first-person blog post -> Simon Willison (2025-10-10) -> HN
+-> official directory (2026-01-15); 244,309 stars by 2026-07-02 (GitHub API).
+The window matters: "loop engineering" went viral 2026-06-07 with only thin
+tooling attached, 15,134 Claude Code plugin repos (4x YoY) make unlabeled repos
+invisible, and CCPM — the niche incumbent — is fading (last push 2026-03-18).
+
+### obra/superpowers — the launch playbook
+
+- Path: https://github.com/obra/superpowers; https://blog.fsck.com/2025/10/09/superpowers/; https://simonwillison.net/2025/Oct/10/superpowers/
+- License: unverified (OSS)
+- Verdict: reference-only — the proven distribution sequence for a methodology
+  plugin; HN's main criticism of it ("over-engineering for small tasks") is
+  loopkit's exact differentiator.
+- Date: 2026-07-02
+- Notes: ADOPT — first-person dogfood narrative with GitHub state as proof;
+  re-verify every cited figure pre-publication (star counts are the one detail
+  a skeptical HN commenter checks); submit to the official Anthropic directory
+  (public solo-dev form; passes `claude plugin validate` since #134/#135) and
+  awesome-claude-code (~48k stars, updated daily). Prerequisites: LICENSE +
+  repo metadata landed (fast-lane); repositioning landed (the README must match
+  the constitution before strangers read both). AVOID — launching with the
+  stale README; a stale pushed_at (reads as abandonment — establish a visible
+  release cadence).
+
+### buildtolaunch — plugin keep-criteria
+
+- Path: https://buildtolaunch.substack.com/p/best-claude-code-plugins-tested-review
+- License: n/a (review)
+- Verdict: reference-only — independent reviewers keep only ~4 of 11 tested
+  plugins; keep-criteria: real workflow improvement (not polish), accurate
+  output, no "always-on overhead", integration with existing systems.
+- Date: 2026-07-02
+- Notes: ADOPT — lead with the fast-lane demo (proportional = no always-on
+  overhead) and the GitHub-integration story (existing systems, no new tool).
+  AVOID — polish-only pitches.
+
+## Foundation-doc context budget (feature: foundation-dedup)
+
+greenfield — no external prior art; internal integrity finding (2026-07-02
+analysis). vision.md and constitution.md duplicate ~20 lines near-verbatim (the
+design phase, the orchestrator model), violating their own "no content
+duplicated across foundation artifacts" don't, at 105/133 lines against the
+self-imposed ~1-page budget — and both are permanently loaded into every
+session, so the duplication costs tokens on every loop iteration. Three
+drifting hard-limit enumerations (CLAUDE.md, docs/workflow.md, settings.json)
+name the same authority; docs/design.md declares a German-diagram exception the
+binding constitution does not sanction — ratify or remove.
