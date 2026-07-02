@@ -129,7 +129,7 @@ Reference `docs/constitution.md` / `docs/vision.md` rather than restating.
 | The step aids a **technical** struggle only; a **design** fork still escalates to planning (`needs:planning`); a `track:adhoc` issue has no linked source so it does not apply | "Clarification belongs to planning" — the checkout must not become a way to resolve open design questions by copying OSS | 2026-07-02 |
 | `Depends on milestone: #10`; the foundation-doc issue `Depends on: #98` | This scope shares `vision.md` + `constitution.md` with the in-flight roadmap-iteration milestone; shared files serialise (loopkit's own dogfood rule) | 2026-07-02 |
 | No persistent reference manifest; no VM/sandbox | Retained cross-repo state would be a second source of truth (Repo-of-Repos AVOID); a transient read-only checkout is sufficient (Manus) | 2026-07-02 |
-| OPEN — how prominent the elevation is in vision + constitution (light reframe of the existing principle + one vision line vs. a stronger dedicated statement) | resolved at the spec-acceptance gate — a calibration call on two permanently-loaded normative docs | — |
+| Elevation = a **reframe** of the existing constitution prior-art principle to substrate framing + generalise its checkout clause to both loops + **one** concise `vision.md` statement. No new principle, no new section, `vision.md` stays ~1 page | resolved at the spec-acceptance gate: "weight, not bulk" — the lightest form that raises prior art to substrate while respecting the ~1-page permanently-loaded budget | 2026-07-02 |
 
 ## Tracking
 
@@ -185,3 +185,6 @@ Verify is `none yet`; this list is the human milestone-QA script.
   introduces; (2) `docs/roadmap.md`'s "disjoint files" Features note is now stale —
   corrected in this milestone's Step-8 roadmap PR (a one-line honesty fix, not a
   status marker).
+- 2026-07-02: Spec-acceptance gate — the one open item (elevation prominence)
+  resolved to a reframe + one vision line (no new principle/section; ~1-page
+  budget preserved). Human prerequisites confirmed none. Spec accepted.
