@@ -6,7 +6,10 @@ Extract ongoing feature/phase planning out of the one-time `/loopkit:inception`
 dialog into a new `/loopkit:roadmap` skill — a prior-art-driven idea-sparring loop
 that seeds one or many roadmap phases (with their backing prior art) without
 inception's loop-readiness sweep — and give `/loopkit:plan` a matching
-multi-milestone loop so several seeded phases can be planned in one run.
+multi-milestone loop so several seeded phases can be planned in one run. The
+prior-art / architecture-seed / roadmap-seeding logic shared with inception is
+extracted into a shared reference both skills read, so nothing is duplicated and
+neither skill reaches into the other's internals.
 
 ## Outcome
 
@@ -15,32 +18,48 @@ multi-milestone loop so several seeded phases can be planned in one run.
       websearch / deep / none, ASKED per idea) → sparring (challenge + sharpen) →
       seeds 1..n roadmap rows + their backing prior-art entries, with **no**
       loop-readiness sweep.
-- [ ] `/loopkit:roadmap` performs the prior-art challenge, architecture-seed, and
-      roadmap-seeding using inception's existing logic **without duplicating its
-      prose** (DRY — mechanism per the resolved OPEN decision).
-- [ ] `/loopkit:roadmap` may draft foundation-doc changes (vision / constitution /
-      architecture) when an idea touches them; those changes land on the default
-      branch only via the phase's `/loopkit:plan` cycle and are **ratified at the
-      spec-acceptance gate** — never authored in `/loopkit:implement`.
-- [ ] `/loopkit:plan` plans **one or many** phases in a single loop run,
-      dependency-ordered via the existing milestone-level `Depends on` — the human
-      still names the set (never auto-picked).
-- [ ] Foundation docs reflect the new skill: `docs/vision.md` ("four → five loop
-      skills"), `docs/constitution.md` (the roadmap skill + a
-      "foundation edits belong to planning, never implement" principle),
-      `docs/architecture.md` (5th component, the delegation, updated flows).
-- [ ] The plugin manifest (`.claude-plugin/`) registers `/loopkit:roadmap`, and
-      `docs/workflow.md`'s Loops section documents the roadmap loop.
+- [ ] The three steps shared with inception (prior-art challenge, architecture
+      seed, roadmap seeding) live in a **shared reference** that BOTH
+      `skills/inception/SKILL.md` and `skills/roadmap/SKILL.md` read; neither skill
+      cross-references the other's internals (upholds `docs/architecture.md`'s
+      "the skills do not know each other's internals" boundary). `inception` is
+      refactored to consume the shared reference — no prose is duplicated.
+- [ ] When an idea implies a foundation-doc change (vision / constitution /
+      architecture), `/loopkit:roadmap` records the impact **on the seeded phase**
+      (a note on its roadmap row / prior-art entry — committed as part of the
+      seed). The actual foundation-doc edit is authored inside that phase's
+      `/loopkit:plan` spec PR and **ratified at its spec-acceptance gate** — never
+      left as a dangling draft in the main checkout, never landed on the default
+      branch by roadmap alone, never authored in `/loopkit:implement`.
+- [ ] `/loopkit:plan` plans **one or many** phases in a single loop run: the human
+      names the set (never auto-picked), plan processes the given sequence and
+      writes each new milestone's `Depends on milestone:` edge as it goes.
+- [ ] Foundation docs + the plugin manifest reflect the new skill: a grep sweep
+      updates every "four (loop) skills" mention (`docs/vision.md`,
+      `docs/constitution.md`, `docs/architecture.md`, `README.md`) to five and adds
+      the component/flow; `docs/constitution.md` gets the "foundation edits belong
+      to planning, never implement" rule as a **one-line corollary** under the
+      existing "Clarification belongs to planning" principle (not a new top-level
+      principle — the file is permanently loaded, ~1 page budget).
+- [ ] The change propagates to future projects, not just this repo:
+      `.claude-plugin/` registers `/loopkit:roadmap`; **both** loopkit's own
+      `docs/workflow.md` **and** the inception template
+      `skills/inception/templates/workflow.md` document the roadmap loop (and the
+      plan loop's multi-phase capability) in their Loops sections.
 
 ## Scope
 
 ### In scope
 
-- New `skills/roadmap/SKILL.md` (+ any template it needs) and its DRY reuse of
-  inception's prior-art / architecture-seed / roadmap-seeding steps.
+- New `skills/roadmap/SKILL.md` (+ any template it needs).
+- The **shared reference** for the three shared steps + refactoring
+  `skills/inception/SKILL.md` to consume it (DRY without cross-skill coupling).
 - The `/loopkit:plan` change: plan multiple phases/milestones per loop run.
-- Foundation-doc edits for the new skill + the foundation-edits-belong-to-planning
-  principle; plugin manifest registration; `docs/workflow.md` Loops update.
+- Foundation-doc edits (grep sweep for "four skills" → five; the planning-edits
+  corollary in `docs/constitution.md`; the new component/flow in
+  `docs/architecture.md`).
+- Plugin manifest registration; Loops-section updates in **both**
+  `docs/workflow.md` **and** `skills/inception/templates/workflow.md`.
 
 ### Out of scope
 
@@ -54,16 +73,19 @@ multi-milestone loop so several seeded phases can be planned in one run.
 
 ## Constraints
 
-Reference `docs/constitution.md` rather than restating it.
+Reference `docs/constitution.md` / `docs/architecture.md` rather than restating.
 
-- **No duplication across skills** — the roadmap skill reuses inception's steps,
-  it does not copy them; project specifics stay in `docs/workflow.md`.
-- **Reuse native primitives / proportional ceremony** — roadmap is the lighter
-  iteration entry point; no readiness sweep, no new gate.
-- **Exactly two human gates** — roadmap sparring is an interactive dialog, not a
-  new gate; the only planning gate remains spec-acceptance (in `/loopkit:plan`).
-- **Clarification belongs to planning** — hence foundation decisions are resolved
-  in roadmap/plan, never discovered in implement.
+- **Skills do not know each other's internals** (`docs/architecture.md`, Boundaries)
+  — the shared steps are extracted into a shared reference both read; no skill
+  cross-references another's step numbers.
+- **No duplication across skills** — project specifics stay in `docs/workflow.md`;
+  shared toolkit logic lives in the shared reference, authored once.
+- **GitHub-only durable state + never modify the main checkout** — roadmap emits
+  only committed artifacts (roadmap rows, prior-art, and via worktrees any PR); it
+  leaves no uncommitted foundation-doc draft behind.
+- **Exactly two human gates / clarification belongs to planning** — roadmap
+  sparring is an interactive dialog, not a new gate; foundation decisions resolve
+  in roadmap/plan, never in implement.
 - Skills are Markdown prose (no build step); Verify is `none yet`, so this scope
   is checked at the milestone-QA gate (review + a smoke run of each changed skill).
 
@@ -82,13 +104,14 @@ Reference `docs/constitution.md` rather than restating it.
 
 | Decision | Rationale | Date |
 |---|---|---|
-| New skill `/loopkit:roadmap`, delegating to inception's Steps 2/5/6 | Bootstrap ≠ iteration (spec-kit precedent); after inception a project is feature-complete, new features need discovery not re-bootstrap; DRY over a forked copy | 2026-07-02 |
-| Scope = prior-art discovery + architecture-seed + roadmap-seeding; **no** readiness sweep; seeds 1..n phases per run | The readiness sweep is token ballast per iteration; the value is prior-art inspiration + adopt/avoid, injected per idea | 2026-07-02 |
-| Research mode is ASKED per idea (websearch / deep / none) | Mirrors inception Step 2's "ASK, never assume"; the thick research is what the skill triggers per feature | 2026-07-02 |
-| `/loopkit:roadmap` and `/loopkit:plan` are multi-milestone loops (1..n per run); human names the set, plan orders by milestone-level `Depends on` | Plan several seeded phases before handing to implement; still human-directed (never auto-picked) | 2026-07-02 |
-| Foundation-doc edits belong to planning (roadmap drafts, `/loopkit:plan` commits + ratifies at spec-acceptance), never `/loopkit:implement` | "Clarification belongs to planning"; a foundation decision reaching implement is a planning defect; keeps big changes (e.g. React→Vue) under the one planning gate, no third gate | 2026-07-02 |
-| roadmap is counted as a loop skill — `docs/vision.md` becomes "five loop skills (inception, plan, implement, design, roadmap)" | It is a producer-side loop skill in the same family; the count is descriptive, not a new category | 2026-07-02 |
-| OPEN — DRY mechanism: (a) roadmap's `SKILL.md` cross-references inception's Steps 2/5/6 in-prose, vs (b) extract the three shared steps into a shared reference both skills read | resolved at the spec-acceptance gate (recommendation: (a) cross-reference — simplest, matches "reuse not reinvent", avoids a new artifact) | — |
+| New skill `/loopkit:roadmap`; the prior-art / arch-seed / roadmap-seeding logic it shares with inception is extracted into a shared reference both skills read | Bootstrap ≠ iteration (spec-kit precedent); DRY without violating `docs/architecture.md`'s "skills don't know each other's internals" — a shared artifact is the sanctioned handoff (mirrors plan/implement both reading `docs/workflow.md`) | 2026-07-02 |
+| `skills/inception/SKILL.md` is refactored to consume the shared reference (in scope) | Otherwise the "extraction" recreates the duplication it removes | 2026-07-02 |
+| Scope = prior-art discovery + architecture-seed + roadmap-seeding; **no** readiness sweep; seeds 1..n phases per run; research mode ASKED per idea | The readiness sweep is token ballast per iteration; value is prior-art inspiration + adopt/avoid, injected per idea; mirrors inception Step 2's "ASK, never assume" | 2026-07-02 |
+| Foundation-doc changes: roadmap records the impact onto the seeded phase; the edit is authored in that phase's `/loopkit:plan` spec PR and ratified at spec-acceptance; roadmap never leaves a dangling draft nor lands one on the default branch alone; never in implement | Only GitHub-durable, never-modify-main-checkout mechanism; keeps big changes (React→Vue) under the one planning gate; "clarification belongs to planning" | 2026-07-02 |
+| `/loopkit:plan` multi-phase loop processes the **human-named** sequence, writing each new milestone's `Depends on milestone:` as it goes (nothing pre-existing to order by on a first-time batch) | Preserves "never auto-picks"; the milestone-level edge is authored during the batch, not read from thin air | 2026-07-02 |
+| `/loopkit:roadmap` (generative idea-sparring, seeds NEW phases) and `/loopkit:inception --here` (readiness audit/repair against the contract) are complementary, not overlapping; inception's existing prior-art↔roadmap gap-closure stays a repair path | Two distinct jobs; avoids collapsing the new front door into the audit sweep | 2026-07-02 |
+| roadmap counted as a loop skill — "five loop skills (inception, plan, implement, design, roadmap)" across all mentions | Producer-side loop skill in the same family; count is descriptive | 2026-07-02 |
+| OPEN — the shared reference's home + naming (e.g. a new `skills/shared/…` steps file vs. another location that keeps it out of any single skill's internals) | resolved at the spec-acceptance gate | — |
 
 ## Tracking
 
@@ -99,19 +122,23 @@ Reference `docs/constitution.md` rather than restating it.
 
 Verify is `none yet`; this list is the human milestone-QA script.
 
-- [ ] `/loopkit:roadmap` smoke-run: given a raw idea, it offers a research mode,
-      sparrings, and seeds ≥1 roadmap row plus a backing prior-art entry — with no
-      readiness sweep.
-- [ ] Seeding multiple ideas in one run appends multiple rows, each backed by a
-      prior-art concern (the coupling holds).
-- [ ] `/loopkit:plan` smoke-run: given two named phases with a dependency, it
-      plans both in one run in dependency order.
-- [ ] No prose is duplicated between `skills/roadmap/SKILL.md` and
-      `skills/inception/SKILL.md` (the DRY decision is honored — grep check).
-- [ ] `docs/vision.md`, `docs/constitution.md`, `docs/architecture.md` reflect the
-      new skill + the foundation-edits-belong-to-planning principle.
-- [ ] `.claude-plugin/` registers `/loopkit:roadmap`; `docs/workflow.md` documents
-      the roadmap loop.
+- [ ] `/loopkit:roadmap` smoke-run: a raw idea → research mode offered → sparring →
+      ≥1 roadmap row + backing prior-art entry seeded, with no readiness sweep.
+- [ ] Multiple ideas in one run append multiple rows, each backed by a prior-art
+      concern (the coupling holds).
+- [ ] `/loopkit:plan` smoke-run: two named phases with a dependency planned in one
+      run, in the named order, each milestone's `Depends on milestone:` written.
+- [ ] Foundation-impact path: a roadmap idea that touches a foundation doc records
+      the impact on the seeded phase and does NOT edit the foundation doc in the
+      main checkout; a follow-up `/loopkit:plan` authors the edit in its spec PR.
+- [ ] DRY holds: `skills/roadmap/SKILL.md` and `skills/inception/SKILL.md` share
+      the three steps via the shared reference; grep finds no duplicated step prose
+      and no cross-skill internal reference.
+- [ ] Propagation: `.claude-plugin/` registers `/loopkit:roadmap`; both
+      `docs/workflow.md` and `skills/inception/templates/workflow.md` document the
+      roadmap loop + the plan multi-phase capability.
+- [ ] Sweep: no "four (loop) skills" mention remains stale in `docs/vision.md`,
+      `docs/constitution.md`, `docs/architecture.md`, `README.md`.
 - [ ] grep guardrails still pass: no headless flag, API key, scheduler, or local
       state introduced.
 
@@ -119,13 +146,20 @@ Verify is `none yet`; this list is the human milestone-QA script.
 
 | Risk | Mitigation |
 |---|---|
-| Cross-referencing inception's step numbers couples roadmap to inception's structure (if (a) chosen) | Reference the steps by name + number and keep inception's step titles stable; a grep test asserts no duplication |
-| "roadmap may edit foundation docs" erodes the two-gate rule | Foundation edits are only ratified at the spec-acceptance gate via `/loopkit:plan`; roadmap alone never lands them on the default branch |
-| Scope creep — design/prior-art-elevation bleed into this phase | Explicit Out-of-scope; those are dependent/sibling phases with their own specs |
-| Multi-milestone plan loop picks work the human didn't name | Preserve "never auto-picks": the human passes the phase set; plan only orders it |
+| Extraction is under-done — inception keeps a copy, so duplication persists | DRY Verification item greps both `SKILL.md`s for shared step prose; inception refactor is an explicit Outcome + in scope |
+| "roadmap may edit foundation docs" erodes the two-gate rule or leaves a dangling draft | Resolved: roadmap only records the impact onto the phase; the edit + ratification happen in `/loopkit:plan`'s spec PR at the spec-acceptance gate |
+| Feature ships to this repo but not to future projects | The inception **template** `skills/inception/templates/workflow.md` is in scope, not just loopkit's own `docs/workflow.md` |
+| Multi-idea run × per-idea `deep-research` multiplies cost (fan-out ~100×); plan's 10-iteration ceiling may not fit a multi-phase batch | research mode ASKED per idea (default to the cheapest that settles it); document that a multi-phase plan run may exceed the 10-iteration ceiling and should be split — noted in the skill |
+| Scope creep — design / prior-art-elevation bleed in | Explicit Out-of-scope; those are dependent/sibling phases with their own specs |
 
 ## Decision log
 
-- 2026-07-02: Spec drafted from the roadmap-sparring dogfood; most decisions were
-  resolved live in the sparring and recorded above as Prior decisions. Single
-  genuinely-open item (DRY mechanism) carried to the spec-acceptance gate.
+- 2026-07-02: Spec drafted from the roadmap-sparring dogfood; most decisions
+  resolved live and recorded as Prior decisions.
+- 2026-07-02: In-session spec review (code-reviewer) returned REQUEST_CHANGES with
+  four blocking findings — all accepted: (1) the DRY cross-reference violated the
+  "skills don't know each other's internals" boundary → switched to a shared
+  reference both skills read; (2) added `skills/inception/SKILL.md` refactor to
+  scope; (3) specified the foundation-doc mechanism (record-onto-phase; `/plan`
+  authors + ratifies); (4) added the inception **template** workflow.md so the
+  feature propagates. Single genuinely-open item now: the shared reference's home.
