@@ -191,3 +191,6 @@ Verify is `none yet`; this list is the human milestone-QA script.
 - 2026-07-02: #107 — reframed the constitution prior-art principle to substrate
   framing + generalised the checkout clause to both loops; added one vision.md
   substrate line.
+- 2026-07-02: #108 — added the optional source-checkout step to /implement §3
+  (technique aid before the no-progress park; points to the constitution licensing
+  rule; escalates design forks; not for track:adhoc).

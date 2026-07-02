@@ -160,6 +160,21 @@ dispatch). Its steps:
 - **Implement (in `$wt`).** Read existing code first, reuse utilities, keep the
   change minimal. Follow the project `CLAUDE.md` and `docs/constitution.md` —
   those own the language-specific rules; this skill does not restate them.
+- **Source checkout when stuck on technique (optional, spec-backed only).** When a
+  supposedly simple, spec-backed change is struggling on **technique** (how to
+  build X, not what to build), you **MAY** check out an OSS repo the spec's
+  **Prior art** section links as a clonable code `Path:` (not an article), analyse
+  the specific implementation, harvest facts/approaches, then discard it — and
+  record any resulting decision in the spec's **Decision log**. Operationally: a
+  read-only, ephemeral clone outside the repo (e.g. `../loopkit-priorart/<project>`),
+  removed after. The binding licensing rule lives once in `docs/constitution.md`'s
+  prior-art principle — this step points to it, it does not restate it.
+  **Boundaries:** a **technique** aid tried **before** the
+  Verify no-progress park (below) — it never replaces the identical-failure-twice
+  park; a genuine **design** fork still escalates to planning (`needs:planning`,
+  §4), never resolved by reading OSS; and it does **not** apply to a `track:adhoc`
+  issue (no spec, hence no linked prior art). Proportional: only when it unsticks a
+  real technical struggle, not routinely.
 - **Verify.** Run the contract's **Verify** command after every change set; fix
   until green. Run **Test** if the project has one, and **Build** before opening
   an app-affecting PR. **No-progress rule:** the identical failure twice in a row
