@@ -61,8 +61,8 @@ no schedulers. You stay the engineer; the loop does the typing.
 
 ### In
 
-- The four loop skills (inception, plan, implement, design) plus the proportional
-  dial (full-spec / living-spec / fast-lane).
+- The five loop skills (inception, plan, implement, design, roadmap) plus the
+  proportional dial (full-spec / living-spec / fast-lane).
 - An optional, tool-agnostic design phase inside the planning cycle: for a
   UI-surface change a design is delivered or produced, becomes part of the spec
   package, and is reviewed at the spec-acceptance gate — non-UI work skips it.
