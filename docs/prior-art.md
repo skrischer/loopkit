@@ -491,3 +491,50 @@ earns its place.
   its Proposed/Accepted/Deprecated/Superseded status headers + append-only log clash
   with loopkit's "specs carry no lifecycle state / no DRAFT-READY" rule. loopkit's
   accepted-state is the merge + git history, not a status marker.
+
+## Structural verification of a Claude Code plugin — reuse the native validator (feature: structural-verify)
+
+loopkit ships `Verify: none`, so every change is checked only at the milestone-QA
+gate. The idea "add a structural Verify (JSON validity + SKILL.md frontmatter)"
+survives the existence check only in a SHARPENED form: Claude Code already ships
+the validator, so loopkit should REUSE it, not hand-roll one — which also keeps
+the constitution's "Runtime = Claude Code + gh + git, no language runtime, no
+package manager" intact (no npm / ajv / python dependency). No foundation-doc
+impact: the native validator fits the existing runtime.
+
+### Claude Code `claude plugin validate` / `/plugin validate` — the native validator
+
+- Path: https://code.claude.com/docs/en/plugin-marketplaces
+- License: n/a (first-party)
+- Verdict: reuse — validates `plugin.json` + `marketplace.json` (JSON + schema),
+  skill/agent/command frontmatter, duplicate plugin names, and source path
+  traversal; runs against a plugin dir or a marketplace dir. Exactly loopkit's
+  desired structural invariants, already shipped with the runtime.
+- Date: 2026-07-02
+- Notes: ADOPT — set loopkit's Verify command to `claude plugin validate` (+ a thin
+  shell/git assertion for loopkit-specific invariants it does not cover); wire it
+  into the per-PR and milestone-QA gates. AVOID — hand-rolling a JSON/frontmatter
+  validator or pulling in npm/ajv/python (breaks the no-package-manager runtime).
+
+### hesreallyhim/claude-code-json-schema — unofficial manifest schemas (reference)
+
+- Path: https://github.com/hesreallyhim/claude-code-json-schema
+- License: unverified (OSS)
+- Verdict: reference-only — comprehensive JSON Schemas for `plugin.json` /
+  `marketplace.json`, meant for editor/IDE integration; a documentation-grade
+  fallback if the native validator is unavailable in some context.
+- Date: 2026-07-02
+- Notes: ADOPT (reference) — the schema shapes as documentation. AVOID — depending
+  on it at runtime (needs a JSON-Schema engine → a package manager).
+
+### Claude Code issue #25380 — frontmatter validator rejects extended fields (caution)
+
+- Path: https://github.com/anthropics/claude-code/issues/25380
+- License: n/a (issue)
+- Verdict: avoid (as a blind dependency) — the SKILL.md validator recognizes only
+  Agent-Skills standard fields and rejects Claude Code extended frontmatter; a
+  known limitation to scope around.
+- Date: 2026-07-02
+- Notes: ADOPT — validate the required fields (`name`, `description`; `name` matches
+  the folder) and treat extended-field warnings as non-fatal. AVOID — failing Verify
+  on extended-frontmatter false-positives until the issue is resolved.
