@@ -65,6 +65,12 @@ differentiation, idea harvest), the ASK-first research-mode choice
 - **This is the sparring.** Apply the challenge lens as an interactive dialog:
   challenge the idea and sharpen it *with* the human using the findings — what to
   adopt, what to avoid, the sources behind each. Not a gate, a conversation.
+- **A design-shaped idea MAY be sketched.** When the idea turns on a flow, state
+  machine, architecture, UI, or concept, the sparring may draw an **exploratory**
+  visualisation to sharpen it (per `skills/shared/iteration-steps.md`) — a dialog
+  aid, no new gate. The durable, reviewed design artifact is deferred to that
+  phase's `/loopkit:plan` cycle (referenced by the spec, reviewed at
+  spec-acceptance); the roadmap seed commits no design artifact.
 - **Research mode is ASKED per idea** (per the shared reference's ASK-first
   choice) — default to the cheapest mode that settles the idea; the reference
   details when `none` applies and `deep-research`'s ~100-subagent fan-out cost,
