@@ -217,7 +217,9 @@ destructive database commands).
 
 Three attended interactive sessions, synchronized only through GitHub state — no
 headless mode, no API keys, no detached schedulers. Start each in its own
-terminal from the main checkout:
+terminal from the main checkout. `/loop` wraps only the two recurring
+queue-draining loops (plan, implement); `/loopkit:roadmap` is invoked directly,
+per idea:
 
 - Roadmap loop (idea sparring):
 
