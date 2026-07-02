@@ -111,7 +111,7 @@ Reference `docs/constitution.md` / `docs/architecture.md` rather than restating.
 | `/loopkit:plan` multi-phase loop processes the **human-named** sequence, writing each new milestone's `Depends on milestone:` as it goes (nothing pre-existing to order by on a first-time batch) | Preserves "never auto-picks"; the milestone-level edge is authored during the batch, not read from thin air | 2026-07-02 |
 | `/loopkit:roadmap` (generative idea-sparring, seeds NEW phases) and `/loopkit:inception --here` (readiness audit/repair against the contract) are complementary, not overlapping; inception's existing prior-art↔roadmap gap-closure stays a repair path | Two distinct jobs; avoids collapsing the new front door into the audit sweep | 2026-07-02 |
 | roadmap counted as a loop skill — "five loop skills (inception, plan, implement, design, roadmap)" across all mentions | Producer-side loop skill in the same family; count is descriptive | 2026-07-02 |
-| OPEN — the shared reference's home + naming (e.g. a new `skills/shared/…` steps file vs. another location that keeps it out of any single skill's internals) | resolved at the spec-acceptance gate | — |
+| OPEN — the shared reference's home + naming: a new `skills/shared/…` steps file shipping with the plugin (leading option) vs. another skills-space location. NOT `docs/workflow.md` — `docs/architecture.md`'s "Where new code goes" nominally points cross-skill behavior there, but that file is a per-project parameter contract inception copies fresh into each project; invariant plugin methodology (the step prose) would be a category mismatch | resolved at the spec-acceptance gate | — |
 
 ## Tracking
 
