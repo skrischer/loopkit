@@ -32,10 +32,10 @@ When the decision the harvest surfaces is **design-shaped** — a flow, a state
 machine, an architecture, a UI, or a concept — an **exploratory** visualisation
 MAY be sketched right here to settle it (e.g. "how did others build a date-range
 picker" -> sketch the variants -> pick one). This sketch is a sparring aid, NOT
-the durable artifact: it is never committed by the roadmap seed. The durable,
-reviewed design is produced later in that phase's `/loopkit:plan` cycle
-(referenced by the spec, reviewed at spec-acceptance) — the sparring is a dialog,
-not a gate.
+the durable artifact: it is never committed here (no roadmap seed, no inception
+bootstrap commits it). The durable, reviewed design is produced later in the
+`/loopkit:plan` cycle of whichever phase covers it (referenced by the spec,
+reviewed at spec-acceptance) — the sparring is a dialog, not a gate.
 
 **Research mode — ASK, never assume.** Present the choice before researching:
 
