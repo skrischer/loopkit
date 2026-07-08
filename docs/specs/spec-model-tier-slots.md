@@ -134,6 +134,7 @@ review kept top-tier.
 | A cheaper implementer tier degrades output quality | the tier is per-project config the maintainer sets and can revert to `inherit`; the review gate still runs and must return `APPROVE` |
 | `CLAUDE_CODE_SUBAGENT_MODEL` silently overrides the routing, confusing debugging | the skills document the override explicitly as a foot-gun |
 | The reviewer tier accidentally downgrades the spec-acceptance review | the carve-out is explicit in `skills/plan/SKILL.md`: the spec gate review is never downgraded |
+| A PR is mis-labelled "no-source-change" (a real behavior change hidden under the cheap reviewer) | scope the cheaper tier to a diff touching only `docs/`, templates, or `*.md` — any source/config touch keeps the full reviewer; when in doubt, use the full tier (the default is never cheaper) |
 | Model names drift as models churn | they live only in the contract (one project-local edit), never in the skills — exactly the Verify-command precedent |
 
 ## Decision log
