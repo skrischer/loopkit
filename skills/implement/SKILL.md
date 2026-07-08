@@ -8,8 +8,8 @@ description: "Orchestrate one milestone end-to-end — pointed at a milestone, b
 Orchestrates a whole milestone to merged PRs using plain `git` + `gh`,
 parameterized by **`docs/workflow.md`** (the workflow contract from
 `/loopkit:inception`: repo, base branch, board, worktree convention,
-Bootstrap/Verify/Test/Build commands, gates, loop rules). Never hardcode those —
-read the contract. If `docs/workflow.md` is missing, stop and tell the user to
+Bootstrap/Verify/Test/Build commands, the OPTIONAL role->tier map, gates, loop
+rules). Never hardcode those — read the contract. If `docs/workflow.md` is missing, stop and tell the user to
 run `/loopkit:inception` first.
 
 **The unit of orchestration is one milestone.** Pointed at a milestone, this
@@ -26,6 +26,16 @@ coordination and no claim arbitration of any kind.
 gate, and merge — all without pausing. **The one human stop is the milestone QA
 gate**, run once the milestone's issues are all closed. A parked issue does not
 stall the orchestrator (see §4).
+
+**Model-tier routing (OPTIONAL).** `docs/workflow.md` MAY map roles to model
+tiers (`orchestrator` / `implementer` / `reviewer`); the field is OPTIONAL and
+every role defaults to **`inherit`** when it is absent or a role is unset — with
+no field the loop runs exactly as today. The orchestrator is **not** an
+Agent-dispatched subagent, so it stays the **session model** (unchanged); only
+the `implementer` (§2 dispatch) and `reviewer` (§3 review gate) tiers are passed
+to the **native Agent-tool `model` selection** — reuse it, build nothing.
+Foot-gun: the `CLAUDE_CODE_SUBAGENT_MODEL` env var **globally overrides** all
+per-role routing.
 
 ## Entry — what to orchestrate
 
@@ -126,7 +136,9 @@ escalated (`needs:planning`), parked (`blocked:human`), or cross-milestone-block
 2. **Dispatch each frontier issue as a parallel in-session subagent** via the
    **Agent tool** (subscription-auth; **never** `claude -p`, never a
    detached/headless process). One subagent implements **exactly one** issue
-   end-to-end per the contract in §3. Set each dispatched issue's board status to
+   end-to-end per the contract in §3. Pass the contract's **`implementer`** tier
+   as the subagent's Agent-tool `model` (default `inherit`). Set each dispatched
+   issue's board status to
    `In Progress` for human visibility (it is **not** a lock). Same-file issues are
    serialized by their `Depends on:` lines, so a truly-unblocked frontier never has
    two subagents editing the same file. (Rolling dispatch — re-dispatching as each
@@ -284,9 +296,14 @@ dispatch). Its steps:
   `gh pr create --base "$base"` with a body restating the change, the
   verification done, and `Closes #<n>`.
 - **Review gate (in-session, machine gate).** Review the branch with a **fresh
-  context via the Agent tool** (`general-purpose` or `code-reviewer`), seeded with
+  context via the Agent tool** (`general-purpose` or `code-reviewer`) — pass the
+  contract's **`reviewer`** tier as its `model` (default `inherit`) — seeded with
   the diff (`git -C "$wt" diff "$base"...HEAD`) and the constitution/CLAUDE.md
-  rules. Ask for a verdict whose first line is `VERDICT: APPROVE` or
+  rules. **No-source-change exception:** when the PR diff touches **only**
+  `docs/`, templates, or `*.md` (no source or config), this review MAY drop to
+  the cheaper **`implementer`** tier; **any** source/config touch keeps the full
+  **`reviewer`** tier, and **when in doubt use the full tier** (the default is
+  never cheaper). Ask for a verdict whose first line is `VERDICT: APPROVE` or
   `VERDICT: REQUEST_CHANGES`, with findings. The Agent tool runs in-session —
   never shell out to a billed CLI. On `REQUEST_CHANGES`, address the findings
   (back to Implement) and push the fix, then re-review; this `REQUEST_CHANGES` ->
