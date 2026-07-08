@@ -221,12 +221,24 @@ second human stop.
 ## 7. Milestone, issues, board (only AFTER the spec merges)
 
 - The spec path must resolve on the **default branch**, so it must be merged
-  first. Then create the milestone and one issue per implementable step:
+  first. Then create the milestone and one issue per implementable step.
+  **Shell-hygiene (`docs/constitution.md` trust boundary):** never interpolate
+  scope/step/spec text — read from GitHub or the scope argument — into a
+  double-quoted `gh` string; backticks / `$()` / embedded quotes in it break or
+  execute the command. Bind titles through a shell variable and pass each body
+  by file reference (`--body-file`, `-F field=@file`) — never inline it:
   ```
-  gh api repos/:owner/:repo/milestones -f title="<Milestone>" \
-    -f description="Design: docs/specs/spec-<scope>.md\nHuman prerequisites: <delivered | summary>\nDepends on milestone: #<n>[, #<m>] | none"
-  gh issue create --title "[<scope>] <step>" --milestone "<Milestone>" \
-    --body "Goal: ...\nAcceptance:\n- [ ] ...\nDepends on: #N\n\nSpec: docs/specs/spec-<scope>.md"
+  # write bodies to temp files (only variable expansion, no untrusted text
+  # ever lands in the command string), then reference them by path
+  ms_body=$(mktemp); issue_body=$(mktemp)
+  printf '%s\n' "Design: docs/specs/spec-$scope.md" \
+    "Human prerequisites: <delivered | summary>" \
+    "Depends on milestone: #<n>[, #<m>] | none" >"$ms_body"
+  gh api repos/:owner/:repo/milestones -f title="$ms_title" -F description=@"$ms_body"
+
+  printf '%s\n' "Goal: ..." "Acceptance:" "- [ ] ..." "Depends on: #N" "" \
+    "Spec: docs/specs/spec-$scope.md" >"$issue_body"
+  gh issue create --title "$issue_title" --milestone "$ms_title" --body-file "$issue_body"
   ```
 - One issue per step, each with a `Goal:` line and an `Acceptance:` checklist
   mirroring the spec's Verification.
