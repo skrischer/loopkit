@@ -185,6 +185,10 @@ asking where you can:
   - **Build** — the full check for app-affecting changes.
 - **QA-gate default** — the check type for the milestone QA gate (review /
   UI check / smoke test).
+- **Model tiers (OPTIONAL)** — if the project routes roles to model tiers, fill
+  the role->tier field (orchestrator / implementer / reviewer); per-project data
+  like the Verify command. Absent or a role unset -> `inherit`. Model names live
+  only in the contract, never in skill prose.
 - Worktree convention, branch/spec naming, issue conventions, gates, autonomy,
   and the loop prompts are fixed by the template — leave them as-is and fill
   the placeholders (repo name, iteration ceiling).
@@ -289,6 +293,8 @@ produced the gap report in Step 0):
 - [ ] Project board exists with `Todo` / `In Progress` / `Done`, and its
       field-ID recipe (Status field id + option ids) is recorded in the contract
 - [ ] `docs/workflow.md` complete — no placeholders left
+- [ ] Model tiers (OPTIONAL) — if the project routes roles to tiers, the
+      role->tier field is filled; else absent (default `inherit`)
 - [ ] `docs/design.md` complete (design-surface project) — no placeholders left;
       or recorded `none` (neither surface, no file)
 - [ ] Every roadmap phase has prior-art coverage to seed its spec (or an explicit

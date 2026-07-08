@@ -58,6 +58,18 @@ green. Run Build additionally before opening an app-affecting PR. While Test is
 `none yet`, every acceptance item no machine check covers is verified at the
 human milestone-QA gate instead.
 
+## Model tiers (OPTIONAL)
+
+Role -> model tier for the native subagent model selection the loops fan out
+with:
+
+- orchestrator: `<orchestrator-tier>`
+- implementer: `<implementer-tier>`
+- reviewer: `<reviewer-tier>`
+
+OPTIONAL — default `inherit` when the field is absent or a role is unset; model
+names live only here, never in skill prose.
+
 ## Branch and spec naming
 
 - Branches: `feat/<scope>`, `fix/<scope>`, `chore/<scope>`, `docs/<scope>`, `refactor/<scope>`.
