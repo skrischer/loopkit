@@ -8,12 +8,16 @@ GitHub issues, milestones, and a project board as the mandatory state machine.
   architecture, roadmap, workflow contract, project board, permission
   settings, CLAUDE.md wiring. On existing projects (`--here`) it runs as a
   loop-readiness check and closes only the gaps. Idempotent.
-- `/loopkit:plan` — one planning cycle: readiness -> `READY` spec (incl. human
+- `/loopkit:plan` — one planning cycle: readiness -> spec (incl. human
   prerequisites) -> milestone + issues with `Depends on:` edges + board
-  entries -> roadmap update. One human stop: the spec-acceptance gate.
-- `/loopkit:implement` — one issue: select/claim -> bootstrapped worktree ->
-  implement -> verify -> PR -> in-session agent review -> autonomous merge.
-  One human stop: the milestone QA gate, when a milestone completes.
+  entries -> roadmap update. One human stop: the spec-acceptance gate (the
+  merge is the acceptance — specs carry no lifecycle marker).
+- `/loopkit:implement` — orchestrate one milestone: build the issue DAG from
+  the `Depends on:` edges and fan out in-session subagents along the unblocked
+  frontier -> bootstrapped worktree -> implement -> verify -> PR -> in-session
+  agent review -> autonomous merge. Ownership, not claiming — the orchestrator
+  is the sole dispatcher. One human stop: the milestone QA gate. Also drives a
+  single issue or a `track:adhoc` fast-lane issue solo.
 - `/loopkit:design` — optional planning-time design step: reads `docs/design.md`,
   accepts or produces a design, hands off one committed file referenced by the
   spec and reviewed at the spec-acceptance gate. Skipped for non-UI work.
@@ -28,7 +32,7 @@ Two attended interactive Claude Code sessions (subscription auth — no headless
 mode, no API keys, no detached schedulers), synchronized only through GitHub:
 
 ```
-/loop /loopkit:plan ...        # producer: roadmap -> READY specs -> issues
+/loop /loopkit:plan ...        # producer: roadmap -> merged specs -> issues
 /loop /loopkit:implement ...   # consumer: unblocked Todo issues -> merged PRs
 ```
 
