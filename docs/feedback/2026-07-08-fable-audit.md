@@ -459,7 +459,34 @@ the autonomy dial behind D1 + a constitution amendment.**
 
 ---
 
-## Open adjudications (for the human, not decided here)
+## Open adjudications
+
+**Update 2026-07-08 — four resolved in-session (research + maintainer decision):**
+
+1. **`/batch` vs Dynamic Workflows** → **resolved.** Docs confirm `/batch` is not
+   deprecated and remains the native worktree-isolated fan-out primitive; Dynamic
+   Workflows is an additive larger-scale primitive, not a successor. loopkit's
+   single-subagent review already reuses a native primitive — reuse-compliant.
+   `repositioning` is unblocked. (Note only: a first-party adversarial-verify
+   pattern — "skeptic persona subagent" — exists and would fit *future*
+   milestone-wide QA, no current conflict.)
+2. **Autonomy dial** → **decided: keep exactly two hard gates, defer the dial.**
+   `gate-evidence` makes today's de-facto prompt-skipping auditable instead (verdict,
+   incl. explicit "waived", posted before the archive PR merges). No constitution
+   amendment pursued now.
+3. **German-diagram exception** → **decided: remove (enforce English-only).** The
+   SVG-vs-Mermaid *medium* stays open, deferred into `foundation-dedup`/`design-coverage`.
+4. **Unscoped `bypassPermissions`** → **resolved: fixable, not a harness limit.** A
+   permission *mode* is session-state, so global `defaultMode` genuinely cannot scope
+   to a skill — but per-skill `PreToolUse` frontmatter hooks (native, scoped to the
+   skill lifecycle, auto-cleaned) grant the needed autonomous actions without a global
+   bypass. `permission-template-hardening` re-scoped to build this; open spec
+   sub-question: hook cleanup under parallel wave fan-out.
+
+Genuinely still open: the SVG-vs-Mermaid medium (#3 above), and the adhoc auto-pick
+trust rule (#5 below).
+
+_Originally logged as open (for the record):_
 
 1. **`/batch` vs Dynamic Workflows** (was F3). Is `/batch` still the current
    fan-out primitive to reuse, or does Claude Code Dynamic Workflows ("use a
