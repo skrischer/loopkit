@@ -229,20 +229,24 @@ dispatch). Its steps:
 
   **First check `$wt` itself, before any `git worktree add`.** Because `$wt` is a
   deterministic function of the branch, a crash mid-dispatch usually leaves the old
-  worktree still registered there (the §4.5 sweep runs only after the frontier
-  empties, never as a pre-flight), so a blind `add` would error `'$wt' already
-  exists` and re-collide — the very failure this step exists to prevent. Consult
-  `git worktree list --porcelain`: a **clean** worktree already at `$wt` for this
-  branch is reused directly (skip `add`, resume by work state above); a **dirty or
-  foreign** one at `$wt` is the ambiguous case -> **park `blocked:human`**, never
-  `--force`. Only when `$wt` is free do you add — fresh (no branch/PR) with `-b`, or
-  re-attaching an existing branch **without** `-b`:
+  worktree still there (the §4.5 sweep runs only after the frontier empties, never
+  as a pre-flight), so a blind `add` would error `'$wt' already exists` and
+  re-collide — the very failure this step exists to prevent. Test the path
+  directly with `[ -e "$wt" ]` (a plain existence test on the relative path — do
+  **not** `grep` for `$wt` in `git worktree list`, whose output is canonicalised to
+  absolute paths that the relative `$wt` never matches): if `$wt` exists and its
+  tree is **clean** for this branch (`git -C "$wt" status --porcelain` empty, HEAD
+  on `<branch>`), reuse it directly (skip `add`, resume by work state above); if it
+  is **dirty or a foreign/other branch**, that is the ambiguous case ->
+  **park `blocked:human`**, never `--force`. Only when `$wt` does not exist do you
+  add — fresh (no branch/PR) with `-b`, or re-attaching an existing branch
+  **without** `-b`:
   ```
   base=<base branch from workflow.md>
   wt=../<repo>-worktrees/<branch-dashes>
-  git worktree list --porcelain | grep -qF "$wt" && echo "worktree present -> reuse/park, do not add"
-  git worktree add "$wt" -b <branch> "$base"   # fresh: no existing branch/PR and $wt free
-  git worktree add "$wt" <branch>               # re-attach an existing branch when $wt is free
+  if [ -e "$wt" ]; then echo "leftover worktree at $wt -> reuse if clean else park; never add over it"; fi
+  git worktree add "$wt" -b <branch> "$base"   # fresh: no existing branch/PR and $wt absent
+  git worktree add "$wt" <branch>               # re-attach an existing branch when $wt is absent
   ```
   Run the contract's **Bootstrap** command inside the worktree (deps + env) —
   verification cannot run in an un-bootstrapped worktree.
