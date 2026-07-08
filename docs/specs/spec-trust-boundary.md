@@ -13,10 +13,11 @@ instruction-following context in the loopkit skills.
 - [ ] `skills/plan/SKILL.md` constructs no `gh` command by interpolating
       scope/step/spec text unquoted into a shell string — GitHub-bound values
       are passed via safe parameter passing.
-- [ ] `skills/implement/SKILL.md` frames a `track:adhoc` issue body as an inert
-      request to plan against (not an executable contract), and loop-mode
-      auto-pick of an adhoc issue is gated on trusted authorship or explicit
-      human selection.
+- [ ] `skills/implement/SKILL.md` frames a `track:adhoc` issue body as fully
+      defining scope yet an inert request to plan against (not a licence to act),
+      and an externally-authored adhoc issue is excluded from loop-mode
+      auto-pick unless the author is trusted (author_association) or a human
+      explicitly selects it — a selection-time exclusion, not a new gate.
 - [ ] Verify passes; no new dependency, headless flag, scheduler, API key, or
       local state; the config-surface guard stays green.
 
@@ -30,9 +31,13 @@ instruction-following context in the loopkit skills.
 - Shell-hygiene in `skills/plan/SKILL.md` — the `gh` milestone/issue creation
   commands (~lines 225-229) must not interpolate scope/step/spec into a
   double-quoted string.
-- Read-discipline + a trusted-author / human-select gate for the `track:adhoc`
-  fast-lane in `skills/implement/SKILL.md` (the `track:adhoc fast-lane` section
-  and the Orient step, ~lines 44-54 and 130-136).
+- Read-discipline + a trusted-author / human-select **auto-pick eligibility rule**
+  (a selection-time exclusion, not a gate) for the `track:adhoc` fast-lane in
+  `skills/implement/SKILL.md` (the `track:adhoc fast-lane` section and the Orient
+  step, ~lines 44-54 and 130-136). When the implementer edits the "its body is
+  the whole contract" prose, it preserves the body's scope-defining role (no spec
+  exists) and adds the trust framing — it does not negate the "contract" language
+  wholesale.
 
 ### Out of scope
 
@@ -85,7 +90,8 @@ instruction-following context in the loopkit skills.
 | trust-boundary is a binding constitution principle (read-discipline + shell-hygiene + Rule of Two) | Meta Rule of Two via Willison; it is the hard predecessor of any autonomy-dial | 2026-07-08 |
 | No injection-detection / classification filter | Willison: detection is futile as the boundary; capability separation is the boundary | 2026-07-08 |
 | bypass / deny-list scoping excluded -> `permission-template-hardening` | a deny-list guards shell-exec only and cannot touch the instruction path; split kept from the 2026-07-08 audit | 2026-07-08 |
-| OPEN — `track:adhoc` auto-pick trust rule: author_association check (allow auto-pick for OWNER/MEMBER/COLLABORATOR) vs. human-select-only for externally-authored adhoc issues on public repos | resolved at the spec-acceptance gate | — |
+| `track:adhoc` auto-pick requires trusted authorship (author_association) **or** explicit human selection — the two combined, not a fork | Rule of Two applied: a trusted author removes the untrusted-input leg (auto-pick fine); everyone else keeps all three legs, so a human selects. The roadmap seed states this combined rule | 2026-07-08 |
+| OPEN — which `author_association` values count as trusted for auto-pick on a public repo (OWNER/MEMBER only, or also COLLABORATOR), or whether COLLABORATOR needs a second signal | resolved at the spec-acceptance gate | — |
 
 ## Tracking
 
@@ -101,8 +107,8 @@ instruction-following context in the loopkit skills.
 - [ ] `skills/plan/SKILL.md` no longer interpolates scope/step/spec into a
       double-quoted `gh -f`/`--body` string; a shell-hygiene rule is stated.
 - [ ] `skills/implement/SKILL.md` frames the adhoc body as an inert request and
-      gates auto-pick on trusted authorship / human selection per the gate
-      decision.
+      conditions auto-pick eligibility on trusted authorship / human selection
+      (a selection-time exclusion, not a gate) per the gate decision.
 - [ ] No diff introduces local state, an API key, a headless flag, or a
       scheduler (config-surface guard).
 
