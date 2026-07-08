@@ -39,17 +39,14 @@ Each one is checkable in review.
   cycle and is optional, triggered when a change has UI surface OR when a
   visualisation (a flow, a state machine, an architecture, a mental model) would
   materially clarify a decision — a change needing neither carries no design
-  artifact (proportional ceremony). It may be sketched exploratorily during the
-  roadmap/plan sparring, but the durable, reviewed artifact is produced in the
-  planning cycle and reviewed AT the spec-acceptance gate — sparring is a dialog,
-  not a gate. The mechanism reads the project's `docs/design.md` contract (the
-  `docs/workflow.md` sibling) and hardcodes no tool or medium (grep-verifiable).
-  Its durable form is a committed file that renders in the project's review
-  surface — a Mermaid diagram (GitHub-native), a committed SVG, an exported
-  image, or a tokens file — chosen per project in `docs/design.md` and referenced
-  from the spec or issue; an external-tool URL (a Figma/v0 share link) is NOT
-  durable state — the tool is an editor, never a second source of truth.
-  (grep-verifiable.)
+  artifact (proportional ceremony). Its durable, reviewed artifact is produced in
+  planning and reviewed AT the spec-acceptance gate (never a third gate). The
+  mechanism reads the project's `docs/design.md` contract (the `docs/workflow.md`
+  sibling) and hardcodes no tool or medium; the durable form is a committed file
+  chosen per project there and referenced from the spec or issue — never an
+  external-tool URL (a Figma/v0 share link), since the tool is an editor, not a
+  second source of truth. `docs/design.md` (and its template) own the medium
+  options and the sparring-vs-gate mechanism. (grep-verifiable.)
 - **Dependency representation at two levels.** Milestones carry depends-on info;
   issues carry `Depends on: #N`. The unblocked frontier (everything with no open
   dependency) is by definition the parallelizable set. Representation is the

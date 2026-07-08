@@ -50,7 +50,8 @@
    decision-clarifying visualisation: `/loopkit:design` delivers/produces a design
    per `docs/design.md`, committed as a file and referenced by the spec] ->
    in-session review -> **spec-acceptance gate (human, reviews the design too)** ->
-   merge -> milestone + issues with two-level `depends-on` -> roadmap links.
+   milestone + roadmap link on the spec branch -> merge -> issues with two-level
+   `depends-on`.
 4. **Implement cycle (orchestrator):** human points it at one milestone -> read
    spec + issues -> compute the issue DAG -> fan out in-session subagents along
    the frontier (each: worktree -> implement -> Verify -> review -> merge) ->

@@ -92,11 +92,10 @@ link.
   or asset dependency (the interpretation SVG inlines `system-ui` fallbacks).
 - Keep the source hand-editable — a diffable `.svg` a future worktree can open
   and amend, not a flattened export.
-- Language: loopkit's diagrams are authored in **German** for the maintainer's
-  comprehension — a deliberate, recorded exception to the constitution's
-  "all artifacts in English" convention, scoped to committed `.svg` diagrams
-  (the exemplar `loopkit-interpretation.svg` is German). Prose artifacts stay
-  English.
+- Language: **English**, per the binding constitution convention (all artifacts
+  in English) — diagrams included, no exception. (The exemplar
+  `loopkit-interpretation.svg` predates this and is still German; re-authoring it
+  to English is a tracked follow-up, not part of this contract.)
 
 ## Do's and Don'ts
 
