@@ -225,14 +225,24 @@ dispatch). Its steps:
     state matching no case above) -> **park `blocked:human`** (§4), never guess.
 
   "Branch exists with a **merged** PR" needs no case — a merge auto-closes the issue
-  (`Closes #<n>`), dropping it from the frontier before it can re-dispatch. With **no**
-  existing branch/PR (the common case) create the worktree fresh; to re-attach an
-  existing branch add the worktree **without** `-b`:
+  (`Closes #<n>`), dropping it from the frontier before it can re-dispatch.
+
+  **First check `$wt` itself, before any `git worktree add`.** Because `$wt` is a
+  deterministic function of the branch, a crash mid-dispatch usually leaves the old
+  worktree still registered there (the §4.5 sweep runs only after the frontier
+  empties, never as a pre-flight), so a blind `add` would error `'$wt' already
+  exists` and re-collide — the very failure this step exists to prevent. Consult
+  `git worktree list --porcelain`: a **clean** worktree already at `$wt` for this
+  branch is reused directly (skip `add`, resume by work state above); a **dirty or
+  foreign** one at `$wt` is the ambiguous case -> **park `blocked:human`**, never
+  `--force`. Only when `$wt` is free do you add — fresh (no branch/PR) with `-b`, or
+  re-attaching an existing branch **without** `-b`:
   ```
   base=<base branch from workflow.md>
   wt=../<repo>-worktrees/<branch-dashes>
-  git worktree add "$wt" -b <branch> "$base"   # fresh
-  git worktree add "$wt" <branch>               # re-attach an existing branch
+  git worktree list --porcelain | grep -qF "$wt" && echo "worktree present -> reuse/park, do not add"
+  git worktree add "$wt" -b <branch> "$base"   # fresh: no existing branch/PR and $wt free
+  git worktree add "$wt" <branch>               # re-attach an existing branch when $wt is free
   ```
   Run the contract's **Bootstrap** command inside the worktree (deps + env) —
   verification cannot run in an un-bootstrapped worktree.
