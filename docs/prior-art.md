@@ -978,3 +978,160 @@ project-config, exactly like the Verify command already in the contract.
   that `CLAUDE_CODE_SUBAGENT_MODEL` silently overrides all per-role routing. The
   cost story is real: routing a top-tier reviewer over the 44/86 no-behavior PRs
   (see `ceremony-overhead`) burned ~half of review spend on process PRs.
+
+## Release/ship phase — attended, GitHub-native release automation (feature: ship-skill)
+
+loopkit drives roadmap → plan → implement but has no finalization step: merged
+milestones do not become tagged, changelogged, published releases. Release
+automation is well-solved terrain, so the honest existence verdict is "wrap the
+existing tools via a contract, do not reimplement" — but every mainstream tool
+ships as a GitHub-Actions / CI release bot, which loopkit's no-scheduler /
+no-headless rule forbids. The loopkit-shaped answer is the attended, in-session
+`gh release create` + `git tag` mechanism (native, subscription-auth, no new
+dependency), driven by a per-project `docs/release.md` contract that names the
+versioning scheme, changelog source, and publish targets.
+
+### googleapis/release-please — the Release-PR (human-merge-when-ready) model
+
+- Path: https://github.com/googleapis/release-please
+- License: Apache-2.0 (verify)
+- Verdict: reference-only — maintains a running "Release PR" that accumulates
+  conventional-commit changes; the human merges it when ready to cut a release,
+  which tags + publishes. The human-gated shape maps directly onto loopkit's
+  attended model.
+- Date: 2026-07-08
+- Notes: ADOPT — the reviewable release artifact + the conventional-commits→semver
+  mapping (`fix:`→patch, `feat:`→minor, `!`→major); the human decides *when* to
+  release. AVOID — it runs only as a GitHub Action (a CI bot); loopkit reproduces
+  the same shape attended in-session via `gh`/`git`, no scheduler.
+
+### semantic-release — fully automated, commit-driven (the anti-pattern anchor)
+
+- Path: https://github.com/semantic-release/semantic-release
+- License: MIT (verify)
+- Verdict: reference-only (adversarial) — every merge to the release branch cuts a
+  release automatically with zero human interaction: the unattended,
+  non-proportional extreme loopkit's attended model exists to reject.
+- Date: 2026-07-08
+- Notes: ADOPT — the commit-message→version convention. AVOID —
+  release-on-every-merge autonomy (no human "when"); it is the release-phase
+  mirror of "ship while you sleep".
+
+### changesets — "the pause is the point" / intentional release
+
+- Path: https://github.com/changesets/changesets
+- License: MIT (verify)
+- Verdict: reference-only — a PR-based flow where the human writes a changeset file
+  describing user-facing impact; a bot surfaces release intent in review and
+  batches changes until you choose to release. Monorepo-native.
+- Date: 2026-07-08
+- Notes: ADOPT — the human-authored user-facing changelog intent made visible at
+  review time (attended + proportional; "the automation isn't the value, the pause
+  is"). AVOID — a mandatory per-change changeset artifact as fixed ceremony on a
+  small project (proportionality); the monorepo scope loopkit does not need.
+
+### goreleaser — config-file-as-contract, language-agnostic publisher
+
+- Path: https://goreleaser.com/ ; https://github.com/goreleaser/goreleaser
+- License: MIT (verify)
+- Verdict: reference-only — a single `.goreleaser.yaml` drives build + tag +
+  changelog + multi-target publish (GitHub/GitLab/Gitea Releases, Homebrew, Scoop,
+  Docker, package registries); "despite the name, supports Go, Python, Rust, Zig,
+  TypeScript".
+- Date: 2026-07-08
+- Notes: ADOPT — validates the **contract-as-file** pattern (`docs/release.md`
+  names the targets, exactly as `.goreleaser.yaml` does) and the tool-agnostic aim:
+  one declarative source, many publish backends. AVOID — bundling a build/compile
+  engine into loopkit; `/ship` wraps the project's own release tool via the
+  contract, it builds nothing itself.
+
+### Claude Code plugin marketplace release — loopkit's own self-ship path
+
+- Path: https://code.claude.com/docs/en/plugin-marketplaces ; starter analysis:
+  https://dev.to/nagell/build-your-own-claude-code-marketplace-scaffold-structure-and-auto-updates-4n3f
+- License: n/a (first-party docs) / article
+- Verdict: reuse — loopkit is itself a plugin; its `docs/release.md` content is:
+  bump `.claude-plugin/plugin.json` version (the field is optional but load-bearing
+  — set it so users only receive updates on a bump), sync `marketplace.json`,
+  update CHANGELOG, create a git tag matching the version, `gh release create`.
+  Version/tag/changelog mismatch is the #1 marketplace-rejection cause.
+- Date: 2026-07-08
+- Notes: ADOPT — the plugin.json ↔ marketplace.json ↔ tag consistency check as
+  loopkit's own ship contract, with `scripts/verify.sh` run pre-tag. AVOID — the
+  starter's Release-Please **GitHub-Actions** release bot (a scheduler/headless
+  surface the constitution forbids); loopkit does the bump + sync + tag attended
+  in-session.
+
+### `gh release create` + `git tag` — the native, CI-free mechanism
+
+- Path: https://cli.github.com/manual/gh_release_create
+- License: n/a (first-party)
+- Verdict: reuse — `gh release create` auto-creates the tag from the default branch
+  if absent, takes notes via `--generate-notes` (GitHub Release Notes API),
+  `-F notes.md`, or `--notes`, and runs fully non-interactively: the entire release
+  mechanism with no CI, no new dependency, under subscription auth.
+- Date: 2026-07-08
+- Notes: ADOPT — `gh`+`git` as the whole publish mechanism (the "reuse native
+  primitives" leg); this is what lets `/ship` stay attended and scheduler-free
+  while every mainstream tool needs a CI runner. Shell-hygiene: changelog text is
+  partly GitHub-sourced (commit/PR/issue text) — never interpolate it unquoted into
+  the `gh` call (cross-ref `trust-boundary`).
+
+### BMAD — the only SDD framework modelling the full lifecycle to deployment
+
+- Path: https://github.com/bmad-code-org/BMAD-METHOD (verify); assessed via the
+  2026 SDD landscape surveys (thebcms / marktechpost / medium comparisons)
+- License: unverified (OSS)
+- Verdict: reference-only — of the surveyed SDD frameworks (spec-kit, Kiro,
+  OpenSpec, BMAD) only BMAD models the lifecycle from requirements *through
+  deployment*; the others stop at implement. The release phase is largely white
+  space in agentic-dev methodology.
+- Date: 2026-07-08
+- Notes: ADOPT — completing loopkit's own lifecycle (roadmap → plan → implement →
+  ship) is a genuine differentiation, not a me-too. AVOID — BMAD's heavy
+  multi-agent role-play ceremony applied to the release step; loopkit keeps it
+  proportional (a one-liner ships via the fast-lane, a milestone via the full
+  contract).
+
+## Release contract bootstrap — inception authors the per-project release medium (feature: ship-inception-bootstrap)
+
+The release medium is project-specific (a plugin bumps plugin.json +
+marketplace.json; a library runs `npm publish`; a binary runs goreleaser; a docs
+site deploys), so `/ship` must read a per-project `docs/release.md` contract rather
+than hardcode a release path — exactly the pattern loopkit already proved for
+`docs/workflow.md` (the operational contract) and `docs/design.md` (the design
+medium). This concern generalizes that proven contract-bootstrap move to the
+release phase: inception authors `docs/release.md` at bootstrap from a
+project-agnostic template, and the `--here` readiness sweep detects when it is
+missing or stale.
+
+### Superdesign `DESIGN.md` + loopkit `docs/design.md` — the contract-bootstrap precedent
+
+- Path: `docs/design.md` + `skills/inception/SKILL.md` (this repo); cross-ref the
+  design-phase entry above (Superdesign DESIGN.md,
+  https://www.superdesign.dev/blog/what-is-design-md)
+- License: n/a (in-house) / OSS
+- Verdict: reuse — loopkit already bootstraps a tool-agnostic per-project contract
+  (`docs/design.md`) from inception with a shipped template and reads it from the
+  skill; `docs/release.md` is the same move for the release phase — no new
+  mechanism, replicate the design-contract bootstrap.
+- Date: 2026-07-08
+- Notes: ADOPT — the contract-file structure (names the tool, where artifacts
+  live, the review path, the handoff form) + the placeholder-intact template
+  asserted by `scripts/verify.sh`. AVOID — a second bootstrap inside `/ship`: a
+  missing `docs/release.md` routes to `inception --here`, exactly as a missing
+  `docs/design.md` does for `/design`.
+
+### github/spec-kit — command topology separates setup from iteration (cross-ref)
+
+- Path: cross-ref the roadmap-iteration entry above
+  (https://github.com/github/spec-kit)
+- License: unverified (MIT likely — verify)
+- Verdict: reference-only — spec-kit's split of the one-time project step from
+  per-feature iteration is the same reason the release *contract* is authored once
+  at inception while `/ship` *runs* per release. Direct precedent for keeping the
+  bootstrap in inception, not in the ship loop.
+- Date: 2026-07-08
+- Notes: ADOPT — bootstrap-once / run-many; the readiness sweep (inception
+  `--here`) owns detecting a missing contract. AVOID — regenerating the contract
+  per release (drift + a second source of truth).
