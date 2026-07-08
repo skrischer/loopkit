@@ -73,6 +73,49 @@ Two findings survived with a one-skeptic caveat worth recording:
 
 ---
 
+## Maintainer weighting (2026-07-08) — build-now core vs. catalogue
+
+Recorded here, NOT as a roadmap marker: the constitution bars a current-focus /
+status marker in `docs/roadmap.md` (grep-verifiable), so the catalogue stays
+marker-free and the human points `/plan` at the chosen rows. Verified-as-real ≠
+worth-building: the audit machinery was deliberately divergent (finder pools + a
+completeness critic that proposed *more*), so this value-weighting is the separate
+human step. Axis = anti-bloat: build what makes loopkit *smaller/more robust* plus
+one clear efficiency win; defer surface-adding seeds until a concrete pain earns
+them.
+
+**Build-now core:**
+- `implement-frontier-exits` — live infinite-re-dispatch bug, minimal surface.
+- `trust-boundary` — live `/plan` shell-hygiene defect + the adhoc instruction
+  surface; the principle itself is lean. Hard predecessor of any autonomy change.
+- README + settings-template fixes — pure correctness (`track:adhoc` fast-lane):
+  the "READY spec"/"select/claim" drift and the hardcoded `supabase db reset` in
+  the copied template.
+- `foundation-dedup` — *reduces* the permanently-loaded context (anti-bloat).
+- `ceremony-overhead` — *cuts* process-PRs ~3→1 (anti-bloat).
+- `model-tier-slots` — token/context + speed efficiency, optional contract field,
+  reuses native subagent model selection (low surface).
+- `implement-resume-safety` — the compaction/idempotency package only: resume
+  idempotency as a per-dispatch invariant (#1), wave-boundary `/compact` guidance
+  (#6), `--limit` (#4), field-ID recipe (#5). The native compactor is reused, not
+  reimplemented.
+
+**Deferred — kept in the catalogue as options, built only on concrete pain:**
+- `implement-conflict-recovery` (#2/#3, split out) — bites only on a genuine
+  parallel frontier over overlapping files; insurance, not a live pain on
+  serial/disjoint milestones.
+- `gate-evidence` — audit-trail/discipline, not a pain-solver for solo use; its
+  value lands when strangers read the state (launch-adjacent).
+- `design-coverage` — deferred for separate treatment; the prominent ceremony-creep
+  risk the audit itself flagged.
+- `prior-art-threading` — adds reads to the flow; optional.
+
+**Launch track — a separate strategic decision (only if/when you launch):**
+`repositioning`, `prior-art-backfill`, `launch-playbook`, `dogfood-untested-claims`.
+Not weighted here; `prior-art-backfill` must precede the other three.
+
+---
+
 ## Lens A — Positioning / external
 
 **Vision-substance verdict: the wedge holds, but it is not "attended".** Anthropic's
