@@ -901,3 +901,80 @@ session, so the duplication costs tokens on every loop iteration. Three
 drifting hard-limit enumerations (CLAUDE.md, docs/workflow.md, settings.json)
 name the same authority; docs/design.md declares a German-diagram exception the
 binding constitution does not sanction — ratify or remove.
+
+## State-machine trust boundary — untrusted GitHub text as instruction/shell (feature: trust-boundary)
+
+loopkit turns partly-untrusted GitHub-sourced strings into instructions for a
+privilege-granted autonomous agent and into shell commands, removing the human
+that normal GitHub use keeps between an untrusted channel and an action, while
+widening blast radius (commit/push/merge/exec, dependency installs, .env edits).
+Surfaced by the 2026-07-08 state-machine note (an external NONE-association
+account posted a malware `.zip` comment on issue #138) and settled by the
+2026-07-08 audit skill-sweep: the one genuine structural gap is the `track:adhoc`
+body treated as "the whole contract" and auto-picked to autonomous squash-merge
+with no author check and no QA gate; a live shell-hygiene defect exists at
+`skills/plan/SKILL.md:226-232` (unescaped interpolation into `gh` strings on the
+human-authored write path). The command-injection facet is latent (preventive)
+in `/implement` — branch names come from contract naming, PR/commit text is
+agent-authored. `settings.json` hard-limits cover only the crudest ops, not
+injection amplification.
+
+### Simon Willison — lethal trifecta, prompt-injection design patterns, Rule of Two
+
+- Path: https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/;
+  https://simonwillison.net/2025/Jun/13/prompt-injection-design-patterns/;
+  https://simonwillison.net/2025/Nov/2/new-prompt-injection-papers/;
+  https://simonwillison.net/2025/Sep/26/how-to-stop-ais-lethal-trifecta/;
+  https://simonwillison.net/2026/Jun/22/prompt-injection-as-role-confusion/
+- License: n/a (essays) — plus Meta "Agents Rule of Two" (via Willison 2025-11-02)
+- Verdict: reference-only — the canonical practitioner corpus on securing LLM
+  agents against prompt injection; directly applicable to a tool that reads issue
+  bodies/titles/comments and can commit/push/merge.
+- Date: 2026-07-08
+- Notes: ADOPT — **plan-then-execute / dual-LLM**: treat every issue/PR/comment/
+  bot field as an inert request, structurally unable to trigger a consequential
+  action (the `track:adhoc` body is a request to plan against, never an
+  executable contract); **shell-hygiene**: never interpolate a GitHub-sourced
+  string unquoted into a shell; **Rule of Two**: force a human gate when
+  untrusted-input + sensitive-access + external-comms coincide — which is exactly
+  why the autonomy dial must not pre-authorise a gate until this boundary lands;
+  keep the human-visible audit trail (GitHub state already provides it). AVOID as
+  futile — injection detection/classification filters ("99% is a failing grade"),
+  vendor "95–99% caught" claims, and trusting trained-in model resistance as *the*
+  boundary (even Jun-2026 Willison would not deploy where an injection could cause
+  irreversible action). The per-repo comment-deletion Action from the note's
+  sparring was discarded on purpose (repo hygiene is the target project's choice,
+  not a loopkit primitive) — do not ship it.
+
+## Model-tier-per-agent — role-to-tier routing in the contract (feature: model-tier-slots)
+
+The maintainer hand-prompts an Opus-orchestrates / Sonnet-implements /
+Opus-reviews split every run; nothing in the skills or `docs/workflow.md` encodes
+it, so `/implement` fans out orchestrator, per-issue subagent, and reviewer
+identically. Hardcoding literal model names into the skills would violate the
+"hardcodes no tool" principle and is maximally volatile (Opus 4.8 → Fable 5 churn
+already happened) — but the *roles* are stable and only the model filling each is
+project-config, exactly like the Verify command already in the contract.
+
+### Anthropic model-config — subagent resolution, opusplan; practitioner tier consensus
+
+- Path: https://code.claude.com/docs/en/model-config;
+  https://code.claude.com/docs/en/sub-agents; https://simonwillison.net/2026/Jul/3/
+- License: n/a (first-party docs + essay)
+- Verdict: reference-only — native subagent model selection already exists
+  (frontmatter `model`: alias / full-id / `inherit`, default `inherit`;
+  resolution order `CLAUDE_CODE_SUBAGENT_MODEL` env var > per-invocation param >
+  frontmatter > main conversation), and `opusplan` ships the plan-Opus /
+  execute-Sonnet split — so no mechanism needs building.
+- Date: 2026-07-08
+- Notes: ADOPT — an OPTIONAL `docs/workflow.md` field mapping role→tier
+  (orchestrator / implementer / reviewer), default `inherit` when absent, read by
+  the skills and passed to native subagent model selection; model names live only
+  in the per-project contract, never in tool-agnostic skill prose (the same class
+  as the "no external-tool URL as durable state" rule). Willison (2026-07-03)
+  found delegating the tier *decision* to the model (Haiku mechanical, Sonnet
+  implementation, top tier for judgment) beat a fixed rule — a variant worth an
+  option. AVOID — literal model names in the skill layer; and note the foot-gun
+  that `CLAUDE_CODE_SUBAGENT_MODEL` silently overrides all per-role routing. The
+  cost story is real: routing a top-tier reviewer over the 44/86 no-behavior PRs
+  (see `ceremony-overhead`) burned ~half of review spend on process PRs.
