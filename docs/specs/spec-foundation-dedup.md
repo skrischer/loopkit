@@ -120,9 +120,10 @@ the spec-acceptance gate.
 - [ ] Verify passes (`bash scripts/verify.sh`).
 - [ ] `docs/constitution.md` still asserts the design principle's binding core
       (optional / trigger / gate / reads design.md / no-hardcoded-tool /
-      committed-file-not-URL) grep-verifiably, but the medium enumeration now
-      lives in `docs/design.md` (grep: the Mermaid/SVG/image/tokens enumeration is
-      in design.md, not the constitution).
+      committed-file-not-URL) grep-verifiably, but the constitution no longer
+      enumerates media — the medium options live in `docs/design.md` + its
+      template (grep: the constitution's design principle names no specific
+      medium).
 - [ ] `docs/vision.md`'s design Scope bullet is a one-line pointer to the
       constitution; the other Scope bullets are intact.
 - [ ] `README.md` and `skills/inception/SKILL.md` no longer re-enumerate the full
