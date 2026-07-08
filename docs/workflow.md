@@ -55,6 +55,18 @@ truth, milestones and issues are created on GitHub from them.
 - Test: `none yet`.
 - Build: `none`.
 
+## Model tiers
+
+Role -> model tier for the native subagent model selection the loops fan out
+with (default `inherit` when a role is unset):
+
+- orchestrator: `opus` — top tier (the milestone session model).
+- implementer: `sonnet` — the cheaper per-issue tier.
+- reviewer: `opus` — top tier; a no-source-change PR diff (docs / config /
+  `*.md` only) may drop to a cheaper tier (`sonnet` / `haiku`).
+
+Model aliases live only here, never in skill prose.
+
 ## Branch and spec naming
 
 - Branches: `feat/<scope>`, `fix/<scope>`, `chore/<scope>`, `docs/<scope>`, `refactor/<scope>`.
