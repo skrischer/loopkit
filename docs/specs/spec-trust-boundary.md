@@ -91,7 +91,7 @@ instruction-following context in the loopkit skills.
 | No injection-detection / classification filter | Willison: detection is futile as the boundary; capability separation is the boundary | 2026-07-08 |
 | bypass / deny-list scoping excluded -> `permission-template-hardening` | a deny-list guards shell-exec only and cannot touch the instruction path; split kept from the 2026-07-08 audit | 2026-07-08 |
 | `track:adhoc` auto-pick requires trusted authorship (author_association) **or** explicit human selection — the two combined, not a fork | Rule of Two applied: a trusted author removes the untrusted-input leg (auto-pick fine); everyone else keeps all three legs, so a human selects. The roadmap seed states this combined rule | 2026-07-08 |
-| OPEN — which `author_association` values count as trusted for auto-pick on a public repo (OWNER/MEMBER only, or also COLLABORATOR), or whether COLLABORATOR needs a second signal | resolved at the spec-acceptance gate | — |
+| Trusted for adhoc auto-pick = `author_association` **OWNER or MEMBER** only; COLLABORATOR, CONTRIBUTOR and NONE require explicit human selection | Spec-acceptance gate 2026-07-08: on a public repo with no QA gate for the adhoc lane, OWNER/MEMBER is the proportional trust boundary — a compromised collaborator account cannot trigger an autonomous loop | 2026-07-08 |
 
 ## Tracking
 
@@ -125,3 +125,8 @@ instruction-following context in the loopkit skills.
 - 2026-07-08: Spec drafted from the `trust-boundary` roadmap seed (2026-07-08
   Fable audit). Foundation edit (the constitution principle) authored in this PR
   per the constitution corollary; ratified at the spec-acceptance gate.
+- 2026-07-08: Spec-acceptance gate — trusted authorship for `track:adhoc`
+  auto-pick set to `author_association` OWNER/MEMBER; COLLABORATOR and external
+  authors require explicit human selection. In-session review returned APPROVE
+  after three blocking findings were addressed (gate-count wording, the
+  false-open decision, shell-hygiene coverage of the write path).
