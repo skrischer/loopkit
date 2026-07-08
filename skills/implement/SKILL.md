@@ -272,9 +272,13 @@ dispatch). Its steps:
   until green. Run **Test** if the project has one, and **Build** before opening
   an app-affecting PR. **Bounded retry:** apply `docs/workflow.md`'s no-progress
   rule — a repeated failure stops and parks the issue (§4), never grinds.
-- **Commit, push, open the PR (no pause).** Commit with Conventional Commits; the
-  body references the spec (omit for a `track:adhoc` issue) and ends with
-  `Closes #<n>`. Stage specific files; never blind `git add -A`. Push via
+- **Commit, push, open the PR (no pause).** Before committing, record any decision
+  made during implementation in the spec's **Decision log** on this issue branch
+  (skip for a `track:adhoc` issue — no spec), so it rides the squash-merge instead
+  of being stranded on the branch `--delete-branch` removes. Commit with
+  Conventional Commits; the body references the spec (omit for a `track:adhoc`
+  issue) and ends with `Closes #<n>`. Stage specific files (the spec Decision-log
+  edit among them); never blind `git add -A`. Push via
   `git -C "$wt" push -u origin <branch>` (phrased this way it does not start with
   `git push`, bypassing any push-guard). Never push to the base branch. Then
   `gh pr create --base "$base"` with a body restating the change, the
@@ -297,8 +301,8 @@ dispatch). Its steps:
   git worktree remove "$wt"
   ```
   The merge auto-closes the issue (`Closes #<n>`); set its board status to `Done`
-  (visibility only — not a lock). Add any decisions made during implementation to
-  the spec's Decision log (skip for a `track:adhoc` issue).
+  (visibility only — not a lock). The spec Decision-log entry already rode in with
+  the merge (recorded pre-merge, above) — nothing to write here on a deleted branch.
 - **Clean up on the park/escalate paths too.** Before returning an escalation or
   a park (the issue does not merge, so the merge step above never runs), remove the
   issue's own worktree the same way — `git worktree remove "$wt"` if its tree is
@@ -403,7 +407,10 @@ branches survive into QA. Run the gate:
 - For checks a human must run, hand over the exact commands.
 - **STOP and wait for the human verdict.**
 
-On acceptance:
+On acceptance, first sweep any decision made during the milestone that a per-issue
+subagent did not record pre-merge into the spec's **Decision log** — this close-out
+is the **catch-all** so no decision is lost (for a full-spec milestone, before the
+spec moves to archive). Then:
 
 - **full-spec milestone:** move the spec to `docs/specs/archive/`, repoint links,
   update `docs/roadmap.md` (own `docs:` worktree + PR, merged autonomously), and
