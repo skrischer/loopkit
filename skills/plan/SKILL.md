@@ -1,6 +1,6 @@
 ---
 name: plan
-description: "Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop once per phase at the spec-acceptance gate (open decisions + prerequisites handover), merge autonomously (the merge is acceptance), then create the GitHub milestone, issues with dependencies, board entries, and update the roadmap. Loop-capable: without an argument it reports the roadmap's unplanned phases and asks the human which to plan (it does not auto-pick), and reports \"fully planned\" when none remains. Multi-phase: the human may name one phase or an ordered set; plan drives each as its own cycle in the named order, writing each new milestone's `Depends on milestone:` edge as it goes (it never auto-picks the set). Reads docs/workflow.md for project specifics."
+description: "Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop once per phase at the spec-acceptance gate (open decisions + prerequisites handover), then create the milestone and fold the roadmap link onto the spec branch, merge once (the merge is acceptance), and create issues with dependencies + board entries. Loop-capable: without an argument it reports the roadmap's unplanned phases and asks the human which to plan (it does not auto-pick), and reports \"fully planned\" when none remains. Multi-phase: the human may name one phase or an ordered set; plan drives each as its own cycle in the named order, writing each new milestone's `Depends on milestone:` edge as it goes (it never auto-picks the set). Reads docs/workflow.md for project specifics."
 ---
 
 # /loopkit:plan — drive one planning cycle to a merged spec + issues
@@ -20,8 +20,9 @@ This is the planning-side sibling to `/loopkit:implement`. Both read
 gates, and loop rules — never hardcode them. If `docs/workflow.md` is missing,
 stop and tell the user to run `/loopkit:inception` first.
 
-**Autonomy:** survey, draft the spec, open the PR, run the review, merge, and
-create milestone/issues/board entries autonomously. **The one human stop per
+**Autonomy:** survey, draft the spec, open the PR, run the review, create the
+milestone, fold the roadmap link onto the spec branch, merge, then create
+issues + board entries autonomously. **The one human stop per
 phase is the spec-acceptance gate** — the milestone gate: genuinely-open
 decisions (AskUserQuestion, never guess) plus the human-prerequisites handover
 (a multi-phase run stops once per phase, never a whole-run single stop). On
