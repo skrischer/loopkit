@@ -27,7 +27,9 @@ Each one is checkable in review.
   `--dangerously-skip-permissions`, an API key, or a scheduler/cron. Subagents
   run in-session, not headless. (grep-verifiable.)
 - **Specs carry no lifecycle state.** No `DRAFT`/`READY` header; "accepted" =
-  merged on the default branch with a milestone and issues.
+  merged on the default branch with a milestone and issues — the milestone is
+  created at acceptance, just before the merge, so the roadmap link rides the
+  accepted spec branch (one PR, not two).
 - **The roadmap carries no current-focus or status marker.** The human passes
   scope to the loops explicitly.
 - **Proportional ceremony.** Three tracks, each change uses exactly one:
