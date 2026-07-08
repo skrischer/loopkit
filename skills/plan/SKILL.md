@@ -200,7 +200,13 @@ second human stop.
   decision docs (`docs/constitution.md`, `docs/prior-art.md`, any sibling spec
   it builds on). Ask for a verdict whose first line is `VERDICT: APPROVE` or
   `VERDICT: REQUEST_CHANGES`, with blocking vs non-blocking findings. The Agent
-  tool runs in-session — never shell out to a billed CLI. Address the findings and
+  tool runs in-session — never shell out to a billed CLI. The review subagent's
+  model tier is read from `docs/workflow.md`'s OPTIONAL role->tier field
+  (`reviewer`; default `inherit` when absent) — no literal model name lives here.
+  **Carve-out: the spec-acceptance review ALWAYS stays top-tier — never downgraded
+  to a cheaper reviewer, even though a spec PR is a docs-only diff; it is the
+  planning-rigor checkpoint, so a "no-source-change -> cheaper reviewer" reading
+  never applies to this gate.** Address the findings and
   re-review; this `REQUEST_CHANGES` -> address -> re-review loop is **bounded by
   `docs/workflow.md`'s no-progress rule** — a repeated failure stops and parks
   (see If blocked), never grinds.
