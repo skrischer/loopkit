@@ -5,7 +5,8 @@ description: "Drive a single planning cycle end-to-end — survey readiness, sor
 
 # /loopkit:plan — drive one planning cycle to a merged spec + issues
 
-Orchestrates the readiness -> merged spec -> milestone + issues + board cycle.
+Orchestrates the readiness -> spec-acceptance gate (milestone + roadmap link) ->
+merge -> issues + board cycle.
 Specs are the **local single source of truth**; milestones and issues are
 created on GitHub from them. The argument is the scope to plan — one phase
 (`/loopkit:plan dashboard-kpis`) or an ordered set
