@@ -102,8 +102,8 @@ Each one is checkable in review.
   autonomous auto-pick and requires explicit human selection (a selection-time
   exclusion like `blocked:human`/`needs:planning`, NOT a third human gate — the
   two gates stay spec-acceptance and milestone-QA). This principle is the hard
-  predecessor of any pre-authorised-autonomy change. (grep-checkable.) (Evidence:
-  `docs/prior-art.md` — Willison lethal-trifecta / Rule of Two.)
+  predecessor of any pre-authorised-autonomy change. (grep-verifiable.)
+  (Evidence: `docs/prior-art.md` — Willison lethal-trifecta / Rule of Two.)
 
 ## Conventions
 
