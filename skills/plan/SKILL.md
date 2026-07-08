@@ -197,7 +197,10 @@ second human stop.
   decision docs (`docs/constitution.md`, `docs/prior-art.md`, any sibling spec
   it builds on). Ask for a verdict whose first line is `VERDICT: APPROVE` or
   `VERDICT: REQUEST_CHANGES`, with blocking vs non-blocking findings. The Agent
-  tool runs in-session — never shell out to a billed CLI. Address the findings.
+  tool runs in-session — never shell out to a billed CLI. Address the findings and
+  re-review; this `REQUEST_CHANGES` -> address -> re-review loop is **bounded by
+  `docs/workflow.md`'s no-progress rule** — a repeated failure stops and parks
+  (see If blocked), never grinds.
   For a scope with a design surface the design artifact the spec references (step
   3) is part of the spec package and is reviewed here with the rest of the spec —
   it is **not** a separate stop.

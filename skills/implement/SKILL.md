@@ -103,12 +103,22 @@ cycle.
   `blocked:human` **nor** a `needs:planning` label (both take an issue out of the
   frontier — `blocked:human` parks it, `needs:planning` escalates it to the
   planner; see §4).
+- **Frontier membership is a total function of issue state** — every **open**
+  issue is exactly one of: **unblocked** (as above), **dependency-blocked** (a
+  same-milestone `Depends on:` issue is still open), **cross-milestone-blocked**
+  (its same-milestone `Depends on:` issues are closed, but a `Depends on:` issue
+  in *another still-open milestone* is open — **derived, label-less**), **parked**
+  (`blocked:human`), or **escalated** (`needs:planning`). Only **unblocked** issues
+  dispatch; the other four are why the frontier can empty with open issues left,
+  and each routes to the §4 report — never back into the re-dispatch frontier (§2
+  terminal branch).
 
 ## 2. Wave-based fan-out (the core loop)
 
 Repeat **while the unblocked frontier is non-empty** — when it empties, the loop
-ends and the milestone is either done or only escalated (`needs:planning`) or
-parked (`blocked:human`) work remains (the branch after step 5):
+ends and the milestone is either done or has only non-unblocked work left:
+escalated (`needs:planning`), parked (`blocked:human`), or cross-milestone-blocked
+(§1 taxonomy; the terminal branch after step 5 routes on all of it):
 
 1. **Compute the current unblocked frontier** (§1).
 2. **Dispatch each frontier issue as a parallel in-session subagent** via the
@@ -131,10 +141,28 @@ parked (`blocked:human`) work remains (the branch after step 5):
    wave. The board may show `Todo`/`In Progress`/`Done` for human visibility, but
    it is **not** a claim or lock — ownership, not claiming, keeps waves correct.
 
+**Every dispatched issue resolves to exactly one terminal state** — merged /
+escalated (`needs:planning`) / parked (`blocked:human`) (§3 report-back). A
+dispatch that returns **none** — the issue is still open with no such label — is a
+**failed dispatch**: re-dispatch it **once** as a fresh subagent; if it again
+returns no terminal state, **auto-park it `blocked:human`** with a comment naming
+the failed-dispatch reason, which removes it from the unblocked frontier so it can
+never re-dispatch forever. This one-retry bookkeeping is **in-session/ephemeral**
+(the orchestrator's own wave-state memory) — **never** a durable marker or
+local-state file; GitHub stays the only durable state.
+
 When the frontier empties, run the **cleanup sweep (§4.5)** to retire any orphan
-worktrees and branches the waves left behind, then branch: if the milestone's
-issues are all closed (none escalated or parked), go to §5; if any issue is
-escalated (`needs:planning`) or parked (`blocked:human`), go to §4.
+worktrees and branches the waves left behind, then route on issue state (the §1
+total function) — **not** the old all-closed-vs-escalated/parked binary:
+
+- **All issues closed** (none escalated, parked, or cross-milestone-blocked) ->
+  **§5** (milestone QA gate).
+- **Any open issue remains** — escalated (`needs:planning`), parked
+  (`blocked:human`), **cross-milestone-blocked** (derived: its same-milestone
+  `Depends on:` issues are closed, but a `Depends on:` issue in another still-open
+  milestone is open), or a dependency-blocked dependent of one of these -> the
+  **§4** report. A cross-milestone-blocked issue routes here — **never** to §5
+  "all closed" and **never** back into the re-dispatch frontier.
 
 ## 3. Per-issue subagent contract (what each fan-out subagent does)
 
@@ -189,15 +217,15 @@ dispatch). Its steps:
   removed after. The binding licensing rule lives once in `docs/constitution.md`'s
   prior-art principle — this step points to it, it does not restate it.
   **Boundaries:** a **technique** aid tried **before** the
-  Verify no-progress park (below) — it never replaces the identical-failure-twice
-  park; a genuine **design** fork still escalates to planning (`needs:planning`,
+  Verify no-progress park (below) — it never replaces that no-progress park; a
+  genuine **design** fork still escalates to planning (`needs:planning`,
   §4), never resolved by reading OSS; and it does **not** apply to a `track:adhoc`
   issue (no spec, hence no linked prior art). Proportional: only when it unsticks a
   real technical struggle, not routinely.
 - **Verify.** Run the contract's **Verify** command after every change set; fix
   until green. Run **Test** if the project has one, and **Build** before opening
-  an app-affecting PR. **No-progress rule:** the identical failure twice in a row
-  -> stop grinding; park the issue (§4).
+  an app-affecting PR. **Bounded retry:** apply `docs/workflow.md`'s no-progress
+  rule — a repeated failure stops and parks the issue (§4), never grinds.
 - **Commit, push, open the PR (no pause).** Commit with Conventional Commits; the
   body references the spec (omit for a `track:adhoc` issue) and ends with
   `Closes #<n>`. Stage specific files; never blind `git add -A`. Push via
@@ -211,8 +239,10 @@ dispatch). Its steps:
   rules. Ask for a verdict whose first line is `VERDICT: APPROVE` or
   `VERDICT: REQUEST_CHANGES`, with findings. The Agent tool runs in-session —
   never shell out to a billed CLI. On `REQUEST_CHANGES`, address the findings
-  (back to Implement) and push the fix. Only an `APPROVE` (or explicit human
-  override) clears this gate.
+  (back to Implement) and push the fix, then re-review; this `REQUEST_CHANGES` ->
+  address -> re-review loop is **bounded by `docs/workflow.md`'s no-progress rule**
+  — a repeated failure stops and parks the issue (§4), never grinds. Only an
+  `APPROVE` (or explicit human override) clears this gate.
 - **Merge and clean up (autonomous — no human stop).** After `APPROVE` and green
   Verify, merge remote-first, then clean up:
   ```
@@ -231,8 +261,11 @@ dispatch). Its steps:
   §4.5). The branch holds no merged PR, so it is **not** deleted here.
 - **Report back** to the orchestrator: **merged** (issue closed), **escalated**
   (`needs:planning` — a design fork; issue number + the question), or **parked**
-  (`blocked:human` — a human prerequisite; issue number + reason). The subagent
-  never asks the human; it escalates or parks and returns.
+  (`blocked:human` — a human prerequisite; issue number + reason). These three are
+  the **only** terminal states; a return that is none of them — the issue left
+  open with no such label — is a **failed dispatch** the orchestrator retries once
+  then auto-parks `blocked:human` (§2). The subagent never asks the human; it
+  escalates or parks and returns.
 
 ## 4. Escalate or park, don't stall
 
@@ -248,8 +281,9 @@ A subagent takes an issue out of the frontier two ways, by **destination**:
   constitution / prior-art are in context. The implementer never asks the human
   directly and never guesses.
 - **`blocked:human` — a human prerequisite (routes to human delivery).** A blocker
-  only a human can clear: a secret, external provisioning. The no-progress rule
-  (the identical failure twice) also parks here. The subagent labels the issue
+  only a human can clear: a secret, external provisioning. A repeated failure under
+  `docs/workflow.md`'s no-progress rule also parks here, as does a failed dispatch
+  (§2). The subagent labels the issue
   `blocked:human`, comments exactly what is needed and where to deliver it, leaves
   the board at `Todo`, and returns the **park**. This is **not** a planning
   question — it does not route to `/loopkit:plan`.
@@ -261,11 +295,14 @@ In both cases the orchestrator then:
 - **Finishes the rest** of the reachable frontier (continue §2) — one escalated or
   parked issue never stalls the orchestrator.
 - At the end — after the frontier-empty cleanup sweep (§4.5) — **reports the
-  escalated and parked issues** (and their excluded dependents) **instead of
-  running the milestone-QA gate** — escalated and parked issues do **not** count
+  escalated, parked, and cross-milestone-blocked issues** (and their excluded
+  dependents) **instead of running the milestone-QA gate** — none of these count
   toward milestone completion, so a milestone carrying any is **not** complete.
-  List them with `gh issue list --label needs:planning` and
-  `gh issue list --label blocked:human`.
+  List escalated with `gh issue list --label needs:planning` and parked with
+  `gh issue list --label blocked:human`; **cross-milestone-blocked issues carry no
+  label** — **derive** them (open, same-milestone `Depends on:` closed, but a
+  `Depends on:` issue in another still-open milestone open) and list them
+  explicitly.
 
 Never implement workarounds; never add status markers to specs.
 
