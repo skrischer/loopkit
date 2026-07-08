@@ -90,7 +90,9 @@ cycle.
 ## 1. Build the milestone DAG
 
 - List the milestone's issues:
-  `gh issue list --milestone "<milestone>" --state all --json number,state,labels,body`.
+  `gh issue list --milestone "<milestone>" --state all --limit 200 --json number,state,labels,body`
+  (every `gh` list call carries an explicit `--limit` — no silent default
+  truncation of the frontier the loop depends on).
 - Read the milestone's track: a **living-spec** milestone carries a
   `Track: living-spec` line in its description
   (`gh api repos/:owner/:repo/milestones/<n> --jq .description`); a **full-spec**
@@ -132,7 +134,8 @@ escalated (`needs:planning`), parked (`blocked:human`), or cross-milestone-block
    coordination.)
 3. **Await the whole batch** of subagents.
 4. **Re-read GitHub issue state and fast-forward local base** — issues just merged
-   are now closed (`gh issue list --milestone "<milestone>" --state all ...`); then
+   are now closed
+   (`gh issue list --milestone "<milestone>" --state all --limit 200 ...`); then
    fast-forward the orchestrator's main checkout
    (`git checkout <base> && git pull --ff-only`) so the next wave's worktrees branch
    off the merged state — a wave-N issue that `Depends on:` a wave-(N-1) merge must
@@ -140,6 +143,15 @@ escalated (`needs:planning`), parked (`blocked:human`), or cross-milestone-block
 5. **Recompute the next frontier** (newly-unblocked issues) and dispatch the next
    wave. The board may show `Todo`/`In Progress`/`Done` for human visibility, but
    it is **not** a claim or lock — ownership, not claiming, keeps waves correct.
+
+**Wave boundary — the only safe `/compact` point.** After step 3 (**await done**)
+and step 4 (GitHub re-read), before step 5 recomputes, sits a hard **barrier**: no
+subagent is live and all state is re-derivable from GitHub. This is the **ONLY**
+place the orchestrator MAY invoke the native `/compact` — **never mid-wave**, which
+would drop live subagent context. When context runs high it MAY `/compact` here,
+relying on the target `CLAUDE.md`'s **`# Compact Instructions`** section (written by
+inception) to preserve the milestone target + unblocked frontier — both re-derivable
+from GitHub. Reuse the native compactor; add no such section here.
 
 **Every dispatched issue resolves to exactly one terminal state** — merged /
 escalated (`needs:planning`) / parked (`blocked:human`) (§3 report-back). A
@@ -194,13 +206,33 @@ dispatch). Its steps:
   implementer never resolves it itself. For a `track:adhoc` issue there is no
   spec to reopen; escalate it `needs:planning` the same way (the planner gives it
   a spec or tightens its body).
-- **Branch + worktree.** Pick a branch from the contract's naming
-  (`feat/<scope>`, `fix/<scope>`, `chore/<scope>`). Always work in a worktree —
-  never the main checkout:
+- **Branch + worktree (idempotent — a per-dispatch invariant).** Pick a branch
+  from the contract's naming (`feat/<scope>`, `fix/<scope>`, `chore/<scope>`).
+  Always work in a worktree — never the main checkout. **Before**
+  `git worktree add -b <branch>`, re-derive the branch's **work state from GitHub +
+  the branch** (never a local resume file) and **re-attach instead of colliding**.
+  This runs **every dispatch**, not only on an explicit resume, so it also catches a
+  **post-compaction re-dispatch** mid-milestone. Check for an open PR
+  (`gh pr list --head <branch> --limit 5`) and an existing local/remote branch, and
+  resume at the stage matching that work state:
+  - **open PR for the issue** -> skip Implement; continue from the **Review gate ->
+    Merge** stage (below) on the existing branch.
+  - **branch with commits/diff but no PR** -> re-attach and continue from **Verify
+    -> push -> open the PR**.
+  - **branch with no commits** (a crash before the first commit, or mid-Implement)
+    -> re-attach and **resume from Implement**.
+  - **ambiguous or unrelated collision** (a branch that is not this issue's, or a
+    state matching no case above) -> **park `blocked:human`** (§4), never guess.
+
+  "Branch exists with a **merged** PR" needs no case — a merge auto-closes the issue
+  (`Closes #<n>`), dropping it from the frontier before it can re-dispatch. With **no**
+  existing branch/PR (the common case) create the worktree fresh; to re-attach an
+  existing branch add the worktree **without** `-b`:
   ```
   base=<base branch from workflow.md>
   wt=../<repo>-worktrees/<branch-dashes>
-  git worktree add "$wt" -b <branch> "$base"
+  git worktree add "$wt" -b <branch> "$base"   # fresh
+  git worktree add "$wt" <branch>               # re-attach an existing branch
   ```
   Run the contract's **Bootstrap** command inside the worktree (deps + env) —
   verification cannot run in an un-bootstrapped worktree.
@@ -298,8 +330,9 @@ In both cases the orchestrator then:
   escalated, parked, and cross-milestone-blocked issues** (and their excluded
   dependents) **instead of running the milestone-QA gate** — none of these count
   toward milestone completion, so a milestone carrying any is **not** complete.
-  List escalated with `gh issue list --label needs:planning` and parked with
-  `gh issue list --label blocked:human`; **cross-milestone-blocked issues carry no
+  List escalated with `gh issue list --label needs:planning --limit 200` and parked
+  with `gh issue list --label blocked:human --limit 200`; **cross-milestone-blocked
+  issues carry no
   label** — **derive** them (open, same-milestone `Depends on:` closed, but a
   `Depends on:` issue in another still-open milestone open) and list them
   explicitly.
