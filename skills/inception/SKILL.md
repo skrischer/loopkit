@@ -243,9 +243,9 @@ per project:
 - Ships `defaultMode: bypassPermissions` so the loops run autonomously. Deny
   rules apply in EVERY mode, bypassPermissions included — deny always wins.
   (Under bypassPermissions the `allow` list has no effect; deny/ask stay
-  enforced.) The template's deny list covers the constitution hard limits:
-  `rm -rf`, force-push, hard reset, `git clean -f`, `git branch -D`,
-  `git checkout .`, `git restore .`.
+  enforced.) The template's deny list ships the constitution hard limits
+  concretely into `.claude/settings.json` — the enforced single source; no
+  prose re-enumerates them.
 - Extend the deny list with the stack's destructive commands against shared
   state: replace the template's `<STACK_DESTRUCTIVE_DB_COMMAND>` placeholder
   with what this stack actually has (e.g. `supabase db reset`,

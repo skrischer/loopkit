@@ -49,9 +49,9 @@ clear are parked (`blocked:human` label + comment), never fatal:
 - A GitHub repository per project; issues, milestones, and a Project board are
   mandatory — they are the loops' durable state machine.
 - Project permissions are written per project by inception into
-  `.claude/settings.json` (plugins cannot ship permission rules). Deny rules
-  cover `rm -rf`, force-push, hard reset, and stack-specific destructive
-  database commands.
+  `.claude/settings.json` (plugins cannot ship permission rules). Its deny
+  rules are the enforced source for the constitution hard limits, plus the
+  stack's destructive database commands.
 
 ## Install
 
