@@ -1,11 +1,12 @@
 ---
 name: plan
-description: "Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop once per phase at the spec-acceptance gate (open decisions + prerequisites handover), merge autonomously (the merge is acceptance), then create the GitHub milestone, issues with dependencies, board entries, and update the roadmap. Loop-capable: without an argument it reports the roadmap's unplanned phases and asks the human which to plan (it does not auto-pick), and reports \"fully planned\" when none remains. Multi-phase: the human may name one phase or an ordered set; plan drives each as its own cycle in the named order, writing each new milestone's `Depends on milestone:` edge as it goes (it never auto-picks the set). Reads docs/workflow.md for project specifics."
+description: "Drive a single planning cycle end-to-end — survey readiness, sort open decisions into precedent/constraint/genuinely-open, draft a spec (the local single source of truth) including human prerequisites, review it via the in-session Agent tool, stop once per phase at the spec-acceptance gate (open decisions + prerequisites handover), then create the milestone and fold the roadmap link onto the spec branch, merge once (the merge is acceptance), and create issues with dependencies + board entries. Loop-capable: without an argument it reports the roadmap's unplanned phases and asks the human which to plan (it does not auto-pick), and reports \"fully planned\" when none remains. Multi-phase: the human may name one phase or an ordered set; plan drives each as its own cycle in the named order, writing each new milestone's `Depends on milestone:` edge as it goes (it never auto-picks the set). Reads docs/workflow.md for project specifics."
 ---
 
 # /loopkit:plan — drive one planning cycle to a merged spec + issues
 
-Orchestrates the readiness -> merged spec -> milestone + issues + board cycle.
+Orchestrates the readiness -> spec-acceptance gate (milestone + roadmap link) ->
+merge -> issues + board cycle.
 Specs are the **local single source of truth**; milestones and issues are
 created on GitHub from them. The argument is the scope to plan — one phase
 (`/loopkit:plan dashboard-kpis`) or an ordered set
@@ -20,8 +21,9 @@ This is the planning-side sibling to `/loopkit:implement`. Both read
 gates, and loop rules — never hardcode them. If `docs/workflow.md` is missing,
 stop and tell the user to run `/loopkit:inception` first.
 
-**Autonomy:** survey, draft the spec, open the PR, run the review, merge, and
-create milestone/issues/board entries autonomously. **The one human stop per
+**Autonomy:** survey, draft the spec, open the PR, run the review, create the
+milestone, fold the roadmap link onto the spec branch, merge, then create
+issues + board entries autonomously. **The one human stop per
 phase is the spec-acceptance gate** — the milestone gate: genuinely-open
 decisions (AskUserQuestion, never guess) plus the human-prerequisites handover
 (a multi-phase run stops once per phase, never a whole-run single stop). On
@@ -56,8 +58,9 @@ blockers, park instead of dying (see If blocked).
 - **Multi-phase run:** when the human names a set, drive each phase as its own
   full cycle in the given order — re-run this readiness step's already-covered
   check and track decision for it, then steps 2–8 (its own spec, spec-acceptance
-  gate with open decisions + prerequisites resolved per phase, merge, milestone,
-  issues, board, roadmap update) — before starting the next. Never reorder the
+  gate with open decisions + prerequisites resolved per phase, milestone +
+  roadmap link on the spec branch, one merge, issues, board) — before starting
+  the next. Never reorder the
   set or add a phase the human did not name. A phase's milestone-level edge may
   depend on a **sibling phase planned earlier in the same run** — step 7 writes
   that `Depends on milestone:` edge to the just-created sibling milestone as the
@@ -206,26 +209,47 @@ second human stop.
   it is **not** a separate stop.
 - **STOP — the cycle's one human gate:**
   - Resolve each genuinely-open decision via `AskUserQuestion` — do not guess.
-    Bake the answer into the spec (Prior decisions row + Decision log entry).
+    Bake the answer into the spec — a Prior decisions row + Decision log entry,
+    committed onto the spec branch **pre-merge** (never write a decision to a
+    branch the merge has already deleted).
   - Present the **Human prerequisites** for delivery: the human provides the
     keys/config or confirms them as in place NOW, so the milestone can later
     be implemented without interruption. Record delivered items as checked.
   - Ask the human to accept the spec.
-- On acceptance: merge the spec PR autonomously — the merge **is** acceptance,
-  the spec carries no lifecycle header to flip. Wait for green checks only if
-  the repo has CI checks configured, then squash-merge, remove the worktree,
-  and fast-forward the local base branch.
-  ```
-  gh pr merge <n> --squash --delete-branch
-  git worktree remove "$wt"
-  git checkout "$base" && git pull --ff-only
-  ```
+- On acceptance, carry the whole phase in **one PR** — do this only AFTER the
+  human accepts (never before: a rejected spec must leave no dangling milestone):
+  1. **Create the milestone now** so its `#NN` exists (step 7's milestone block —
+     mechanics, body, and `Depends on milestone:` edge). This is the only
+     milestone creation; issues + board still come after the merge (step 7).
+  2. **Commit the roadmap-link edit onto the spec branch** (full-spec only —
+     living-spec skips it, 7a): fill the planned phase's **Spec** and
+     **Milestone** links in `docs/roadmap.md` in the worktree, then commit via
+     `git -C "$wt"` (no current-focus pointer, no status marker — see step 8).
+     ```
+     git -C "$wt" add docs/roadmap.md
+     git -C "$wt" commit -m "docs(roadmap): link <scope> spec + milestone #<n>"
+     git -C "$wt" push
+     ```
+  3. **Squash-merge once** — spec + roadmap link land together; the merge **is**
+     acceptance (the spec carries no lifecycle header to flip). Wait for green
+     checks only if the repo has CI configured, then merge, remove the worktree,
+     and fast-forward the local base branch.
+     ```
+     gh pr merge <n> --squash --delete-branch
+     git worktree remove "$wt"
+     git checkout "$base" && git pull --ff-only
+     ```
 
-## 7. Milestone, issues, board (only AFTER the spec merges)
+## 7. Milestone (at acceptance), issues + board (after the merge)
 
-- The spec path must resolve on the **default branch**, so it must be merged
-  first. Then create the milestone and one issue per implementable step.
-  **Shell-hygiene (`docs/constitution.md` trust boundary):** never interpolate
+- **The milestone is created at the acceptance gate (step 6), just before the
+  merge** — so its `#NN` exists for the roadmap-link commit that rides the spec
+  branch. Created only after acceptance, so a rejected spec leaves no dangling
+  milestone.
+- **Issues + board come after the merge:** the spec path each issue references
+  must resolve on the **default branch**, so the merge lands first, then create
+  one issue per implementable step.
+- **Shell-hygiene (`docs/constitution.md` trust boundary):** never interpolate
   scope/step/spec text — read from GitHub or the scope argument — into a
   double-quoted `gh` string; backticks / `$()` / embedded quotes in it break or
   execute the command. Bind titles through a shell variable and pass each body
@@ -233,12 +257,15 @@ second human stop.
   ```
   # write bodies to temp files (only variable expansion, no untrusted text
   # ever lands in the command string), then reference them by path
-  ms_body=$(mktemp); issue_body=$(mktemp)
+  # -- milestone: created at acceptance (step 6), just before the merge --
+  ms_body=$(mktemp)
   printf '%s\n' "Design: docs/specs/spec-$scope.md" \
     "Human prerequisites: <delivered | summary>" \
     "Depends on milestone: #<n>[, #<m>] | none" >"$ms_body"
   gh api repos/:owner/:repo/milestones -f title="$ms_title" -F description=@"$ms_body"
 
+  # -- issues: created after the merge, one per step --
+  issue_body=$(mktemp)
   printf '%s\n' "Goal: ..." "Acceptance:" "- [ ] ..." "Depends on: #N" "" \
     "Spec: docs/specs/spec-$scope.md" >"$issue_body"
   gh issue create --title "$issue_title" --milestone "$ms_title" --body-file "$issue_body"
@@ -279,24 +306,26 @@ A living-spec is the same chain as step 7, with two differences — it is
   known now and **keep accreting** issues into the same open milestone as the
   theme grows — re-run this skill with the same scope to add more (the merged
   spec already covers them). Use `Depends on: #N` for ordering as usual.
-- It is **not a roadmap phase:** skip step 8 — do not add it to the roadmap
-  overview's phase table, and never fill a current-focus/status marker.
-  Loop-mode never sees it (step 1), so the loop terminal state is unaffected.
+- It is **not a roadmap phase:** skip the roadmap-link commit (step 6's step 2 /
+  step 8) — do not add it to the roadmap overview's phase table, and never fill a
+  current-focus/status marker. Loop-mode never sees it (step 1), so the loop
+  terminal state is unaffected.
 - It is **never archived or closed by the QA gate.** Closing one of its issues
   archives nothing; the milestone and spec stay live. `/loopkit:implement`
   handles the QA-gate behavior (per-batch summary, no archive) — this skill's
   job is to open the milestone and keep accreting issues into it.
 
-## 8. Roadmap (mandatory for full-spec — closes the loop; skip for living-spec, see 7a)
+## 8. Roadmap link — rode the spec branch (nothing separate to merge)
 
-- Every plan cycle ends by updating `docs/roadmap.md`: fill the planned
-  phase's **Spec** and **Milestone** links in the overview table. That is the
-  only change — no current-focus pointer, no status marker. The linked
-  milestone is where status lives.
-- Do this via its own `docs:` worktree + PR (step 5 again), **merged
-  autonomously** — no gate. The `#NN` links only exist after step 7, which is
-  why this is a separate PR from the spec. The cycle is not done until the
-  roadmap reflects it.
+- The roadmap link — the planned phase's **Spec** and **Milestone** links in
+  `docs/roadmap.md`'s overview table — is committed onto the **spec branch at
+  acceptance** (step 6), and lands in the single squash-merge. There is **no
+  separate roadmap worktree or PR**: one acceptance PR carries spec + roadmap
+  link together, and the QA close-out is the only other PR (net: one acceptance
+  PR + one close-out PR). That link is the only roadmap change — no current-focus
+  pointer, no status marker; the linked milestone is where status lives.
+- Living-spec (7a) is **not a roadmap phase** — step 6 skips the roadmap-link
+  commit for it; nothing to do here.
 
 ## Close out
 
