@@ -237,8 +237,9 @@ per project:
   `rm -rf`, force-push, hard reset, `git clean -f`, `git branch -D`,
   `git checkout .`, `git restore .`.
 - Extend the deny list with the stack's destructive commands against shared
-  state (e.g. `supabase db reset`, `prisma migrate reset` — replace the
-  template's example with what this stack actually has).
+  state: replace the template's `<STACK_DESTRUCTIVE_DB_COMMAND>` placeholder
+  with what this stack actually has (e.g. `supabase db reset`,
+  `prisma migrate reset`), or drop it if the stack has none.
 - The contract's Autonomy section is the human-readable counterpart: it
   explicitly grants autonomous commits, pushes, merges, dependency installs,
   and `.env` edits to the skills, overriding any stricter global user rules.

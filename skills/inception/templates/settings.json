@@ -14,8 +14,8 @@
       "Bash(git branch -D *)",
       "Bash(git checkout .)",
       "Bash(git restore .)",
-      "Bash(supabase db reset)",
-      "Bash(supabase db reset *)"
+      "Bash(<STACK_DESTRUCTIVE_DB_COMMAND>)",
+      "Bash(<STACK_DESTRUCTIVE_DB_COMMAND> *)"
     ]
   }
 }
