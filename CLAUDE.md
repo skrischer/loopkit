@@ -27,3 +27,11 @@ the stricter global user rules for these skills only. Outside the loopkit skills
 the global rules still apply. Hard limits (no `rm -rf`, force-push, hard reset,
 `git clean -f`, `git branch -D`, etc.) live in `.claude/settings.json` and always
 win.
+
+# Compact Instructions
+
+Read only at compaction (manual `/compact` and auto-compaction) — zero permanent
+per-turn cost. When compacting mid-`/loopkit:implement`, preserve the active
+milestone target and its unblocked frontier (both re-derivable from GitHub —
+milestone number, open issues, `Depends on:` edges, board status); drop
+resolved subagent chatter. State lives on GitHub, never in this summary.

@@ -84,8 +84,8 @@ blockers, park instead of dying (see If blocked).
   (the human files it directly; `/loopkit:implement` picks it up).
 - Survey existing specs, open issues and milestones:
   ```
-  gh api repos/:owner/:repo/milestones --jq '.[]|"\(.number) \(.title) [\(.state)] open=\(.open_issues)"'
-  gh issue list --state open
+  gh api --paginate repos/:owner/:repo/milestones --jq '.[]|"\(.number) \(.title) [\(.state)] open=\(.open_issues)"'
+  gh issue list --state open --limit 200
   ```
 - If a merged spec already covers the scope (with a milestone and issues),
   there is nothing to plan — point at `/loopkit:implement`. A spec still in an
