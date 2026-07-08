@@ -22,6 +22,12 @@
 - GitHub Project board: `<url-or-number>` — mandatory; the loops' queue and
   status display. Status values: `Todo`, `In Progress`, `Done` — a status
   display, **not** a claim or lock (see Orchestration).
+- Board field-ID recipe (so the loops set status without re-discovering it):
+  ProjectV2 Status field `<status-field-id>`; option IDs — Todo
+  `<todo-option-id>`, In Progress `<in-progress-option-id>`, Done
+  `<done-option-id>`. Re-derive with `gh project field-list <number> --owner
+  <owner> --format json --jq '.fields[]|select(.name=="Status")'` (returns the
+  field id + option ids).
 
 `/loopkit:plan` requires a GitHub repo; specs are the local single source of
 truth, milestones and issues are created on GitHub from them.

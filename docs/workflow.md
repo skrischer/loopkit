@@ -22,6 +22,10 @@
 - Base / integration branch: `main`
 - GitHub Project board: https://github.com/users/skrischer/projects/5 (#5) —
   mandatory; the loops' queue. Status values: `Todo`, `In Progress`, `Done`.
+- Board field-ID recipe (so the loops set status without re-discovering it):
+  ProjectV2 Status field `PVTSSF_lAHOBLauTs4Ba0iOzhVpWoA`; option IDs — Todo
+  `f75ad846`, In Progress `47fc9ee4`, Done `98236657`. Re-derive with
+  `gh project field-list 5 --owner skrischer --format json --jq '.fields[]|select(.name=="Status")'`.
 
 `/loopkit:plan` requires a GitHub repo; specs are the local single source of
 truth, milestones and issues are created on GitHub from them.

@@ -160,7 +160,13 @@ asking where you can:
 - **GitHub Project board — mandatory.** It is the loops' queue and claim
   mechanism (`Todo` / `In Progress` / `Done`). Ask for the existing project
   URL/number; if none exists, create one (`gh project create`) on explicit
-  confirmation, never silently. `none` is not a valid value.
+  confirmation, never silently. `none` is not a valid value. Then **record the
+  board field-ID recipe** into the contract's board section — per-project data,
+  like the Verify command: `gh project field-list <number> --owner <owner>
+  --format json --jq '.fields[]|select(.name=="Status")'` returns the ProjectV2
+  Status field id + the Todo / In Progress / Done option ids; write the concrete
+  values into the contract's `<status-field-id>` / `<...-option-id>`
+  placeholders so `plan`/`implement` set status without re-discovering them.
 - **Brownfield backfill:** put every existing open issue onto the board
   (`Todo`, or its real state) AND retrofit the issue conventions on the
   existing issue bodies — above all a parseable `Depends on: #N` line per
@@ -265,6 +271,12 @@ artifact):
   always in context): within the loopkit skills, autonomous commits, pushes,
   merges, dependency installs, and `.env` edits are explicitly granted; hard
   limits live in `.claude/settings.json`.
+- Write a `# Compact Instructions` section — Claude Code's native compaction
+  mechanism, read ONLY at compaction time (manual `/compact` and
+  auto-compaction) at zero permanent per-turn token cost (unlike ordinary
+  always-loaded CLAUDE.md text). Keep it a terse directive, not a state dump:
+  tell the compactor to preserve the active milestone target + the unblocked
+  frontier (both re-derivable from GitHub).
 
 ## Close out — loop readiness
 
@@ -274,7 +286,8 @@ produced the gap report in Step 0):
 - [ ] gh + git available and authorized — gh authenticated with the repo + project scopes (Step 0 preflight)
 - [ ] Verify is ONE command, runs green, duration recorded in the contract
 - [ ] Bootstrap turns a fresh worktree runnable, proven by running it
-- [ ] Project board exists with `Todo` / `In Progress` / `Done`
+- [ ] Project board exists with `Todo` / `In Progress` / `Done`, and its
+      field-ID recipe (Status field id + option ids) is recorded in the contract
 - [ ] `docs/workflow.md` complete — no placeholders left
 - [ ] `docs/design.md` complete (design-surface project) — no placeholders left;
       or recorded `none` (neither surface, no file)
