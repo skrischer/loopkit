@@ -301,7 +301,9 @@ dispatch). Its steps:
   the diff (`git -C "$wt" diff "$base"...HEAD`) and the constitution/CLAUDE.md
   rules. **No-source-change exception:** when the PR diff touches **only**
   `docs/`, templates, or `*.md` (no source or config), this review MAY drop to
-  the cheaper **`implementer`** tier; **any** source/config touch keeps the full
+  the **`reviewer`** role's documented no-source-change cheaper tier (the
+  contract's `reviewer` line MAY note a fallback — never substitute the
+  `implementer` tier for a review); **any** source/config touch keeps the full
   **`reviewer`** tier, and **when in doubt use the full tier** (the default is
   never cheaper). Ask for a verdict whose first line is `VERDICT: APPROVE` or
   `VERDICT: REQUEST_CHANGES`, with findings. The Agent tool runs in-session —
