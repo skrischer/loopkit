@@ -25,8 +25,8 @@ Spec-driven loop engineering for Claude Code — developed via its own loops (do
 Within the loopkit skills (`/loopkit:plan`, `/loopkit:implement`,
 `/loopkit:inception`, `/loopkit:ship`), autonomous commits, pushes, PR creation
 and merges, tag and release creation, dependency installs, and `.env` edits are
-explicitly granted — this overrides
-the stricter global user rules for these skills only. Outside the loopkit skills,
+explicitly granted — this overrides the stricter global user rules for these
+skills only. Outside the loopkit skills,
 the global rules still apply. Hard limits (no `rm -rf`, force-push, hard reset,
 `git clean -f`, `git branch -D`, etc.) live in `.claude/settings.json` and always
 win.
