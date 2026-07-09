@@ -58,16 +58,22 @@ no schedulers. You stay the engineer; the loop does the typing.
   size (no spec for a one-liner).
 - loopkit runs entirely on subscription auth — no API key, no headless flag, no
   scheduler (verifiable by grep over the skills).
+- A merged milestone reaches a tagged, published release through `/ship` — no CI
+  bot, no scheduler — driven by the project's `docs/release.md` contract.
 
 ## Scope
 
 ### In
 
-- The five loop skills (inception, plan, implement, design, roadmap) plus the
-  proportional dial (full-spec / living-spec / fast-lane).
+- The six loop skills (inception, plan, implement, design, roadmap, ship) plus
+  the proportional dial (full-spec / living-spec / fast-lane).
 - An optional, tool-agnostic design phase inside the planning cycle, reviewed at
   the spec-acceptance gate (the constitution's design principle is binding) —
   work needing no design skips it.
+- An attended, GitHub-native release phase (`/ship`) that finalizes merged work
+  into a published release — versioning, changelog, tag, publish — via a
+  per-project `docs/release.md` contract, human-invoked and tool-agnostic, with
+  no CI bot or scheduler; optional and proportional (a one-liner needs none).
 - GitHub issues, milestones, and the Project board as the sole durable state.
 - The attended producer/orchestrator model: producer `/plan` + per-milestone
   orchestrator `/implement` that fans out in-session subagents/agent-teams along
