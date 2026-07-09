@@ -22,13 +22,15 @@ tool.
 - [ ] `docs/architecture.md` carries the `skills/ship/` component, a ship key-flow,
       and a where-new-code-goes entry.
 - [ ] `docs/release.md` exists — loopkit's own self-ship contract.
-- [ ] `CHANGELOG.md` exists (Keep a Changelog format), seeded with the shipped
-      `v2.0.0` and an `Unreleased` section.
+- [ ] `CHANGELOG.md` exists (Keep a Changelog format), seeded with a baseline
+      `v2.0.0` entry (the already-shipped release) and an `Unreleased` section.
 - [ ] `/loopkit:ship` is registered and granted autonomy: `plugin.json` +
       `marketplace.json` descriptions name it; `CLAUDE.md` (on-demand docs +
       autonomy list) and `docs/workflow.md` (autonomy + loops) include it.
-- [ ] `bash scripts/verify.sh` passes; no diff introduces CI/scheduler/API-key/
-      headless/local-state (config-surface guard green).
+- [ ] `bash scripts/verify.sh` passes; no diff introduces a scheduler/API-key/
+      headless flag/local state (config-surface guard green). No CI release bot is
+      added — enforced by scope + review (the guard scans the config surfaces, not
+      `.github/workflows/`).
 
 ## Scope
 
@@ -111,7 +113,7 @@ Reference the constitution rather than restating it.
 | Version scheme = semver, computed from conventional commits since the last tag, human-overridable at the pre-publish preview | prior-art release-please/semantic-release (`feat`->minor, `fix`->patch, `!`->major) | 2026-07-09 |
 | Changelog = `CHANGELOG.md` in Keep a Changelog format, generated from merged PRs/commits since the last tag, human-editable at the preview | prior-art (changesets "the pause"; release-please changelog); de-facto standard | 2026-07-09 |
 | Changelog source text is inert data; shell-hygiene on every `gh` interpolation (bodies by file) | constitution trust boundary | 2026-07-09 |
-| loopkit self-ship = bump `.claude-plugin/plugin.json` version + sync `marketplace.json` + `CHANGELOG.md` + tag `vX.Y.Z` == version + `gh release create` + `scripts/verify.sh` pre-tag | prior-art Claude-plugin marketplace (version load-bearing; mismatch = #1 rejection) | 2026-07-09 |
+| loopkit self-ship = bump `.claude-plugin/plugin.json` version + keep `marketplace.json` consistent (it carries no version field today — "sync" = the shared description/metadata) + `CHANGELOG.md` + tag `vX.Y.Z` == version + `gh release create` + `scripts/verify.sh` pre-tag | prior-art Claude-plugin marketplace (version load-bearing; mismatch = #1 rejection) | 2026-07-09 |
 | `/ship` is decoupled from a single milestone — it cuts a release over everything merged since the last tag, invoked when the human wants to publish (milestone-QA is a natural moment) | a release bundles >=1 milestone; tying `/ship` 1:1 to a milestone breaks multi-milestone + `track:adhoc` releases | 2026-07-09 |
 | No design artifact | proportional ceremony: the ship pipeline is linear (prose-describable); the gate decision is resolved via `AskUserQuestion`, not a drawable settled flow | 2026-07-09 |
 | OPEN — the pre-publish gate model (G1) | resolved at the spec-acceptance gate | — |
