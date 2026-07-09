@@ -20,8 +20,11 @@ release contract on a releasable project.
       Step 7c — NOT a second bootstrap inside `/ship`.
 - [ ] Inception's frontmatter/intro and close-out readiness checklist name the
       release contract alongside the design contract.
-- [ ] `bash scripts/verify.sh` passes; the template carries no project-specific
-      values (placeholder guard green).
+- [ ] `bash scripts/verify.sh` passes (plugin + skills validate green); the
+      template carries no project-specific values / placeholders intact — checked
+      at review + milestone-QA (the constitution quality gate), as for loopkit's
+      other `.md` templates (verify.sh's placeholder guard machine-covers only
+      `*/templates/*.json`, not `.md`).
 
 ## Scope
 
@@ -54,10 +57,13 @@ Reference the constitution rather than restating it.
 - Depends on `ship-skill` (#20): loopkit's own `docs/release.md` (the contract
   shape) must exist to generalize into the template.
 - Templates contain no project-specific values; placeholders stay intact
-  (constitution quality gate; `scripts/verify.sh` asserts).
-- Mirror Step 7b (design contract) exactly: OPTIONAL + proportional, and the
-  `--here` sweep routes a missing contract back to inception, never a second
-  bootstrap inside the consuming skill.
+  (constitution quality gate, enforced at review/QA — verify.sh machine-guards
+  only `*/templates/*.json`, not `.md`, exactly as for the `design.md` template).
+- Mirror Step 7b's structure (OPTIONAL + proportional; the `--here` sweep routes a
+  missing contract back to inception, never a second bootstrap inside the consuming
+  skill). Note release applicability is broader than design-surface — more projects
+  publish than render UI — so Step 7c's yes-rate is higher; the OPTIONAL framing
+  still holds (a non-publishing project skips it).
 - All artifacts in English; skill prose terse/imperative/gate-marked; no
   duplication across skills (constitution conventions).
 
@@ -79,9 +85,9 @@ Reference the constitution rather than restating it.
 | Decision | Rationale | Date |
 |---|---|---|
 | Template = `skills/inception/templates/release.md`, alongside the other inception-filled templates | the established templates dir (`workflow.md`, `design.md`, `settings.json`, ...) | 2026-07-09 |
-| Step 7c mirrors Step 7b (design contract): OPTIONAL, releasable-projects-only; a non-releasing project skips it with no `docs/release.md` and no gate | Step 7b precedent + proportional ceremony (do not force a release contract on a project that never publishes) | 2026-07-09 |
+| Step 7c mirrors Step 7b's structure: OPTIONAL; a project with a versioned release/publish concept (library / plugin / binary / deployed service / hosted site) gets it, a throwaway/experiment/unversioned-internal project skips it (no `docs/release.md`, no gate) | Step 7b precedent + proportional ceremony; enumerate the discriminator to match 7b's concreteness (release applicability is broader than design-surface) | 2026-07-09 |
 | `--here` readiness sweep detects a missing/placeholder-stale `docs/release.md` on a releasable project and routes to Step 7c — never a second bootstrap inside `/ship` | design.md-missing -> inception precedent (design-coverage row); a skill owns one bootstrap, not two | 2026-07-09 |
-| Template is project-agnostic with placeholders (no project values) | constitution quality gate; `scripts/verify.sh` template guard | 2026-07-09 |
+| Template is project-agnostic with placeholders (no project values) | constitution quality gate, enforced at review/QA — verify.sh guards only JSON templates, not `.md`, mirroring the `design.md` template's treatment | 2026-07-09 |
 | No foundation-doc edit (no constitution/vision/architecture change) | `ship-skill` already added the release principle + scoped the phase + anticipated the template in architecture; this phase is skill+template wiring | 2026-07-09 |
 | No design artifact | proportional ceremony: pure bootstrap wiring, no flow/UI/concept to draw | 2026-07-09 |
 
@@ -93,10 +99,10 @@ Reference the constitution rather than restating it.
 
 ## Verification
 
-- [ ] `bash scripts/verify.sh` passes — validate + template-placeholder guard
-      green.
-- [ ] `skills/inception/templates/release.md` exists; no project-specific values
-      (grep — the verify.sh template guard).
+- [ ] `bash scripts/verify.sh` passes — plugin + skills validate green.
+- [ ] `skills/inception/templates/release.md` exists; no project-specific values /
+      placeholders intact — verified at review + milestone-QA (verify.sh does not
+      machine-guard `.md` templates; grep is the reviewer's aid, not a gate).
 - [ ] `skills/inception/SKILL.md` has Step 7c (Release contract, OPTIONAL, mirrors
       7b) + the `--here` sweep detection/routing + the close-out checklist item +
       the frontmatter/intro mention (grep).
@@ -109,7 +115,7 @@ Reference the constitution rather than restating it.
 
 | Risk | Mitigation |
 |---|---|
-| The template leaks loopkit-specific values (plugin.json/marketplace.json) | write it project-agnostic with placeholders; `scripts/verify.sh` template guard asserts no project values |
+| The template leaks loopkit-specific values (plugin.json/marketplace.json) | write it project-agnostic with placeholders; no-project-values is checked at review + milestone-QA (the constitution quality gate) — verify.sh guards only JSON templates, not `.md`, as for the design.md template |
 | Step 7c drifts from Step 7b (two divergent bootstrap patterns) | author it as a mirror of Step 7b; the `--here` sweep reuses the design.md-missing routing |
 | A release contract is forced on a project that never publishes | Step 7c is OPTIONAL (releasable-projects-only), exactly like Step 7b for design |
 
@@ -121,3 +127,10 @@ Reference the constitution rather than restating it.
   changes; this phase mirrors the design-contract bootstrap (Step 7b) for release.
 - 2026-07-09: Design surface considered and skipped — pure bootstrap wiring, no
   flow/UI/concept to visualise.
+- 2026-07-09: In-session review returned REQUEST_CHANGES (1 blocking): the spec
+  over-claimed a `verify.sh` placeholder guard for `.md` templates (it machine-guards
+  only `*/templates/*.json`). Fixed — no-project-values enforcement reattributed to
+  review + milestone-QA (the constitution quality gate), mirroring the unguarded
+  `design.md` template. Non-blocking: the "releasable project" discriminator was
+  enumerated (versioned release/publish concept) and the broader-than-design-surface
+  applicability acknowledged.
