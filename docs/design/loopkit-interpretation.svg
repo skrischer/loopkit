@@ -50,7 +50,7 @@
   <text x="441" y="296" font-size="9.5" font-weight="600" fill="#cba6f7" text-anchor="middle">delegates steps (DRY)</text>
 
   <!-- loop container -->
-  <rect x="456" y="250" width="936" height="320" rx="18" fill="#ffffff" fill-opacity="0.02" stroke="#6c7086" stroke-width="1.5" stroke-dasharray="7 5"/>
+  <rect x="456" y="250" width="824" height="320" rx="18" fill="#ffffff" fill-opacity="0.02" stroke="#6c7086" stroke-width="1.5" stroke-dasharray="7 5"/>
   <text x="474" y="278" font-size="14" font-weight="700" fill="#b4befe">Iteration loop — per idea · roadmap seeds 1..n phases · plan plans 1..n milestones</text>
 
   <!-- roadmap -->
@@ -95,12 +95,12 @@
   <path d="M1208,474 L1208,548 Q1208,554 1202,554 L565,554 Q559,554 559,548 L559,412" fill="none" stroke="#89dceb" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arb)"/>
   <text x="890" y="550" font-size="10.5" font-weight="600" fill="#89dceb" text-anchor="middle">next idea</text>
 
-  <!-- ship — human-invoked release phase; publishes merged work, decoupled from a single milestone (optional) -->
-  <line x1="1268" y1="452" x2="1280" y2="452" stroke="#6c7086" stroke-width="1.6" marker-end="url(#ar)"/>
-  <text x="1334" y="422" font-size="9.5" font-weight="600" fill="#a6e3a1" text-anchor="middle">human-invoked</text>
-  <rect x="1284" y="430" width="100" height="44" rx="10" fill="#a6e3a1" fill-opacity="0.10" stroke="#a6e3a1" stroke-width="1.5"/>
-  <text x="1334" y="450" font-size="11" font-weight="600" fill="#cdd6f4" text-anchor="middle">/loopkit:ship</text>
-  <text x="1334" y="466" font-size="9" fill="#a6adc8" text-anchor="middle">release · optional</text>
+  <!-- ship — human-invoked release phase; sits OUTSIDE the iteration loop: publishes everything merged since the last tag, decoupled from a single milestone (optional) -->
+  <line x1="1268" y1="452" x2="1288" y2="452" stroke="#6c7086" stroke-width="1.6" marker-end="url(#ar)"/>
+  <text x="1342" y="422" font-size="9.5" font-weight="600" fill="#a6e3a1" text-anchor="middle">human-invoked</text>
+  <rect x="1292" y="430" width="100" height="44" rx="10" fill="#a6e3a1" fill-opacity="0.10" stroke="#a6e3a1" stroke-width="1.5"/>
+  <text x="1342" y="450" font-size="11" font-weight="600" fill="#cdd6f4" text-anchor="middle">/loopkit:ship</text>
+  <text x="1342" y="466" font-size="9" fill="#a6adc8" text-anchor="middle">release · optional</text>
 
   <!-- design node (used-within) -->
   <text x="700" y="450" font-size="10" font-weight="600" fill="#fab387" text-anchor="middle">optional · calls</text>
