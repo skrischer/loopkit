@@ -93,9 +93,8 @@ link.
 - Keep the source hand-editable — a diffable `.svg` a future worktree can open
   and amend, not a flattened export.
 - Language: **English**, per the binding constitution convention (all artifacts
-  in English) — diagrams included, no exception. (The exemplar
-  `loopkit-interpretation.svg` predates this and is still German; re-authoring it
-  to English is a tracked follow-up, not part of this contract.)
+  in English) — diagrams included, no exception. The exemplar
+  `loopkit-interpretation.svg` is authored in English.
 
 ## Do's and Don'ts
 
