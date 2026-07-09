@@ -23,8 +23,9 @@ release contract on a releasable project.
 - [ ] `bash scripts/verify.sh` passes (plugin + skills validate green); the
       template carries no project-specific values / placeholders intact — checked
       at review + milestone-QA (the constitution quality gate), as for loopkit's
-      other `.md` templates (verify.sh's placeholder guard machine-covers only
-      `*/templates/*.json`, not `.md`).
+      other `.md` templates (verify.sh's config-surface guard machine-scans only
+      `*/templates/*.json`, for auth/scheduler tokens — not `.md`, and not
+      placeholder-intactness).
 
 ## Scope
 
