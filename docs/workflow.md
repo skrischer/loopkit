@@ -136,12 +136,13 @@ never lists steps; the issues never restate the design.
 
 Within the loopkit skills the following are explicitly granted and override any
 stricter global user rules: autonomous commits, pushes, PR creation and merges,
-dependency installs, and `.env` edits. Hard limits live in
-`.claude/settings.json` (deny rules: `rm -rf`, force-push, hard reset).
+tag and release creation (`/loopkit:ship`), dependency installs, and `.env`
+edits. Hard limits live in `.claude/settings.json` (deny rules: `rm -rf`,
+force-push, hard reset).
 
 ## Loops
 
-Three attended interactive sessions, synchronized only through GitHub state — no
+Four attended interactive sessions, synchronized only through GitHub state — no
 headless mode, no API keys, no detached schedulers. Start each in its own
 terminal from the main checkout.
 
@@ -174,6 +175,17 @@ terminal from the main checkout.
   PRs; stop at the milestone-QA gate. Parallelize milestones with a second
   orchestrator on an independent milestone. Ceiling: 10 iterations; stop when
   the same failure repeats twice.
+  ```
+
+- Ship loop (release):
+
+  ```
+  /loopkit:ship [--dry-run | vX.Y.Z] — cut a published release from everything
+  merged since the last tag: determine the version, update the changelog, tag,
+  and publish via native `gh` + `git`. Human-invoked; reads `docs/release.md`
+  for every specific; no CI bot, no scheduler. The invocation authorizes the
+  publish (G1=A) — no QA-style human stop; `--dry-run` previews without
+  publishing.
   ```
 
 - No-progress rule: the identical failure twice in a row -> stop and report,
