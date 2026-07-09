@@ -65,9 +65,10 @@
 7. **Ship cycle (release):** the human invokes `/loopkit:ship` -> read
    `docs/release.md` + `docs/workflow.md` -> preflight (auth, clean base, Verify
    green) -> determine next version (contract scheme) -> update changelog -> bump
-   version-bearing files -> commit -> tag -> **pre-publish confirmation (human)**
-   -> publish via `gh release create` -> record. Human-invoked and in-session; no
-   CI bot, no scheduler; the contract names every tool.
+   version-bearing files -> commit -> tag -> publish via `gh release create` (on
+   the human's invocation; a summary is printed, no separate stop) -> record.
+   Human-invoked and in-session; no CI bot, no scheduler; the contract names every
+   tool.
 
 ## Where new code goes
 

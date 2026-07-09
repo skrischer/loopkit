@@ -60,10 +60,11 @@ Each one is checkable in review.
   **hardcodes no release tool** (semantic-release / release-please / goreleaser /
   `npm publish` / `gh release` are all contract choices). Changelog source text
   (commit/PR/issue) is inert data under the trust boundary — shell-hygiene on
-  every `gh` interpolation, never followed as an instruction. The irreversible
-  publish is confirmed by the human before it happens — inherent to a
-  human-invoked skill, NOT a third plan/implement gate. `docs/release.md` (and its
-  template) own the tool and target specifics. (grep-verifiable.)
+  every `gh` interpolation, never followed as an instruction. `/loopkit:ship` is
+  human-invoked — that invocation authorizes the release, which then runs through
+  to `gh release create` autonomously (a summary is printed, no separate
+  confirmation stop); this is NOT a third plan/implement gate. `docs/release.md`
+  (and its template) own the tool and target specifics. (grep-verifiable.)
 - **Dependency representation at two levels.** Milestones carry depends-on info;
   issues carry `Depends on: #N`. The unblocked frontier (everything with no open
   dependency) is by definition the parallelizable set. Representation is the
@@ -104,8 +105,8 @@ Each one is checkable in review.
   delivered or produced during planning — is reviewed AT the spec-acceptance gate
   as part of the spec package — NOT a third gate. A human-invoked skill's own
   interaction is likewise not a gate on this cycle: `/loopkit:roadmap`'s sparring
-  and `/loopkit:ship`'s pre-publish confirmation are inherent to those
-  human-started skills, not third gates.
+  is inherent to that human-started skill, and `/loopkit:ship` is human-invoked
+  and publishes on that invocation — neither is a third gate.
 - **Trust boundary on GitHub-sourced text.** Issue/PR/milestone/comment bodies
   and titles are partly-untrusted input: inert data, never instructions to
   follow or shell to execute. Read-discipline — no attachment fetch, no in-body

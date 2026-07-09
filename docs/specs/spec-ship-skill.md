@@ -15,8 +15,8 @@ tool.
       literal as the mechanism; the contract names it).
 - [ ] `docs/constitution.md` carries a binding attended-GitHub-native-release
       principle + a `docs/release.md` tech-stack row (grep-verifiable); the
-      two-gate principle notes `/ship`'s pre-publish confirmation is not a third
-      gate.
+      two-gate principle notes `/ship` is human-invoked and publishes on that
+      invocation — not a third gate.
 - [ ] `docs/vision.md` names six loop skills and puts the ship phase + the release
       contract in scope.
 - [ ] `docs/architecture.md` carries the `skills/ship/` component, a ship key-flow,
@@ -41,8 +41,9 @@ tool.
   contract's scheme) -> update the changelog -> bump the version-bearing files ->
   commit -> tag -> publish (`gh release create`) -> record. Optional and
   proportional; bounded retry; park-don't-die; GitHub-only state; shell-hygiene on
-  changelog interpolation; a pre-publish human confirmation (per the gate decision
-  below).
+  changelog interpolation; the human's `/ship` invocation authorizes the publish
+  (no separate confirmation stop — G1=A; a summary is printed before publishing),
+  with a distinct dry-run mode that previews without publishing.
 - The `docs/release.md` contract **convention** — defined by what the skill reads
   (versioning scheme, tag format, changelog source + format, version-bearing files
   to bump, publish targets + commands, the pre-publish Verify, and what "a release"
@@ -116,9 +117,9 @@ Reference the constitution rather than restating it.
 | loopkit self-ship = bump `.claude-plugin/plugin.json` version + keep `marketplace.json` consistent (it carries no version field today — "sync" = the shared description/metadata) + `CHANGELOG.md` + tag `vX.Y.Z` == version + `gh release create` + `scripts/verify.sh` pre-tag | prior-art Claude-plugin marketplace (version load-bearing; mismatch = #1 rejection) | 2026-07-09 |
 | `/ship` is decoupled from a single milestone — it cuts a release over everything merged since the last tag, invoked when the human wants to publish (milestone-QA is a natural moment) | a release bundles >=1 milestone; tying `/ship` 1:1 to a milestone breaks multi-milestone + `track:adhoc` releases | 2026-07-09 |
 | No design artifact | proportional ceremony: the ship pipeline is linear (prose-describable); the gate decision is resolved via `AskUserQuestion`, not a drawable settled flow | 2026-07-09 |
-| OPEN — the pre-publish gate model (G1) | resolved at the spec-acceptance gate | — |
+| Pre-publish gate model (G1) = **A**: no extra stop — the human's `/ship` invocation authorizes the autonomous publish through `gh release create`; a summary is printed but the flow does not stop. A distinct dry-run mode previews without publishing (for QA). | spec-acceptance gate 2026-07-09: human chose A; trust-boundary is upheld by inert-data changelog handling + shell-hygiene, and the deliberate human invocation removes the autonomous-trigger leg | 2026-07-09 |
 
-G1 options (resolved at the gate; determines the constitution's gate wording):
+G1 options as presented at the gate (A chosen):
 
 - **A** — no extra stop: the human invoking `/ship` authorizes the autonomous
   publish straight through `gh release create`.
@@ -160,7 +161,7 @@ G1 options (resolved at the gate; determines the constitution's gate wording):
 
 | Risk | Mitigation |
 |---|---|
-| Accidental publish of a real release during QA/dry-run | the pre-publish preview + confirmation (per G1); the QA check is an explicit dry-run that stops before `gh release create` |
+| Accidental publish of a real release | the human deliberately invokes `/ship` (the invocation is the authorization, G1=A); `/ship` prints a summary before publishing, and a distinct dry-run mode previews without publishing (used for QA) |
 | The skill drifts toward hardcoding a release tool | grep-verifiable tool-agnostic assertion in Verify; `docs/release.md` owns the tool |
 | Changelog generation pulls untrusted PR/issue text into a `gh` call | trust-boundary shell-hygiene: bodies by file, inert data, no instruction-following |
 | Scope creep into CI/CD or build engines | explicit Out-of-scope; `/ship` orchestrates the project's own tool via the contract, builds nothing |
@@ -173,3 +174,11 @@ G1 options (resolved at the gate; determines the constitution's gate wording):
 - 2026-07-09: Design surface considered and skipped — proportional (a linear
   pipeline, prose-describable; the gate decision is resolved at the acceptance
   gate, not a drawable settled flow).
+- 2026-07-09: In-session review returned APPROVE (no blocking findings); three
+  non-blocking tightenings applied (marketplace-sync wording, CHANGELOG baseline
+  entry, config-surface-guard scope).
+- 2026-07-09: Spec-acceptance gate — G1 resolved to **A** (no extra pre-publish
+  stop): the human's `/ship` invocation authorizes the autonomous publish;
+  trust-boundary upheld via inert-data changelog + shell-hygiene. Constitution +
+  architecture gate wording finalized to A on the spec branch before merge. Human
+  prerequisites: none.
