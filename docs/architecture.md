@@ -15,17 +15,18 @@
 | `skills/implement/` | Milestone orchestrator: plan the issue DAG -> fan out in-session subagents/agent-teams along the frontier -> QA gate |
 | `skills/design/` | The optional `/loopkit:design` skill, planning-time: for a UI surface OR a decision-clarifying visualisation (flow/architecture/concept), reads `docs/design.md`, delivers/produces a design, hands off a committed file (that renders in the review surface) referenced by the spec |
 | `skills/roadmap/` | Iteration entry point: raw idea -> prior-art sparring -> seeds 1..n roadmap rows + backing prior-art (no readiness sweep); reads `skills/shared/iteration-steps.md` |
+| `skills/ship/` | The `/loopkit:ship` release phase, human-invoked: reads `docs/release.md`, finalizes merged work into a published release (version -> changelog -> tag -> publish) via native `gh`+`git`; no CI bot, hardcodes no tool |
 | `skills/shared/` | Plugin-shipped shared reference (`iteration-steps.md`): the prior-art challenge / architecture-seed / roadmap-seeding steps inception and roadmap both read — not a skill |
 | `skills/*/templates/` | Pure artifact blueprints, filled into target projects by inception |
 | `.claude-plugin/` | `plugin.json` + `marketplace.json` |
-| `docs/` (target project) | vision/constitution/prior-art/architecture + `roadmap.md` + `workflow.md` + `design.md` |
+| `docs/` (target project) | vision/constitution/prior-art/architecture + `roadmap.md` + `workflow.md` + `design.md` + `release.md` |
 | GitHub (issues/milestones/board/PRs) | the single durable state machine |
 
 ## Boundaries
 
 - Skills never hardcode project specifics — they read `docs/workflow.md`
   (inception produces it; plan/implement consume it).
-- The five skills do not know each other's internals — handoff is only through
+- The six skills do not know each other's internals — handoff is only through
   GitHub state, `docs/` artifacts, and the plugin-shipped `skills/shared/`
   reference (inception and roadmap both read `skills/shared/iteration-steps.md`;
   neither reaches into the other).
@@ -61,6 +62,13 @@
    milestone (chosen via milestone-level `depends-on`); sync only through GitHub.
 6. **Ad-hoc fast-lane:** a bug/QoL change -> `track:adhoc` issue (no
    spec/milestone) -> implement directly -> PR -> merge.
+7. **Ship cycle (release):** the human invokes `/loopkit:ship` -> read
+   `docs/release.md` + `docs/workflow.md` -> preflight (auth, clean base, Verify
+   green) -> determine next version (contract scheme) -> update changelog -> bump
+   version-bearing files -> commit -> tag -> publish via `gh release create` (on
+   the human's invocation; a summary is printed, no separate stop) -> record.
+   Human-invoked and in-session; no CI bot, no scheduler; the contract names every
+   tool.
 
 ## Where new code goes
 
@@ -70,6 +78,9 @@
 - How a milestone is executed/orchestrated -> `skills/implement/`.
 - How a design step is produced/reviewed (planning-time) -> `skills/design/`.
 - How raw ideas are sparred into seeded roadmap phases -> `skills/roadmap/`.
+- How merged work is finalized into a published release -> `skills/ship/`.
+- Per-project release parameters (versioning, changelog, tag, publish targets) ->
+  the `release.md` template (NOT the skill — the skill reads it).
 - The shared prior-art / architecture-seed / roadmap-seeding steps (read by both
   inception and roadmap) -> `skills/shared/iteration-steps.md` (NOT a skill).
 - Per-project parameters (commands, board, naming) -> the `workflow.md` template
