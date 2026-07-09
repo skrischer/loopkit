@@ -1,6 +1,6 @@
 ---
 name: inception
-description: "Phase-0 inception dialog that runs BEFORE any spec work — clarify the goal, research prior art, then derive vision, constitution, and architecture artifacts plus roadmap, workflow contract, an optional design contract, GitHub project board, project permission settings, and CLAUDE.md wiring, leaving the project loop-ready for /loopkit:plan and /loopkit:implement. On an existing project (--here) it doubles as a loop-readiness check that diffs the project against the contract and closes only the gaps. Only run when the user explicitly invokes it. Arguments: a project pitch (greenfield) or --here (brownfield)."
+description: "Phase-0 inception dialog that runs BEFORE any spec work — clarify the goal, research prior art, then derive vision, constitution, and architecture artifacts plus roadmap, workflow contract, an optional design contract and an optional release contract, GitHub project board, project permission settings, and CLAUDE.md wiring, leaving the project loop-ready for /loopkit:plan and /loopkit:implement. On an existing project (--here) it doubles as a loop-readiness check that diffs the project against the contract and closes only the gaps. Only run when the user explicitly invokes it. Arguments: a project pitch (greenfield) or --here (brownfield)."
 ---
 
 # /loopkit:inception — Phase-0 inception (before specs)
@@ -9,7 +9,8 @@ Codifies the phase BEFORE spec-driven development (constitution -> specify ->
 plan -> tasks). Produces four foundation artifacts in `docs/` (vision,
 constitution, prior-art, architecture), a `docs/roadmap.md` sequencing the work
 into plannable phases, a `docs/workflow.md` operational contract, an optional
-`docs/design.md` design contract (design-surface projects), a GitHub Project board,
+`docs/design.md` design contract (design-surface projects), an optional
+`docs/release.md` release contract (releasable projects), a GitHub Project board,
 and the project's `.claude/settings.json` permissions — the
 hand-off to the `/loopkit:plan` and `/loopkit:implement` sibling skills, which
 then run as two parallel attended loops over GitHub issues, milestones, and the
@@ -19,8 +20,9 @@ stack belongs in the constitution, never in feature specs.
 **Interaction model:** guided dialog, never one-shot. Human gates: after the
 goal draft, before finalizing each artifact (prior-art, vision, constitution,
 architecture), before the roadmap, before the workflow contract, before the
-design contract (design-surface projects), and before writing the permission
-settings. At each gate, present the draft and confirm
+design contract (design-surface projects), before the release contract
+(releasable projects), and before writing the permission settings. At each
+gate, present the draft and confirm
 via AskUserQuestion before writing the final file. Converse in the user's
 language; all artifacts and the CLAUDE.md wiring are written in English.
 
@@ -234,6 +236,41 @@ skips this step entirely (no `docs/design.md`, no gate).
 GATE: present the filled contract before writing `docs/design.md` (skip the gate
 entirely when the design surface is `none`).
 
+## Step 7c — Release contract (gate 7c, OPTIONAL — releasable projects only)
+
+The release sibling of the workflow contract: `/loopkit:ship` reads
+`docs/release.md` instead of hardcoding a release tool. Proportional — only a
+project with a versioned release/publish concept gets it; a throwaway /
+experiment / unversioned-internal project records `none` and skips this step
+entirely (no `docs/release.md`, no gate).
+
+- **Decide releasability.** Does this project ship a versioned release — a
+  library / plugin / binary / deployed service / hosted site? No -> record `none`
+  in the Close out checklist and skip to Step 8. Yes -> fill the contract.
+  (Release applicability is broader than design-surface — more projects publish
+  than render UI — so the yes-rate is higher; the OPTIONAL framing still holds.)
+- Fill `templates/release.md` into `docs/release.md`, deriving values from the
+  vision/constitution/stack where you can rather than asking:
+  - **Versioning scheme** — semver / CalVer / build number, and how the next
+    version is computed from the range since the last tag.
+  - **Version-bearing files** — the file(s) carrying the version string to bump;
+    name the single source and any metadata-consistent siblings.
+  - **Tag format** — the tag shape; the tag must match the version exactly.
+  - **Changelog** — source range + format/file; the human curates it at preview.
+  - **Publish target + command** — the native in-session `gh` / tooling command;
+    release notes passed by file, never inlined.
+  - **Pre-publish Verify** — reference this project's Verify (from
+    `docs/workflow.md`); do not restate the command.
+  The template's invariant prose (human-invoked, tag == version, trust boundary,
+  durable state, G1 = A) is loopkit-fixed — leave it intact, it is not a
+  placeholder.
+- **`--here`:** a missing or placeholder-stale `docs/release.md` on a releasable
+  project is a gap that routes here (Step 7c) — never a second bootstrap inside
+  `/ship`; a non-releasable project's absent file is not a gap.
+
+GATE: present the filled contract before writing `docs/release.md` (skip the gate
+entirely when the project is not releasable).
+
 ## Step 8 — Project permissions (gate 8)
 
 Fill `templates/settings.json` into the project's `.claude/settings.json` —
@@ -297,6 +334,8 @@ produced the gap report in Step 0):
       role->tier field is filled; else absent (default `inherit`)
 - [ ] `docs/design.md` complete (design-surface project) — no placeholders left;
       or recorded `none` (neither surface, no file)
+- [ ] `docs/release.md` complete (releasable project) — no placeholders left;
+      or recorded `none` (not releasable, no file)
 - [ ] Every roadmap phase has prior-art coverage to seed its spec (or an explicit
       greenfield "no prior art" note)
 - [ ] `.claude/settings.json` in place: `defaultMode: bypassPermissions` with
