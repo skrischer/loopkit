@@ -410,10 +410,20 @@ loopkit's worktree-path convention** (`../<repo>-worktrees/...`, per
   --force` (the deny rules forbid destroying uncommitted work). The sweep reports
   what it could not clean rather than forcing it.
 - **Prune:** `git worktree prune` to clear stale administrative entries.
-- **Delete stale local branches whose PR has merged:** for a local branch whose PR
-  is merged, `git branch -d <branch>` (safe delete only — `-d`, never `-D`; an
-  unmerged branch refuses deletion and is reported instead). Leave remote branches
-  to `--delete-branch` at merge.
+- **Delete what `-d` can; report the rest — do not expect to clean every merged
+  branch.** For a local branch whose PR is merged, try `git branch -d <branch>` —
+  safe delete only, **never `-D`** (a `.claude/settings.json` deny rule and a
+  constitution hard limit). `-d` succeeds only while the branch's remote-tracking
+  ref still exists, because it accepts "merged into its **upstream**". Once that ref
+  is pruned, `-d` falls back to comparing against HEAD — where a **squash-merge is
+  no ancestor** — and **refuses**: `error: the branch '<b>' is not fully merged`.
+  That refusal is **expected on a squash-merge repo, not a failure to route around**:
+  **report the branch and the reason**, and leave it for the human. Never reach for
+  `-D` to force it. After §3's ordering fix the merge path deletes the branch itself,
+  so this sweep only ever meets the crash path (a run that died between merge and
+  delete) — reporting is proportional there. Leave remote branches to
+  `--delete-branch` at merge (it deletes the remote even when the local delete
+  fails).
 
 Report any worktree or branch the sweep could **not** clean (dirty / unmerged) so
 the human can resolve it; nothing is force-removed.
