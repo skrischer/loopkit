@@ -129,8 +129,12 @@ for f in skills/*/SKILL.md; do
       /^[[:space:]]*gh pr merge/ {
         # A trailing comment is prose, not part of the command — strip it before
         # any flag test, so a line documenting a prohibition cannot trip it.
+        # Require the fences own convention of 2+ spaces before the #: a bare
+        # /#.*/ would also cut at a # INSIDE a quoted argument (this repo commits
+        # titles like "chore(release): 2.1.0 (#204)"), hiding a --repo that follows
+        # it — a silent miss, which is the very thing this guard exists to prevent.
         cmd = $0
-        sub(/#.*/, "", cmd)
+        sub(/[[:space:]][[:space:]]+#.*/, "", cmd)
         # Count ONLY what we actually check: the floor is meaningless unless
         # counted == checked. Counting every `gh pr merge` would let a merge whose
         # delete flag moved to a continuation line keep the count at 4 while its
