@@ -161,11 +161,11 @@ second human stop.
 - Ask **"what would an implementer ask while building this?"** Walk the spec's
   outcomes and verification as if implementing them: name every fork, ambiguous
   contract, or unstated default a subagent would hit mid-build.
-- **Resolve each from `docs/vision.md`, `docs/constitution.md`, and
-  `docs/prior-art.md`** (the same precedent/constraint inputs as step 2, named
-  explicitly). When one of these settles the question, bake the answer into the
-  spec — a **Prior decisions** row plus a **Decision log** entry — so the
-  implementer never has to ask.
+- **Resolve each from `docs/vision.md`, `docs/constitution.md`,
+  `docs/architecture.md`, and `docs/prior-art.md`** (the same precedent/constraint
+  inputs as step 2, named explicitly). When one of these settles the question, bake
+  the answer into the spec — a **Prior decisions** row plus a **Decision log**
+  entry — so the implementer never has to ask.
 - **What neither precedent nor constraint settles becomes a genuinely-open
   item** carried into the acceptance gate (step 6), where `AskUserQuestion`
   resolves it — exactly like the genuinely-open bucket from step 2. Mark it in
@@ -197,8 +197,21 @@ second human stop.
 
 - Review the spec with a **fresh context via the Agent tool**
   (`general-purpose` or `code-reviewer`), seeded with the PR diff and the
-  decision docs (`docs/constitution.md`, `docs/prior-art.md`, any sibling spec
-  it builds on). Ask for a verdict whose first line is `VERDICT: APPROVE` or
+  decision docs (`docs/architecture.md`, `docs/prior-art.md`, any sibling spec
+  it builds on). `docs/vision.md` and `docs/constitution.md` are deliberately
+  **not** in this seed: CLAUDE.md's `@import` ("Always in context") already
+  puts both in the subagent's context before any tool use, so re-seeding either
+  would duplicate an always-loaded doc and burn tokens. `docs/architecture.md`
+  IS seeded — CLAUDE.md lists it "On demand (NOT auto-loaded)", making it the
+  one foundation doc genuinely absent otherwise.
+  **Ask explicitly whether the spec contradicts `docs/vision.md`,
+  `docs/constitution.md`, or `docs/architecture.md`** — a contradiction is a
+  blocking finding. Availability was never the gap (vision and constitution are
+  already in context); nothing previously asked the check. **Verify every
+  foundation-doc citation the spec makes against the full source** — never
+  accept a quoted line at face value; a spec citing one success criterion while
+  passing over a line that answers the other way must be caught here.
+  Ask for a verdict whose first line is `VERDICT: APPROVE` or
   `VERDICT: REQUEST_CHANGES`, with blocking vs non-blocking findings. The Agent
   tool runs in-session — never shell out to a billed CLI. The review subagent's
   model tier is read from `docs/workflow.md`'s OPTIONAL role->tier field
