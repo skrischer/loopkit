@@ -238,11 +238,13 @@ second human stop.
      ```
   3. **Squash-merge once** — spec + roadmap link land together; the merge **is**
      acceptance (the spec carries no lifecycle header to flip). Wait for green
-     checks only if the repo has CI configured, then merge, remove the worktree,
+     checks only if the repo has CI configured, remove the worktree, then merge,
      and fast-forward the local base branch.
      ```
+     git worktree remove "$wt"   # BEFORE the merge: --delete-branch cannot delete a
+                                 # branch a worktree still holds — never re-swap these.
+                                 # On a conflict: re-add $wt, fix, remove again, merge.
      gh pr merge <n> --squash --delete-branch
-     git worktree remove "$wt"
      git checkout "$base" && git pull --ff-only
      ```
 
