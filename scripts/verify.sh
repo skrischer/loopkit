@@ -95,6 +95,82 @@ else
   echo "  local-state guard: OK (no tracked *.sqlite/*.db or root state.json)"
 fi
 
+# 5. Merge-ordering guard — `gh pr merge --delete-branch` deletes the LOCAL
+#    branch too, and git refuses to delete a branch a worktree still holds
+#    ("cannot delete branch '<b>' used by worktree at '<path>'" — neither -d nor
+#    -D gets through). Every skill mandates a worktree, so merging before
+#    removing it orphans one local branch per merged PR, silently and every time.
+#
+#    SCOPE NOTE — this consciously extends the scanned surface. Guard 3 above
+#    deliberately does NOT scan instructional Markdown, because a skill
+#    legitimately NAMES a forbidden token in order to forbid it. That rationale
+#    is about token-prohibition greps and does not carry to an ordering
+#    assertion, so this guard reads skills/*/SKILL.md — for this ONE invariant
+#    only. Do not grow it into a general skill-prose linter.
+#
+#    It matches COMMAND lines inside fenced code blocks only (fence-tracked and
+#    line-anchored): implement/SKILL.md legitimately mentions
+#    `gh pr merge <n> --delete-branch` in prose, explaining why a second such
+#    call is NOT the repair — that mention must never count as a merge site.
+#
+#    The pair must live in the SAME fence, and every merge needs its OWN
+#    preceding removal: `seen_remove` resets on fence open and after each merge.
+echo "-- merge-ordering guard (worktree removed before --delete-branch) --"
+
+order_fail=0
+order_sites=0
+for f in skills/*/SKILL.md; do
+  [ -f "$f" ] || continue
+  out="$(
+    awk -v file="$f" '
+      /^[[:space:]]*```/ { infence = !infence; if (infence) seen_remove = 0; next }
+      !infence { next }
+      /^[[:space:]]*git worktree remove([[:space:]]+--[^[:space:]]+)*[[:space:]]+"\$wt"/ { seen_remove = 1; next }
+      /^[[:space:]]*gh pr merge/ {
+        # Count ONLY what we actually check: the floor is meaningless unless
+        # counted == checked. Counting every `gh pr merge` would let a merge whose
+        # delete flag moved to a continuation line keep the count at 4 while its
+        # ordering went unchecked — silent vacuity, one level down.
+        if ($0 ~ /--delete-branch/ || $0 ~ /[[:space:]]-d([[:space:]]|$)/) {
+          sites++
+          if (!seen_remove) {
+            printf "  %s:%d: `gh pr merge` deletes the branch with no `git worktree remove \"$wt\"` before it in this block.\n", file, FNR
+            print  "      --delete-branch/-d deletes the LOCAL branch too, and git refuses while a worktree"
+            print  "      holds it — this order orphans a local branch on EVERY merge. Remove the worktree first."
+            bad = 1
+          }
+        }
+        seen_remove = 0
+      }
+      END { printf "SITES=%d\n", sites; exit (bad ? 1 : 0) }
+    ' "$f"
+  )" || order_fail=1
+  echo "$out" | grep -v '^SITES=' || true
+  n="$(echo "$out" | sed -n 's/^SITES=//p')"
+  order_sites=$(( order_sites + ${n:-0} ))
+done
+
+# Floor — without it the guard degrades SILENTLY. A line continuation
+# (`gh pr merge <n> --squash \` + `--delete-branch` on the next line) stops
+# matching, the site vanishes from the count, and Verify stays green while
+# guarding nothing. A guard that can quietly stop guarding is the same defect
+# class it exists to catch. If a skill legitimately gains or loses a merge site,
+# raise or lower this floor deliberately — that conscious edit is the point.
+order_floor=4
+if [ "$order_sites" -lt "$order_floor" ]; then
+  echo "  found $order_sites merge site(s), expected at least $order_floor."
+  echo "      A site stopped matching (pattern drift — e.g. a line continuation), so the guard"
+  echo "      no longer checks it. Fix the pattern, or lower the floor deliberately."
+  order_fail=1
+fi
+
+if [ "$order_fail" -eq 0 ]; then
+  echo "  merge-ordering guard: OK ($order_sites merge site(s) checked, worktree removed before each)"
+else
+  echo "  merge-ordering guard: FAILED"
+  fail=1
+fi
+
 echo
 if [ "$fail" -eq 0 ]; then
   echo "PASS: loopkit Verify — all checks green"
