@@ -330,7 +330,11 @@ dispatch). Its steps:
   push and the review gate are already done and the merge happens remote-side. Do
   **not** repair this with a second `gh pr merge <n> --delete-branch` after the
   merge — on an already-merged PR `gh` prompts interactively ("Pull request #<n>
-  was already merged. Delete the branch locally?") and would hang the loop. If the
+  was already merged. Delete the branch locally?") and would hang the loop. Never
+  add **`--repo`/`-R`** to the merge either: gh sets
+  `CanDeleteLocalBranch = !cmd.Flags().Changed("repo")`, so `--repo` makes it skip
+  the local delete **silently** — no warning, and `gh pr merge --help` does not say
+  so — re-creating this leak in full. If the
   merge fails on a conflict, `$wt` is already gone — re-attach with
   `git worktree add "$wt" <branch>`, fix, then **remove the worktree again before
   re-merging**: the re-attached worktree holds the branch exactly as before, so

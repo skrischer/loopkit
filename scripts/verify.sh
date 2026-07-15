@@ -139,6 +139,16 @@ for f in skills/*/SKILL.md; do
             print  "      holds it — this order orphans a local branch on EVERY merge. Remove the worktree first."
             bad = 1
           }
+          # --repo makes the ordering fix moot: gh sets
+          # CanDeleteLocalBranch = !cmd.Flags().Changed("repo"), so with --repo it
+          # NEVER deletes the local branch — silently, with no warning and no note
+          # in `gh pr merge --help`. Observed live 2026-07-15 (PR #215).
+          if ($0 ~ /--repo([[:space:]]|=)/ || $0 ~ /[[:space:]]-R([[:space:]]|=)/) {
+            printf "  %s:%d: `gh pr merge` carries --repo/-R together with a delete flag.\n", file, FNR
+            print  "      gh sets CanDeleteLocalBranch = !Flags().Changed(\"repo\"), so --repo silently skips"
+            print  "      the LOCAL branch delete and re-creates the #205 leak. Drop --repo from the merge."
+            bad = 1
+          }
         }
         seen_remove = 0
       }
@@ -168,6 +178,36 @@ if [ "$order_fail" -eq 0 ]; then
   echo "  merge-ordering guard: OK ($order_sites merge site(s) checked, worktree removed before each)"
 else
   echo "  merge-ordering guard: FAILED"
+  fail=1
+fi
+
+# 6. Always-in-context guard — `/loopkit:plan` §6's spec-acceptance gate does NOT
+#    seed docs/vision.md or docs/constitution.md: it relies on CLAUDE.md's
+#    `@import` ("Always in context") to put both in the review subagent's context
+#    before any tool use. Only docs/architecture.md is seeded, being the one
+#    foundation doc CLAUDE.md marks "On demand (NOT auto-loaded)". If an @import
+#    line is dropped, the gate silently loses the documents it exists to check
+#    against — no failure, just a quieter gate. Assert the lines are still there.
+#
+#    Scope: this covers THIS repo's CLAUDE.md (loopkit dogfooding itself). Target
+#    projects get the same wiring from /loopkit:inception (skills/inception/SKILL.md
+#    Step 8); asserting it there is a separate concern, not this guard's job.
+echo "-- always-in-context guard (CLAUDE.md @imports the gate's decision docs) --"
+
+import_fail=0
+for doc in docs/vision.md docs/constitution.md; do
+  if ! grep -qF "@$doc" CLAUDE.md; then
+    echo "  CLAUDE.md no longer @imports $doc."
+    echo "      /loopkit:plan §6 does not seed it — it relies on this line to place it in the"
+    echo "      review subagent's context. Without it the spec-acceptance gate silently loses"
+    echo "      the doc it checks specs against. Restore the @import, or seed the doc in §6."
+    import_fail=1
+  fi
+done
+if [ "$import_fail" -eq 0 ]; then
+  echo "  always-in-context guard: OK (vision + constitution @imported)"
+else
+  echo "  always-in-context guard: FAILED"
   fail=1
 fi
 
