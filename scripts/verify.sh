@@ -112,6 +112,9 @@ fi
 #    line-anchored): implement/SKILL.md legitimately mentions
 #    `gh pr merge <n> --delete-branch` in prose, explaining why a second such
 #    call is NOT the repair — that mention must never count as a merge site.
+#
+#    The pair must live in the SAME fence, and every merge needs its OWN
+#    preceding removal: `seen_remove` resets on fence open and after each merge.
 echo "-- merge-ordering guard (worktree removed before --delete-branch) --"
 
 order_fail=0
@@ -122,7 +125,7 @@ for f in skills/*/SKILL.md; do
     awk -v file="$f" '
       /^[[:space:]]*```/ { infence = !infence; if (infence) seen_remove = 0; next }
       !infence { next }
-      /^[[:space:]]*git worktree remove[[:space:]]+"\$wt"/ { seen_remove = 1; next }
+      /^[[:space:]]*git worktree remove.*"\$wt"/ { seen_remove = 1; next }
       /^[[:space:]]*gh pr merge .*--delete-branch/ {
         sites++
         if (!seen_remove) {
@@ -131,16 +134,34 @@ for f in skills/*/SKILL.md; do
           print  "      holds it — this order orphans a local branch on EVERY merge. Remove the worktree first."
           bad = 1
         }
+        seen_remove = 0
       }
       END { printf "SITES=%d\n", sites; exit bad ? 1 : 0 }
     ' "$f"
   )" || order_fail=1
   echo "$out" | grep -v '^SITES=' || true
-  order_sites=$(( order_sites + $(echo "$out" | sed -n 's/^SITES=//p') ))
+  n="$(echo "$out" | sed -n 's/^SITES=//p')"
+  order_sites=$(( order_sites + ${n:-0} ))
 done
+
+# Floor — without it the guard degrades SILENTLY. A line continuation
+# (`gh pr merge <n> --squash \` + `--delete-branch` on the next line) stops
+# matching, the site vanishes from the count, and Verify stays green while
+# guarding nothing. A guard that can quietly stop guarding is the same defect
+# class it exists to catch. If a skill legitimately gains or loses a merge site,
+# raise or lower this floor deliberately — that conscious edit is the point.
+order_floor=4
+if [ "$order_sites" -lt "$order_floor" ]; then
+  echo "  found $order_sites merge site(s), expected at least $order_floor."
+  echo "      A site stopped matching (pattern drift — e.g. a line continuation), so the guard"
+  echo "      no longer checks it. Fix the pattern, or lower the floor deliberately."
+  order_fail=1
+fi
+
 if [ "$order_fail" -eq 0 ]; then
   echo "  merge-ordering guard: OK ($order_sites merge site(s) checked, worktree removed before each)"
 else
+  echo "  merge-ordering guard: FAILED"
   fail=1
 fi
 
