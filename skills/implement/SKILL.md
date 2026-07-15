@@ -313,12 +313,23 @@ dispatch). Its steps:
   — a repeated failure stops and parks the issue (§4), never grinds. Only an
   `APPROVE` (or explicit human override) clears this gate.
 - **Merge and clean up (autonomous — no human stop).** After `APPROVE` and green
-  Verify, merge remote-first, then clean up:
+  Verify, **remove the worktree, then merge** — the order is load-bearing:
   ```
   gh pr checks <n> --watch          # only if the repo has CI checks configured
+  git worktree remove "$wt"         # BEFORE the merge — never re-swap these two
   gh pr merge <n> --squash --delete-branch
-  git worktree remove "$wt"
   ```
+  `--delete-branch` deletes the **local** branch too, and git refuses to delete a
+  branch a worktree still holds (`cannot delete branch '<b>' used by worktree at
+  '<path>'` — neither `-d` nor `-D` gets through). Merging first therefore deletes
+  the remote branch and orphans the local one on **every** merge, since this skill
+  mandates a worktree for all work. The worktree is not needed for the merge: the
+  push and the review gate are already done and the merge happens remote-side. Do
+  **not** repair this with a second `gh pr merge <n> --delete-branch` after the
+  merge — on an already-merged PR `gh` prompts interactively ("Pull request #<n>
+  was already merged. Delete the branch locally?") and would hang the loop. If the
+  merge fails on a conflict, `$wt` is already gone — re-attach with
+  `git worktree add "$wt" <branch>`, fix, then merge again.
   The merge auto-closes the issue (`Closes #<n>`); set its board status to `Done`
   (visibility only — not a lock). The spec Decision-log entry already rode in with
   the merge (recorded pre-merge, above) — nothing to write here on a deleted branch.

@@ -127,8 +127,9 @@ git -C "$wt" add docs/roadmap.md docs/prior-art.md
 git -C "$wt" commit -m "docs(roadmap): seed <phases> from idea sparring"
 git -C "$wt" push -u origin docs/roadmap-<slug>
 gh pr create --base "$base" --head docs/roadmap-<slug> --title "docs(roadmap): ..." --body "..."
+git worktree remove "$wt"   # BEFORE the merge: --delete-branch cannot delete a
+                            # branch a worktree still holds — never re-swap these
 gh pr merge <n> --squash --delete-branch
-git worktree remove "$wt"
 git checkout "$base" && git pull --ff-only
 ```
 
