@@ -412,13 +412,16 @@ loopkit's worktree-path convention** (`../<repo>-worktrees/...`, per
 - **Prune:** `git worktree prune` to clear stale administrative entries.
 - **Delete what `-d` can; report the rest.** For a local branch whose PR is merged,
   try `git branch -d <branch>` — safe delete only, **never `-D`** (a
-  `.claude/settings.json` deny rule and a constitution hard limit). `-d` succeeds
-  only while the branch's upstream still resolves, because it accepts "merged into
-  its **upstream**"; once that ref is pruned it falls back to comparing against HEAD
-  — where a **squash-merge is no ancestor** — and **refuses**: `error: the branch
-  '<b>' is not fully merged`. On a squash-merge repo that refusal is **expected, not
-  a failure to route around**: report the branch and the reason, and leave it for the
-  human. After §3's ordering fix the merge path deletes the branch itself, so this
+  `.claude/settings.json` deny rule and a constitution hard limit). `-d` accepts
+  "merged into its **upstream**" — and a branch's upstream is its **own** remote ref
+  (`origin/<branch>`), **not** the base — so while that ref still resolves the test
+  passes trivially and the branch deletes (git warns "merged to
+  `refs/remotes/origin/<b>`, but not yet merged to HEAD"). Once the ref is pruned,
+  `-d` compares against HEAD instead — where a **squash-merge is no ancestor** — and
+  **refuses**: `error: the branch '<b>' is not fully merged`. The discriminator is
+  therefore the upstream ref's survival, not the merge. On a squash-merge repo that
+  refusal is **expected, not a failure to route around**: report the branch and the
+  reason, and leave it for the human. After §3's ordering fix the merge path deletes the branch itself, so this
   sweep should normally meet only leftovers — a run that died between merge and
   delete, or a branch merged outside the loop. Leave remote branches to
   `--delete-branch` at merge.
