@@ -170,9 +170,9 @@ second human stop.
   item** carried into the acceptance gate (step 6), where `AskUserQuestion`
   resolves it — exactly like the genuinely-open bucket from step 2. Mark it in
   the spec (`OPEN — resolved at the spec-acceptance gate`); do not guess.
-- Scope it to questions answerable from vision/constitution/prior-art or
-  genuinely open — not unbounded speculation. A fork that still reaches an
-  implementer is a planning defect this step exists to catch.
+- Scope it to questions answerable from vision/constitution/architecture/
+  prior-art or genuinely open — not unbounded speculation. A fork that still
+  reaches an implementer is a planning defect this step exists to catch.
 
 ## 5. Worktree and PR
 
