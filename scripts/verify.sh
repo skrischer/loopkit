@@ -127,11 +127,15 @@ for f in skills/*/SKILL.md; do
       !infence { next }
       /^[[:space:]]*git worktree remove([[:space:]]+--[^[:space:]]+)*[[:space:]]+"\$wt"/ { seen_remove = 1; next }
       /^[[:space:]]*gh pr merge/ {
+        # A trailing comment is prose, not part of the command — strip it before
+        # any flag test, so a line documenting a prohibition cannot trip it.
+        cmd = $0
+        sub(/#.*/, "", cmd)
         # Count ONLY what we actually check: the floor is meaningless unless
         # counted == checked. Counting every `gh pr merge` would let a merge whose
         # delete flag moved to a continuation line keep the count at 4 while its
         # ordering went unchecked — silent vacuity, one level down.
-        if ($0 ~ /--delete-branch/ || $0 ~ /[[:space:]]-d([[:space:]]|$)/) {
+        if (cmd ~ /--delete-branch/ || cmd ~ /[[:space:]]-d([[:space:]]|$)/) {
           sites++
           if (!seen_remove) {
             printf "  %s:%d: `gh pr merge` deletes the branch with no `git worktree remove \"$wt\"` before it in this block.\n", file, FNR
@@ -143,10 +147,22 @@ for f in skills/*/SKILL.md; do
           # CanDeleteLocalBranch = !cmd.Flags().Changed("repo"), so with --repo it
           # NEVER deletes the local branch — silently, with no warning and no note
           # in `gh pr merge --help`. Observed live 2026-07-15 (PR #215).
-          if ($0 ~ /--repo([[:space:]]|=)/ || $0 ~ /[[:space:]]-R([[:space:]]|=)/) {
+          if (cmd ~ /--repo([[:space:]]|=|$)/ || cmd ~ /[[:space:]]-R/) {
             printf "  %s:%d: `gh pr merge` carries --repo/-R together with a delete flag.\n", file, FNR
             print  "      gh sets CanDeleteLocalBranch = !Flags().Changed(\"repo\"), so --repo silently skips"
             print  "      the LOCAL branch delete and re-creates the #205 leak. Drop --repo from the merge."
+            bad = 1
+          }
+          # Every flag test above is LINE-LOCAL, so a continuation would carry a
+          # flag out of their reach while `sites` still counts the site and the
+          # floor stays satisfied — green guard, broken invariant. Keep merge sites
+          # on one line and assert it, rather than assuming it: the ship fence
+          # already uses a continuation for `gh pr create`.
+          # (No apostrophes in this awk program — it is single-quoted in the shell.)
+          if (cmd ~ /\\[[:space:]]*$/) {
+            printf "  %s:%d: `gh pr merge` delete site continues onto the next line.\n", file, FNR
+            print  "      The flag checks here are line-local, so a continuation hides --repo or a"
+            print  "      second delete flag from them while the site still counts. Keep it on one line."
             bad = 1
           }
         }
@@ -191,13 +207,19 @@ fi
 #
 #    Scope: this covers THIS repo's CLAUDE.md (loopkit dogfooding itself). Target
 #    projects get the same wiring from /loopkit:inception (skills/inception/SKILL.md
-#    Step 8); asserting it there is a separate concern, not this guard's job.
+#    Step 9); asserting it there is a separate concern, not this guard's job.
+#
+#    Match the LIVE import form only — a bare `- @docs/x.md` list item. CLAUDE.md
+#    deliberately distinguishes it from the backticked `docs/x.md` of the "On demand
+#    (NOT auto-loaded)" section, which Claude Code does NOT import. A plain
+#    substring test would accept a doc demoted into that style: token present,
+#    import dead, guard green.
 echo "-- always-in-context guard (CLAUDE.md @imports the gate's decision docs) --"
 
 import_fail=0
 for doc in docs/vision.md docs/constitution.md; do
-  if ! grep -qF "@$doc" CLAUDE.md; then
-    echo "  CLAUDE.md no longer @imports $doc."
+  if ! grep -qE "^[[:space:]]*-[[:space:]]+@${doc//./\\.}([[:space:]]|$)" CLAUDE.md; then
+    echo "  CLAUDE.md no longer @imports $doc as a live import."
     echo "      /loopkit:plan §6 does not seed it — it relies on this line to place it in the"
     echo "      review subagent's context. Without it the spec-acceptance gate silently loses"
     echo "      the doc it checks specs against. Restore the @import, or seed the doc in §6."
