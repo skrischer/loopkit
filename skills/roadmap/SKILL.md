@@ -95,21 +95,32 @@ start `—`, `/loopkit:plan` fills them later):
 - Multiple ideas in one run append multiple rows; the roadmap keeps its ordering
   and north star intact.
 
-## Step 3 — Record foundation-doc impact onto the phase (only when an idea implies one)
+## Step 3 — Sweep every seeded phase for foundation-doc impact (per seeded phase, no gate)
 
-When an idea implies a change to a **foundation doc** — `docs/vision.md`,
-`docs/constitution.md`, or `docs/architecture.md` (apply the architecture-seed
+Run this sweep on **every** seeded phase, not just ones that look
+foundation-shaped. For each of the three foundation docs — `docs/vision.md`,
+`docs/constitution.md`, `docs/architecture.md` (apply the architecture-seed
 method per `skills/shared/iteration-steps.md` to work out the architectural
-impact) — roadmap does **NOT** edit that doc:
+impact) — record an explicit verdict, `none` included; a missing verdict is an
+omission, not an absence of impact. Roadmap does **NOT** edit any foundation
+doc itself:
 
-- Record the impact as a note **on the seeded phase** — on its roadmap row or its
-  backing prior-art entry, committed as part of the seed (e.g. `Foundation
-  impact: constitution — <one line of what must change and why>`).
+- Record the three verdicts as **one inline, semicolon-separated line** on the
+  seeded phase — on its roadmap row or its backing prior-art entry, committed as
+  part of the seed:
+
+  `Foundation impact: vision — none; constitution — <one line of what must change and why>; architecture — none`
+
+  **Why inline:** `docs/roadmap.md`'s phase table is a pipe-delimited Markdown
+  table where each row is one physical line — a multi-line block breaks it. The
+  same inline form is used at both locations named above (the roadmap row and
+  the backing prior-art entry) so there is one form to write and grep, not two.
 - The actual foundation-doc edit is authored inside that phase's
   `/loopkit:plan` spec PR and **ratified at its spec-acceptance gate** — never
   landed on the default branch by roadmap alone, never left as a dangling draft
   in the main checkout, never authored in `/loopkit:implement`. This keeps even a
   large change (e.g. a stack swap) under the one planning gate.
+- Forward rule: roadmap never backfills a verdict onto an existing row.
 
 ## Step 4 — Commit the seed (worktree + PR, merged autonomously — no gate)
 
