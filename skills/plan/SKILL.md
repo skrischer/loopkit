@@ -242,7 +242,8 @@ second human stop.
      and fast-forward the local base branch.
      ```
      git worktree remove "$wt"   # BEFORE the merge: --delete-branch cannot delete a
-                                 # branch a worktree still holds — never re-swap these
+                                 # branch a worktree still holds — never re-swap these.
+                                 # On a conflict: re-add $wt, fix, remove again, merge.
      gh pr merge <n> --squash --delete-branch
      git checkout "$base" && git pull --ff-only
      ```

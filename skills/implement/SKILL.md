@@ -329,7 +329,9 @@ dispatch). Its steps:
   merge — on an already-merged PR `gh` prompts interactively ("Pull request #<n>
   was already merged. Delete the branch locally?") and would hang the loop. If the
   merge fails on a conflict, `$wt` is already gone — re-attach with
-  `git worktree add "$wt" <branch>`, fix, then merge again.
+  `git worktree add "$wt" <branch>`, fix, then **remove the worktree again before
+  re-merging**: the re-attached worktree holds the branch exactly as before, so
+  merging with it in place re-orphans the branch.
   The merge auto-closes the issue (`Closes #<n>`); set its board status to `Done`
   (visibility only — not a lock). The spec Decision-log entry already rode in with
   the merge (recorded pre-merge, above) — nothing to write here on a deleted branch.

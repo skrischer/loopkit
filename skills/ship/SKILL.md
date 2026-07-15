@@ -109,7 +109,8 @@ no mutation); an explicit version (`vX.Y.Z`) to override the computed one.
   gh pr create --base "$base" --head release/<version> \
     --title "chore(release): <version>" --body-file "$notes"
   git worktree remove "$wt"    # BEFORE the merge: --delete-branch cannot delete a
-                               # branch a worktree still holds — never re-swap these
+                               # branch a worktree still holds — never re-swap these.
+                               # On a conflict: re-add $wt, fix, remove again, merge.
   gh pr merge <n> --squash --delete-branch
   git checkout "$base" && git pull --ff-only
   ```
