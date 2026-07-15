@@ -392,7 +392,7 @@ In both cases the orchestrator then:
 
 Never implement workarounds; never add status markers to specs.
 
-## 4.5 Cleanup sweep — no orphans, no force
+## 4.5 Cleanup sweep — clean what is safe, report the rest, never force
 
 The orchestrator runs this **once per run, after the frontier empties** —
 **before** the §5 QA gate and **before** the §4 escalate/park report. Per-issue
@@ -410,23 +410,23 @@ loopkit's worktree-path convention** (`../<repo>-worktrees/...`, per
   --force` (the deny rules forbid destroying uncommitted work). The sweep reports
   what it could not clean rather than forcing it.
 - **Prune:** `git worktree prune` to clear stale administrative entries.
-- **Delete what `-d` can; report the rest — do not expect to clean every merged
-  branch.** For a local branch whose PR is merged, try `git branch -d <branch>` —
-  safe delete only, **never `-D`** (a `.claude/settings.json` deny rule and a
-  constitution hard limit). `-d` succeeds only while the branch's remote-tracking
-  ref still exists, because it accepts "merged into its **upstream**". Once that ref
-  is pruned, `-d` falls back to comparing against HEAD — where a **squash-merge is
-  no ancestor** — and **refuses**: `error: the branch '<b>' is not fully merged`.
-  That refusal is **expected on a squash-merge repo, not a failure to route around**:
-  **report the branch and the reason**, and leave it for the human. Never reach for
-  `-D` to force it. After §3's ordering fix the merge path deletes the branch itself,
-  so this sweep only ever meets the crash path (a run that died between merge and
-  delete) — reporting is proportional there. Leave remote branches to
-  `--delete-branch` at merge (it deletes the remote even when the local delete
-  fails).
+- **Delete what `-d` can; report the rest.** For a local branch whose PR is merged,
+  try `git branch -d <branch>` — safe delete only, **never `-D`** (a
+  `.claude/settings.json` deny rule and a constitution hard limit). `-d` succeeds
+  only while the branch's upstream still resolves, because it accepts "merged into
+  its **upstream**"; once that ref is pruned it falls back to comparing against HEAD
+  — where a **squash-merge is no ancestor** — and **refuses**: `error: the branch
+  '<b>' is not fully merged`. On a squash-merge repo that refusal is **expected, not
+  a failure to route around**: report the branch and the reason, and leave it for the
+  human. After §3's ordering fix the merge path deletes the branch itself, so this
+  sweep should normally meet only leftovers — a run that died between merge and
+  delete, or a branch merged outside the loop. Leave remote branches to
+  `--delete-branch` at merge.
 
-Report any worktree or branch the sweep could **not** clean (dirty / unmerged) so
-the human can resolve it; nothing is force-removed.
+Report any worktree or branch the sweep could **not** clean — a dirty worktree, or a
+branch `-d` refused (typically a squash-merged branch whose upstream is gone: its PR
+**is** merged, git just cannot prove it) — so the human can resolve it; nothing is
+force-removed.
 
 ## 5. Milestone QA gate (STOP — the human gate)
 
@@ -441,8 +441,9 @@ merges. A **living-spec** milestone (description carries `Track: living-spec`) i
 always-open — it accretes issues and is never archived or closed by this gate; run
 the gate on the **closed-issue batch** (the issues that closed since the last QA).
 
-The frontier-empty cleanup sweep (§4.5) has already run, so no orphan worktrees or
-branches survive into QA. Run the gate:
+The frontier-empty cleanup sweep (§4.5) has already run; whatever it could not clean
+is in its report — on a squash-merge repo a `-d`-refused branch surviving into QA is
+expected, not a defect. Run the gate:
 
 - Derive concrete QA scenarios from the spec's **Verification** section — it is the
   QA script — including every acceptance item no machine check covers (the
