@@ -127,16 +127,46 @@ for f in skills/*/SKILL.md; do
       !infence { next }
       /^[[:space:]]*git worktree remove([[:space:]]+--[^[:space:]]+)*[[:space:]]+"\$wt"/ { seen_remove = 1; next }
       /^[[:space:]]*gh pr merge/ {
+        # A trailing comment is prose, not part of the command — strip it before
+        # any flag test, so a line documenting a prohibition cannot trip it.
+        # Require the fences own convention of 2+ spaces before the #: a bare
+        # /#.*/ would also cut at a # INSIDE a quoted argument (this repo commits
+        # titles like "chore(release): 2.1.0 (#204)"), hiding a --repo that follows
+        # it — a silent miss, which is the very thing this guard exists to prevent.
+        cmd = $0
+        sub(/[[:space:]][[:space:]]+#.*/, "", cmd)
         # Count ONLY what we actually check: the floor is meaningless unless
         # counted == checked. Counting every `gh pr merge` would let a merge whose
         # delete flag moved to a continuation line keep the count at 4 while its
         # ordering went unchecked — silent vacuity, one level down.
-        if ($0 ~ /--delete-branch/ || $0 ~ /[[:space:]]-d([[:space:]]|$)/) {
+        if (cmd ~ /--delete-branch/ || cmd ~ /[[:space:]]-d([[:space:]]|$)/) {
           sites++
           if (!seen_remove) {
             printf "  %s:%d: `gh pr merge` deletes the branch with no `git worktree remove \"$wt\"` before it in this block.\n", file, FNR
             print  "      --delete-branch/-d deletes the LOCAL branch too, and git refuses while a worktree"
             print  "      holds it — this order orphans a local branch on EVERY merge. Remove the worktree first."
+            bad = 1
+          }
+          # --repo makes the ordering fix moot: gh sets
+          # CanDeleteLocalBranch = !cmd.Flags().Changed("repo"), so with --repo it
+          # NEVER deletes the local branch — silently, with no warning and no note
+          # in `gh pr merge --help`. Observed live 2026-07-15 (PR #215).
+          if (cmd ~ /--repo([[:space:]]|=|$)/ || cmd ~ /[[:space:]]-R/) {
+            printf "  %s:%d: `gh pr merge` carries --repo/-R together with a delete flag.\n", file, FNR
+            print  "      gh sets CanDeleteLocalBranch = !Flags().Changed(\"repo\"), so --repo silently skips"
+            print  "      the LOCAL branch delete and re-creates the #205 leak. Drop --repo from the merge."
+            bad = 1
+          }
+          # Every flag test above is LINE-LOCAL, so a continuation would carry a
+          # flag out of their reach while `sites` still counts the site and the
+          # floor stays satisfied — green guard, broken invariant. Keep merge sites
+          # on one line and assert it, rather than assuming it: the ship fence
+          # already uses a continuation for `gh pr create`.
+          # (No apostrophes in this awk program — it is single-quoted in the shell.)
+          if (cmd ~ /\\[[:space:]]*$/) {
+            printf "  %s:%d: `gh pr merge` delete site continues onto the next line.\n", file, FNR
+            print  "      The flag checks here are line-local, so a continuation hides --repo or a"
+            print  "      second delete flag from them while the site still counts. Keep it on one line."
             bad = 1
           }
         }
@@ -168,6 +198,42 @@ if [ "$order_fail" -eq 0 ]; then
   echo "  merge-ordering guard: OK ($order_sites merge site(s) checked, worktree removed before each)"
 else
   echo "  merge-ordering guard: FAILED"
+  fail=1
+fi
+
+# 6. Always-in-context guard — `/loopkit:plan` §6's spec-acceptance gate does NOT
+#    seed docs/vision.md or docs/constitution.md: it relies on CLAUDE.md's
+#    `@import` ("Always in context") to put both in the review subagent's context
+#    before any tool use. Only docs/architecture.md is seeded, being the one
+#    foundation doc CLAUDE.md marks "On demand (NOT auto-loaded)". If an @import
+#    line is dropped, the gate silently loses the documents it exists to check
+#    against — no failure, just a quieter gate. Assert the lines are still there.
+#
+#    Scope: this covers THIS repo's CLAUDE.md (loopkit dogfooding itself). Target
+#    projects get the same wiring from /loopkit:inception (skills/inception/SKILL.md
+#    Step 9); asserting it there is a separate concern, not this guard's job.
+#
+#    Match the LIVE import form only — a bare `- @docs/x.md` list item. CLAUDE.md
+#    deliberately distinguishes it from the backticked `docs/x.md` of the "On demand
+#    (NOT auto-loaded)" section, which Claude Code does NOT import. A plain
+#    substring test would accept a doc demoted into that style: token present,
+#    import dead, guard green.
+echo "-- always-in-context guard (CLAUDE.md @imports the gate's decision docs) --"
+
+import_fail=0
+for doc in docs/vision.md docs/constitution.md; do
+  if ! grep -qE "^[[:space:]]*-[[:space:]]+@${doc//./\\.}([[:space:]]|$)" CLAUDE.md; then
+    echo "  CLAUDE.md no longer @imports $doc as a live import."
+    echo "      /loopkit:plan §6 does not seed it — it relies on this line to place it in the"
+    echo "      review subagent's context. Without it the spec-acceptance gate silently loses"
+    echo "      the doc it checks specs against. Restore the @import, or seed the doc in §6."
+    import_fail=1
+  fi
+done
+if [ "$import_fail" -eq 0 ]; then
+  echo "  always-in-context guard: OK (vision + constitution @imported)"
+else
+  echo "  always-in-context guard: FAILED"
   fail=1
 fi
 
