@@ -125,18 +125,24 @@ for f in skills/*/SKILL.md; do
     awk -v file="$f" '
       /^[[:space:]]*```/ { infence = !infence; if (infence) seen_remove = 0; next }
       !infence { next }
-      /^[[:space:]]*git worktree remove.*"\$wt"/ { seen_remove = 1; next }
-      /^[[:space:]]*gh pr merge .*--delete-branch/ {
-        sites++
-        if (!seen_remove) {
-          printf "  %s:%d: `gh pr merge --delete-branch` runs with no `git worktree remove \"$wt\"` before it in this block.\n", file, FNR
-          print  "      --delete-branch deletes the LOCAL branch too, and git refuses while a worktree"
-          print  "      holds it — this order orphans a local branch on EVERY merge. Remove the worktree first."
-          bad = 1
+      /^[[:space:]]*git worktree remove([[:space:]]+--[^[:space:]]+)*[[:space:]]+"\$wt"/ { seen_remove = 1; next }
+      /^[[:space:]]*gh pr merge/ {
+        # Count ONLY what we actually check: the floor is meaningless unless
+        # counted == checked. Counting every `gh pr merge` would let a merge whose
+        # delete flag moved to a continuation line keep the count at 4 while its
+        # ordering went unchecked — silent vacuity, one level down.
+        if ($0 ~ /--delete-branch/ || $0 ~ /[[:space:]]-d([[:space:]]|$)/) {
+          sites++
+          if (!seen_remove) {
+            printf "  %s:%d: `gh pr merge` deletes the branch with no `git worktree remove \"$wt\"` before it in this block.\n", file, FNR
+            print  "      --delete-branch/-d deletes the LOCAL branch too, and git refuses while a worktree"
+            print  "      holds it — this order orphans a local branch on EVERY merge. Remove the worktree first."
+            bad = 1
+          }
         }
         seen_remove = 0
       }
-      END { printf "SITES=%d\n", sites; exit bad ? 1 : 0 }
+      END { printf "SITES=%d\n", sites; exit (bad ? 1 : 0) }
     ' "$f"
   )" || order_fail=1
   echo "$out" | grep -v '^SITES=' || true
