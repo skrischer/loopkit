@@ -1,7 +1,7 @@
 {
   "name": "loopkit",
   "displayName": "Loopkit",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "The proportional loop for Claude Code: ceremony scales with change size — full spec -> milestone -> dependency-ordered issues for features, a track:adhoc fast-lane for bugs/QoL, a living-spec track for ongoing themes. /inception bootstraps loop-readiness; /roadmap spars raw ideas into seeded roadmap phases; /plan produces, /implement orchestrates one milestone via in-session subagent fan-out, /design adds an optional planning-time design step (UI or a decision-clarifying concept/flow visualisation); /ship finalizes merged work into a published release — all on GitHub issues/milestones/board, attended and subscription-auth.",
   "author": { "name": "Sebastian Krischer" }
 }

@@ -8,6 +8,38 @@ Versioning and the release process are defined in [`docs/release.md`](docs/relea
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-07-16
+
+### Added
+
+- Two structural guards in `scripts/verify.sh`. A **merge-ordering guard**
+  asserts every `--delete-branch` merge site is preceded by
+  `git worktree remove "$wt"`, and rejects a `--repo`/`-R` flag or a
+  line-continuation at that site — both silently disable gh's local-branch
+  delete. An **always-in-context guard** asserts `docs/vision.md` and
+  `docs/constitution.md` stay `@import`ed in `CLAUDE.md`, so the
+  permanently-loaded foundation docs cannot silently detach from the gate that
+  reads them.
+
+### Fixed
+
+- The `/loopkit:implement` merge sequence leaked a local branch on every merge:
+  `--delete-branch` cannot delete a branch a worktree still holds. All four
+  skills (`implement`, `ship`, `plan`, `roadmap`) now remove the worktree
+  **before** the squash-merge, and the `/loopkit:implement` §4.5 cleanup sweep's
+  branch rule is honest and report-only — it had keyed its safety on the wrong
+  ref (a squash-merged branch is deletable only while its upstream
+  `origin/<branch>` survives, never by ancestry to the base).
+- The `track:adhoc` auto-pick eligibility check queried a non-existent
+  `gh issue view` field, silently failing the trust-boundary trusted-author
+  gate; it now reads `author_association` via the REST API
+  (`gh api repos/:owner/:repo/issues/<n>`).
+- The spec-acceptance gate could pass a spec that contradicts a foundation doc.
+  `/loopkit:plan` §6 now explicitly asks whether the spec contradicts
+  `docs/vision.md`, `docs/constitution.md`, or `docs/architecture.md` (with
+  citation verification), and `/loopkit:roadmap` Step 3 records foundation-doc
+  impact as a sweep across all three docs rather than a single hit.
+
 ## [2.1.0] - 2026-07-09
 
 ### Added
@@ -65,6 +97,7 @@ marker, not a reconstructed history; changes from here forward are recorded abov
 - Foundation docs (vision, constitution, architecture, prior-art, roadmap) and
   the per-project contracts (`docs/workflow.md`, `docs/design.md`).
 
-[Unreleased]: https://github.com/skrischer/loopkit/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/skrischer/loopkit/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/skrischer/loopkit/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/skrischer/loopkit/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/skrischer/loopkit/releases/tag/v2.0.0
