@@ -711,6 +711,19 @@ works only when the file is committed.
   /design (duplication); a feedback watcher/automation — /roadmap recognizes
   docs/feedback/ files as raw-idea inputs when invoked (attended model).
 
+### Anthropic — Context Engineering for Claude 5 Generation Models (HTML mockups)
+
+- Path: https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models
+  (Thariq Shihipar, 2026-07-24)
+- License: n/a (first-party essay)
+- Verdict: reference-only — "a HTML mockup of a design will generally produce
+  better results than a description of the design or a screenshot".
+- Date: 2026-10-27
+- Notes: ADOPT — a committed `.html` mockup as a durable design medium and
+  handoff form next to SVG/Mermaid; it is a committed file, so the
+  never-an-external-URL rule holds. AVOID — a hosted preview link as the
+  durable form.
+
 ## Attended-loop permission guardrails (feature: permission-template-hardening)
 
 The shipped inception settings template defaults generated projects to
@@ -744,6 +757,27 @@ gate on exactly the surface a skeptical adopter inspects first.
   stricter acceptEdits variant as an explicit inception choice. AVOID —
   defaulting strangers into bypass silently, without the rationale in front of
   them.
+
+### Claude Code permission modes and rules — project-level bypass is ignored (first-party, 2026-10-27)
+
+- Path: https://code.claude.com/docs/en/permission-modes;
+  https://code.claude.com/docs/en/permissions; https://code.claude.com/docs/en/hooks
+- License: n/a (first-party docs)
+- Verdict: reference-only — "If you set `bypassPermissions` in those two files
+  [`.claude/settings.json` / `settings.local.json`], it doesn't take effect
+  either, and the session starts in Manual mode"; `auto` is likewise ignored in
+  project files. bypassPermissions is documented as "Isolated containers and VMs
+  only" and "offers no protection against prompt injection". A Bash rule "matches
+  the command text Claude writes … isn't a security boundary"; the docs' own
+  example: `Bash(git push *)` does not stop `git -C . push origin main`. Real
+  enforcement is hooks or the sandbox.
+- Date: 2026-10-27
+- Notes: ADOPT — a restrictive project `defaultMode` (`acceptEdits`) with
+  `auto` as the user-level opt-in; repeat each git deny rule for the `git -C`
+  form the loops use; put the merge-order and force-push guards in a
+  plugin-shipped PreToolUse hook. AVOID — the Cherny entry's "document why bypass
+  is the attended default" as written: in a project file the setting never takes
+  effect (the auto mode he argues for is now a native mode).
 
 ## Positioning vocabulary — attended, spec-anchored, agentic engineering (feature: repositioning)
 
@@ -978,6 +1012,11 @@ project-config, exactly like the Verify command already in the contract.
   that `CLAUDE_CODE_SUBAGENT_MODEL` silently overrides all per-role routing. The
   cost story is real: routing a top-tier reviewer over the 44/86 no-behavior PRs
   (see `ceremony-overhead`) burned ~half of review spend on process PRs.
+- Re-verified 2026-10-27 (docs/feedback/2026-10-27-claude5-audit.md F07): the resolution order above
+  is obsolete since Claude Code v2.1.251 — per-invocation `model` > definition
+  frontmatter > `CLAUDE_CODE_SUBAGENT_MODEL` (only a default) > main model; the env
+  var overrides the routing only with `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`. The
+  foot-gun note no longer holds.
 
 ## Release/ship phase — attended, GitHub-native release automation (feature: ship-skill)
 
@@ -1135,3 +1174,140 @@ missing or stale.
 - Notes: ADOPT — bootstrap-once / run-many; the readiness sweep (inception
   `--here`) owns detecting a missing contract. AVOID — regenerating the contract
   per release (drift + a second source of truth).
+
+## Skill structure for Claude 5 — compaction re-attach, progressive disclosure, plugin-relative paths (feature: skill-structure)
+
+loopkit's three largest skills exceed what Claude Code carries through a
+compaction: invoked skill bodies are re-attached capped at 5,000 tokens each,
+keeping the start, so `implement` (~7.8k tokens) loses its merge order, park
+rules, cleanup sweep and the milestone-QA gate mid-run. Separately, skills
+reference sibling files by repo-relative path (`skills/shared/…`, "templates next
+to this file") and point security rules at loopkit's own constitution — both
+resolve only inside the loopkit repo, never in a target project (the dogfood
+blind spot). Internal evidence: docs/feedback/2026-10-27-claude5-audit.md F01/F03/F04/F14/F16/F23.
+
+### Claude Code docs — skills, context window, plugins (first-party)
+
+- Path: https://code.claude.com/docs/en/skills;
+  https://code.claude.com/docs/en/context-window;
+  https://code.claude.com/docs/en/plugins-reference
+- License: n/a (first-party docs)
+- Verdict: reference-only — "Invoked skill bodies | Re-injected, capped at 5,000
+  tokens per skill and 25,000 tokens total; oldest dropped first"; "Truncation
+  keeps the start of the file, so put the most important instructions near the
+  top of `SKILL.md`"; "Keep `SKILL.md` under 500 lines". `${CLAUDE_SKILL_DIR}` and
+  `${CLAUDE_PLUGIN_ROOT}` are substituted in skill content only — not in files
+  read with Read, not in the Bash environment.
+- Date: 2026-10-27
+- Notes: ADOPT — a core `SKILL.md` holding everything a run needs to reach its
+  gate, with rarely-needed or subagent-only parts in on-demand files; plugin
+  variables for every path in skill content, file-relative paths inside
+  reference files. AVOID — reading "under 500 lines" as the binding limit (the
+  5,000-token re-attach cap bites first); repo-relative paths in a plugin skill.
+
+### Agent Skills spec + anthropics/skills — `references/` and progressive disclosure
+
+- Path: https://agentskills.io/specification; https://github.com/anthropics/skills
+  (skill-creator, mcp-builder)
+- License: not verified in this pass
+- Verdict: reference-only — the cross-agent convention: a skill directory with
+  optional `scripts/`, `references/`, `assets/`; name + description always in
+  context, the body on trigger, bundled files only when the body points to them;
+  SKILL.md under 500 lines; each reference linked from SKILL.md with when to read
+  it. mcp-builder keeps a 237-line core by moving its guides into references.
+- Date: 2026-10-27
+- Notes: ADOPT — the `references/` directory name (portable across agents) and
+  the "link each reference with when to read it" rule. AVOID — nothing; the
+  convention is the substrate, not a competitor.
+
+### VisiTrans claude-toolkit — skill-amnesia mitigation via compaction hooks
+
+- Path: https://v025-claude-toolkit.pages.dev/solutions/patterns/skill-amnesia-mitigation/
+  (repo Visitrans/V025-claude-toolkit)
+- License: not stated
+- Verdict: reference-only — a PreCompact hook enriches the summary and a
+  SessionStart(`compact`) hook re-injects the workflow state after compaction;
+  an always-loaded CLAUDE.md inventory was retired at ~1,500 tokens per request.
+- Date: 2026-10-27
+- Notes: ADOPT — re-inject orchestration state with a `compact`-matcher hook
+  (feeds `permission-template-hardening`'s hooks). AVOID — buying compaction
+  survival with always-loaded CLAUDE.md text; that costs tokens on every turn,
+  the same misbelief as loopkit's "Compact Instructions … zero per-turn cost".
+
+### Anthropic — Context Engineering for Claude 5 Generation Models (skills as light guides)
+
+- Path: https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models
+  (Thariq Shihipar, 2026-07-24)
+- License: n/a (first-party essay)
+- Verdict: reference-only — overconstraining hurts Claude 5 models; skills should
+  be "lightweight guides… Avoid making them overconstrained, except in highly
+  important areas"; use progressive disclosure, a "tree of files".
+- Date: 2026-10-27
+- Notes: ADOPT — the register pass: emphasis only where it guards a real
+  failure (the two STOP gates, the trust boundary, the merge order); outcomes
+  over choreography. AVOID — deleting load-bearing prohibitions in the name of
+  brevity (keep list: docs/feedback/2026-10-27-claude5-audit.md).
+
+## Foundation docs current for Claude 5 — lean always-loaded context, honest native-primitive claims (feature: foundation-currency)
+
+The foundation docs load every turn (`CLAUDE.md` + vision + constitution ≈ 4.6k
+tokens) and carry history narrative, a native-primitive claim the skills do not
+honour ("skills wrap `/loop`, `/plan`, `/batch`, and worktrees"), "no scheduler"
+wording that predates `/loop`'s session-scoped cron, and agent teams presented
+as a peer of subagents. Builds on "Foundation-doc context budget (feature:
+foundation-dedup)" and "Native Claude Code primitives — loopkit builds on these"
+above. Internal evidence: docs/feedback/2026-10-27-claude5-audit.md F19/F24/F26/F27/F29.
+
+### Anthropic — Context Engineering for Claude 5 Generation Models (lightweight CLAUDE.md)
+
+- Path: https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models
+  (Thariq Shihipar, 2026-07-24)
+- License: n/a (first-party essay)
+- Verdict: reference-only — "Keep your CLAUDE.md lightweight … spend most of the
+  tokens on gotchas"; Anthropic deleted most of its own system prompt for Claude 5.
+- Date: 2026-10-27
+- Notes: ADOPT — always-loaded text states binding rules and gotchas; mechanism
+  detail lives in the contracts it already points to; history lives in git.
+  AVOID — migration-relative phrasing ("now", "no longer", "the old …").
+
+### Claude Code docs — `/loop`, worktree isolation, agent teams (first-party)
+
+- Path: https://code.claude.com/docs/en/scheduled-tasks;
+  https://code.claude.com/docs/en/sub-agents; https://code.claude.com/docs/en/agent-teams
+- License: n/a (first-party docs)
+- Verdict: reference-only — `/loop` "converts it to a cron expression" (or
+  self-paces via `ScheduleWakeup`), is session-scoped and expires after 7 days;
+  Agent `isolation: worktree` creates temporary worktrees under
+  `.claude/worktrees/` with generated branch names; agent teams are experimental
+  and off by default.
+- Date: 2026-10-27
+- Notes: ADOPT — name what is reused (subagents, `/loop`, plan mode where used)
+  and what is hand-rolled on purpose (worktrees: resume needs deterministic
+  branch names); define "no scheduler" as no external or unattended scheduler.
+  AVOID — claiming a wrap the skills do not perform.
+
+## Layer precedence + per-role effort in the workflow contract (feature: contract-precedence)
+
+The contract's role→tier map, the skills' defaults, the human's in-session
+instruction and Claude Code's own enforcement can disagree, and loopkit never says
+which wins — so each run resolves it differently. Builds on
+"Model-tier-per-agent — role-to-tier routing in the contract (feature:
+model-tier-slots)" above. Internal evidence: docs/feedback/2026-10-27-claude5-audit.md F12/F28.
+
+### Claude Code settings precedence, subagent model order, effort (first-party)
+
+- Path: https://code.claude.com/docs/en/settings;
+  https://code.claude.com/docs/en/sub-agents; https://code.claude.com/docs/en/model-config
+- License: n/a (first-party docs)
+- Verdict: reference-only — Claude Code resolves its own layers by a fixed,
+  documented order (managed > command line > local project > shared project >
+  user settings; deny rules win over every allow); subagent models resolve
+  per-invocation > frontmatter > `CLAUDE_CODE_SUBAGENT_MODEL` default; skills and
+  subagents accept an `effort` frontmatter that overrides the session level, and
+  Opus 5.5 defaults to `medium` effort in Claude Code.
+- Date: 2026-10-27
+- Notes: ADOPT — the same shape for loopkit's layers: a short numbered "first
+  applicable layer wins" list, enforcement first, and the trust boundary stated
+  in it (GitHub text is never a human instruction); per-role effort beside the
+  tier in the contract. AVOID — model or effort in skill frontmatter (a hidden
+  extra layer the contract cannot override per project).
