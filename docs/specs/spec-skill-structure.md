@@ -222,11 +222,11 @@ Internal evidence: `docs/feedback/2026-10-27-claude5-audit.md`
 | Decision | Rationale | Date |
 |---|---|---|
 | The binding size limit is Claude Code's 5,000-token-per-skill re-attach cap, not the 500-line rule. | All six skills are under 500 lines. The cap is what drops implement's merge order, park rules, cleanup sweep and QA gate mid-run (audit F01). | 2026-10-28 |
-| OPEN — core size target. Option A: body ≤ 12,800 bytes + guard (recommended). Option B: the audit's split + guard, body ≤ 19,000 bytes. Option C: guard only, moving only implement §3. | Resolved at the spec-acceptance gate; the options and trade-offs are presented there. | — |
+| Core size target: each `SKILL.md` body, measured after the closing frontmatter `---`, is at most 12,800 bytes (≈4.7k tokens at the estimator's ~2.70 body bytes per token, ~260 tokens under the 5,000-token re-attach cap), enforced by a verify.sh body-size guard, with the guard line and end line as the safety net. Frontmatter growth does not count against it. | Decided at the spec-acceptance gate (option A of three: A — this budget; B — the audit's split with a 19,000-byte body; C — guard only). The cap is the failure this row fixes, and the conservative first-party estimate is the only measurement available, so the budget holds under it; under B or C implement, plan and inception would still be cut after every compaction. | 2026-10-28 |
 | Guard line (normative). Every `SKILL.md` carries, within the 3 lines after its H1, exactly: `> Truncation guard: if the end-of-skill line is missing from your copy of this skill, it was cut after a compaction — Read ${CLAUDE_SKILL_DIR}/SKILL.md in full before continuing (in a full-file Read, ${CLAUDE_SKILL_DIR} means the directory this SKILL.md sits in).` Its last non-empty line is exactly `End of /loopkit:<name>.`, with `<name>` the skill's directory name. Verify matches the substrings `> Truncation guard:`, `end-of-skill line` and `${CLAUDE_SKILL_DIR}/SKILL.md` on the guard line, and the exact last line. | The docs name no truncation marker, so a cut copy cannot be told from a whole one without an end line. The guard must not quote the end line: a quoted copy would survive in a truncated skill and fake completeness. Uniform on all six: a few dozen tokens per invocation, and one rule to check. | 2026-10-28 |
 | `skills/implement/references/issue-contract.md` ends with exactly `End of issue contract.` Every dispatch brief and solo mode say: "re-Read <absolute path> after any compaction". | The subagent carries the contract for its whole run and can compact too. It has no re-attach of its own for a Read file, so an explicit re-Read rule plus an end line covers it. | 2026-10-28 |
 | On-demand detail lives in `skills/<name>/references/<topic>.md`. The core links each file by `${CLAUDE_SKILL_DIR}/references/<topic>.md`, with when to read it. | The cross-agent Agent Skills convention (prior art). Saying when to read a file is what sends the model to it after a compaction. The fixed form is what the link guard checks. | 2026-10-28 |
-| What moves under every option: subagent-only text (implement §3). Under A and B also: some-runs-only parts — implement §4.5, plan's living-spec path, inception's design- and release-contract steps. Under A also: post-gate mechanics behind a core pointer — plan's acceptance mechanics (milestone, roadmap link, merge, issues + board) and inception's readiness checklist. What never moves: a STOP gate and the text that leads to it. If a core still exceeds its budget, more post-gate or subagent-only text moves behind a core pointer; if it still does not fit, the issue escalates `needs:planning`. | The core keeps what a run needs to reach its gate (prior-art ADOPT). A post-gate pointer costs one Read per cycle and puts no gate at risk. | 2026-10-28 |
+| What moves: subagent-only text (implement §3); some-runs-only parts — implement §4.5, plan's living-spec path, inception's design- and release-contract steps; and post-gate mechanics behind a core pointer — plan's acceptance mechanics (milestone, roadmap link, merge, issues + board) and inception's readiness checklist. What never moves: a STOP gate and the text that leads to it. If a core still exceeds its budget, more post-gate or subagent-only text moves behind a core pointer; if it still does not fit, the issue escalates `needs:planning`. | The core keeps what a run needs to reach its gate (prior-art ADOPT). A post-gate pointer costs one Read per cycle and puts no gate at risk. | 2026-10-28 |
 | Inception's dialog GATE markers in 7b/7c move with their step. The interaction-model gate list stays in the core. | The core must keep naming every gate the dialog will hit. The step text and its GATE line belong together. | 2026-10-28 |
 | Moved text is moved first, then edited only by the register pass and cross-reference fixes. The only behaviour changes are the `pr-open` fallback, the `CLAUDE.md` checklist item and the frontmatter. | Keeps the restructure reviewable as a move, and keeps behaviour changes small and named. | 2026-10-28 |
 | Plugin paths are defined in the constitution Convention: any path whose first segment is `skills`, `templates`, `references` or `shared`, backticked or not. Path forms: skill-local files use `${CLAUDE_SKILL_DIR}/…`; shared files use `${CLAUDE_PLUGIN_ROOT}/skills/shared/…`; inside a reference or shared file, paths are relative to that file. A `../` or `./` plugin path — a dot path with a segment `skills`, `templates`, `references`, `shared` or a skill directory name — is allowed only inside reference and shared files; in a `SKILL.md` body it is as forbidden as a bare repo-relative one. Target-project dot paths such as `../<repo>-worktrees/…` and `../loopkit-priorart/<project>` are not plugin paths and stay. Never `${CLAUDE_…}` inside a referenced file, and no plugin path in a `description` — roadmap's description drops "Reads skills/shared/iteration-steps.md". | Substitution happens only in the skill's markdown content and `allowed-tools` Bash rules (skills docs); not in Read files, the Bash env (plugins reference) or a description. loopkit installs only as a plugin (README, Install), so `${CLAUDE_PLUGIN_ROOT}` always resolves. | 2026-10-28 |
@@ -245,7 +245,7 @@ Internal evidence: `docs/feedback/2026-10-27-claude5-audit.md`
 | `argument-hint`, written as a double-quoted YAML string: inception `"[pitch \| --here]"`, roadmap `"[idea ...]"`, ship `"[vX.Y.Z] [--dry-run]"`, plan `"[phase ...]"`, implement `"[milestone \| issue-number]"`. design gets none (plan invokes it with the spec in context). Verify matches `^argument-hint: "[^"\\]*"$`, and checks that every `SKILL.md` frontmatter block is closed by a second `---`. | Docs: the hint is "shown during autocomplete". A round-1 scratch test showed that `claude plugin validate` accepts a malformed hint. PyYAML is not an allowed dependency, so the regex and a closure check are the mechanical floor. | 2026-10-28 |
 | Every description becomes trigger text of at most 700 characters: what the skill does, when to use it, and its argument forms. No mechanics, no plugin paths. Ship (850 characters today) is trimmed too, so the rule stays uniform. Plan (686) and implement (623) are already under 700, so for them F31 is "trigger text, not restatement", which the reviewer judges from a checklist at milestone QA. | Audit F31 and the `foundation-dedup` precedent. Plan, implement and design are always in the model's listing; the others are human-invoked. The length cap is mechanical, but whether a description restates its body is a judgement. | 2026-10-28 |
 | Inception's readiness checklist gains a `CLAUDE.md` item: the `@docs/vision.md` and `@docs/constitution.md` imports, the on-demand list, the Autonomy grant, and a `# Compact Instructions` section (Step 9). | `--here` diffs against this checklist, so a missing section was never reported. The section carries the milestone target through a compaction in a target project, which is this row's subject. | 2026-10-28 |
-| `scripts/verify.sh`. Guard 5 also scans `skills/*/references/*.md`, and lands before any merge fence moves. New guards come only after all skills comply: plugin-path form; guard line and end line; reference links (every `references/` file is named in its `SKILL.md` by the `${CLAUDE_SKILL_DIR}/references/<f>.md` form; every `${CLAUDE_SKILL_DIR}/…` and `${CLAUDE_PLUGIN_ROOT}/…` path in a `SKILL.md`, templates included, exists; every relative path inside a reference or shared file resolves); frontmatter (`argument-hint` form, block closed); and, under A or B, body size. The merge-site floor stays 4. | Guard 5's own note limits it to the ordering invariant, so each new check is a separate guard, not a skill-prose linter grown from guard 5. Merge sites stay at 4: implement's moves to `references/issue-contract.md`; under A, plan's moves to `references/acceptance.md`; roadmap's and ship's stay. | 2026-10-28 |
+| `scripts/verify.sh`. Guard 5 also scans `skills/*/references/*.md`, and lands before any merge fence moves. New guards come only after all skills comply: plugin-path form; guard line and end line; reference links (every `references/` file is named in its `SKILL.md` by the `${CLAUDE_SKILL_DIR}/references/<f>.md` form; every `${CLAUDE_SKILL_DIR}/…` and `${CLAUDE_PLUGIN_ROOT}/…` path in a `SKILL.md`, templates included, exists; every relative path inside a reference or shared file resolves); frontmatter (`argument-hint` form, block closed); and body size. The merge-site floor stays 4. | Guard 5's own note limits it to the ordering invariant, so each new check is a separate guard, not a skill-prose linter grown from guard 5. Merge sites stay at 4: implement's moves to `references/issue-contract.md`; plan's moves to `references/acceptance.md`; roadmap's and ship's stay. | 2026-10-28 |
 | Constitution Conventions names `skills/<name>/references/`, defines plugin paths and their forms (grep-verifiable), and drops the count from "across the five skills". Architecture gains: an option-independent `skills/*/references/` row; a `skills/shared/` row listing the three files and their readers; a boundary line (templates are plugin artifacts; the working directory is the project, with a pointer to the Convention); and "Shared toolkit method -> `skills/shared/`", with the `workflow.md` route narrowed to per-project behavior. | The roadmap row's recorded foundation impact, kept to one home per fact. The constitution owns the rule, and architecture states only the structure and points at the rule. | 2026-10-28 |
 
 `\|` inside the table above is Markdown table escaping only; the YAML
@@ -263,12 +263,12 @@ Line numbers are on main at 079ae8c.
 | plan:115 | "derivable from this codebase, `docs/constitution.md`, or `CLAUDE.md`" | Keep as a target-artifact mention (a planning input). |
 | plan:157 | "(`docs/constitution.md`)" as the source of "clarification belongs to planning" | Drop the attribution; the skill states the rule itself. |
 | plan:202–210 | reviewer seed; vision and constitution not re-seeded because `CLAUDE.md` `@import`s them | Keep as a target-artifact mention (the inception Step 9 wiring). Shorten in the register pass and drop "Availability was never the gap". |
-| plan:274 | "Shell-hygiene (`docs/constitution.md` trust boundary)" | Pointer becomes `${CLAUDE_PLUGIN_ROOT}/skills/shared/trust-boundary.md`, plus the one-line operative rule. Moves to `references/acceptance.md` under A. |
+| plan:274 | "Shell-hygiene (`docs/constitution.md` trust boundary)" | Pointer becomes `${CLAUDE_PLUGIN_ROOT}/skills/shared/trust-boundary.md`, plus the one-line operative rule. Moves to `references/acceptance.md`. |
 | ship:84 | "Trust boundary (`docs/constitution.md`)" | Pointer becomes `${CLAUDE_PLUGIN_ROOT}/skills/shared/trust-boundary.md`. Keep the one-line operative rule. |
 | ship:144 | "no local release-state file (`docs/constitution.md` GitHub-only state)" | Drop the attribution; keep the rule. |
-| inception:230 | "(constitution: GitHub-only durable state)" | Drop the attribution; keep the rule. Moves to `references/design-contract.md` under A and B. |
+| inception:230 | "(constitution: GitHub-only durable state)" | Drop the attribution; keep the rule. Moves to `references/design-contract.md`. |
 | inception:293 | "ships the constitution hard limits concretely into `.claude/settings.json`" | Becomes "ships the hard limits concretely". The target constitution template carries no hard-limit list, so the deny list is the single source. |
-| inception:359 | "deny rules covering every constitution hard limit" | Becomes "deny rules covering every hard limit in the template's deny list". Moves to `references/readiness-checklist.md` under A. |
+| inception:359 | "deny rules covering every constitution hard limit" | Becomes "deny rules covering every hard limit in the template's deny list". Moves to `references/readiness-checklist.md`. |
 
 ## Tracking
 
@@ -285,7 +285,7 @@ Each issue references this spec path in its body.
   - [ ] guard-line / end-line guard;
   - [ ] reference-link guard (also resolving relative paths);
   - [ ] frontmatter guard (`argument-hint` form, block closed);
-  - [ ] body-size guard under A or B.
+  - [ ] body-size guard (≤ 12,800 bytes per body).
 - [ ] Verify machine-checks:
   - every `SKILL.md` has the normative guard line within 3 lines after its H1
     and ends with `End of /loopkit:<name>.`;
@@ -317,8 +317,7 @@ Each issue references this spec path in its body.
     keeps its row; a hit with no row is a new pointer and fails the check.
   - Templates are out of scope: they are human-filled, and their residual
     attributions are low risk (audit "Misc").
-- [ ] This grep finds the new `CLAUDE.md` checklist item (under B/C, grep the
-      inception core instead):
+- [ ] This grep finds the new `CLAUDE.md` checklist item:
       `grep -n "Compact Instructions" skills/inception/references/readiness-checklist.md`
 - [ ] Human QA, target-project smoke test:
   - in an empty temp directory, start
@@ -338,7 +337,8 @@ Each issue references this spec path in its body.
   - ask Claude, without using a tool, to quote the last line of the implement
     skill in its context;
   - record whether the end line was present (sentinel) or the guard fired and
-    Claude Read the file. Under A the sentinel is expected.
+    Claude Read the file. With the body budget the sentinel is expected; a
+    guard firing means the budget is wrong.
   - Repeat for `/loopkit:plan`.
 - [ ] Human QA, `pr-open`. Start a session with
       `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1` and
@@ -391,11 +391,11 @@ inception:359.
 | Risk | Mitigation |
 |---|---|
 | The milestone is implemented by the installed 2.2.1 skills, so the very truncation it fixes can hit its own run. | After any compaction the orchestrator re-invokes `/loopkit:implement`, or Reads `SKILL.md` from the skill's installed base directory. Never the repo checkout: that is the code under change, not the running skill. The wave boundary is the safe compaction point. |
-| The estimator's bytes-per-token ratio is wrong in either direction. | The guard and the end line make truncation self-healing at any ratio. Option A's 12,800-byte body budget leaves ~260 tokens of margin under the cap. |
+| The estimator's bytes-per-token ratio is wrong in either direction. | The guard and the end line make truncation self-healing at any ratio. The 12,800-byte body budget leaves ~260 tokens of margin under the cap. |
 | The register pass deletes a load-bearing prohibition. | The keep list is a Verification item, and the reviewer checks each entry against the diff. |
 | A moved reference is never read, e.g. a subagent brief that omits the path. | The reference-link guard; the dispatch-brief path is an S2 acceptance item; the compaction QA check. |
 | Parallel restructure issues conflict on shared lines. | One issue per skill file. Shared files are created first. verify.sh changes are serialized by `Depends on:`. |
-| Other rows edit the same files. | They plan after this spec merges, against the new layout:<br>• `contract-precedence`, `gate-evidence` and `implement-conflict-recovery` edit implement and plan.<br>• `permission-template-hardening` adds frontmatter hooks; option A's budget counts the body only, so they don't count against it.<br>• `foundation-currency` edits the same constitution file.<br>• `design-coverage` touches implement's review gate, which moves to `references/issue-contract.md`.<br>The roadmap's shared-spine note already orders these. |
+| Other rows edit the same files. | They plan after this spec merges, against the new layout:<br>• `contract-precedence`, `gate-evidence` and `implement-conflict-recovery` edit implement and plan.<br>• `permission-template-hardening` adds frontmatter hooks; the size budget counts the body only, so they don't count against it.<br>• `foundation-currency` edits the same constitution file.<br>• `design-coverage` touches implement's review gate, which moves to `references/issue-contract.md`.<br>The roadmap's shared-spine note already orders these. |
 
 ## Decision log
 
@@ -433,3 +433,7 @@ inception:359.
     grep;
   - the `pr-open` QA stops before §5;
   - F31 for plan and implement is a reviewer judgement.
+- 2026-10-28: Spec-acceptance gate: the human chose option A for the core size
+  target (body ≤ 12,800 bytes after the frontmatter, enforced by Verify, plus
+  the guard line and end line) and accepted the spec with its constitution and
+  architecture edits.
