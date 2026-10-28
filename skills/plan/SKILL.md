@@ -144,7 +144,7 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   question, bake the answer into the spec — a Prior decisions row plus a
   Decision log entry — so the implementer never has to ask.
 - What none of them settles becomes a genuinely-open item carried into the
-  acceptance gate (step 6), marked in the spec as in step 2; do not guess.
+  acceptance gate (step 6), marked in the spec as in step 3; do not guess.
 - Scope it to questions those docs answer or that are genuinely open. A fork that still reaches an implementer is a
   planning defect this step exists to catch.
 

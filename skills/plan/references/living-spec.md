@@ -10,7 +10,7 @@
   gate: a merged spec on the default branch + an open milestone. The spec
   carries no lifecycle header to flip; the open milestone is the signal the
   theme is active. Nothing about acceptance differs from full-spec.
-- Create the milestone (`acceptance.md` §2) and leave it open; do not plan an
+- Create the milestone (`acceptance.md` §1 step 1) and leave it open; issues for a re-run follow `acceptance.md` §2; do not plan an
   end state for it. Mark it living-spec so `/loopkit:implement` can tell the
   tracks apart at the QA gate: put a `Track: living-spec` line in the milestone
   description (a full-spec milestone has no such line). Seed it with the issues
