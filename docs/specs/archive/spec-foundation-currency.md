@@ -114,20 +114,20 @@ spec-acceptance gate (the constitution's clarification corollary). They touch
 
 ## Prior art
 
-- [Foundation docs current for Claude 5 — lean always-loaded context, honest native-primitive claims (feature: foundation-currency)](../prior-art.md#foundation-docs-current-for-claude-5--lean-always-loaded-context-honest-native-primitive-claims-feature-foundation-currency)
+- [Foundation docs current for Claude 5 — lean always-loaded context, honest native-primitive claims (feature: foundation-currency)](../../prior-art.md#foundation-docs-current-for-claude-5--lean-always-loaded-context-honest-native-primitive-claims-feature-foundation-currency)
   — the row's concern. It holds the lightweight-CLAUDE.md essay (ADOPT: binding
   rules and gotchas in always-loaded text, history in git) and the `/loop`,
   worktree and agent-teams facts behind every reword here.
-- [Native Claude Code primitives — loopkit builds on these](../prior-art.md#native-claude-code-primitives--loopkit-builds-on-these)
+- [Native Claude Code primitives — loopkit builds on these](../../prior-art.md#native-claude-code-primitives--loopkit-builds-on-these)
   — the entry whose verdict "loopkit reuses `/plan`, `/loop`, `/batch`" gets a
   dated correction line, which also settles its `/batch` OPEN note.
-- [Foundation-doc context budget (feature: foundation-dedup)](../prior-art.md#foundation-doc-context-budget-feature-foundation-dedup)
+- [Foundation-doc context budget (feature: foundation-dedup)](../../prior-art.md#foundation-doc-context-budget-feature-foundation-dedup)
   — the precedent for removing cross-artifact restatements from the
   always-loaded docs, with the foundation edits riding the spec PR.
-- [Worktree resume & merge-conflict recovery (feature: implement-resume-safety)](../prior-art.md#worktree-resume--merge-conflict-recovery-feature-implement-resume-safety)
+- [Worktree resume & merge-conflict recovery (feature: implement-resume-safety)](../../prior-art.md#worktree-resume--merge-conflict-recovery-feature-implement-resume-safety)
   — where deterministic-branch resume comes from. This is the gap native
   isolation cannot fill.
-- [Claim arbitration / parallel-agent coordination](../prior-art.md#claim-arbitration--parallel-agent-coordination)
+- [Claim arbitration / parallel-agent coordination](../../prior-art.md#claim-arbitration--parallel-agent-coordination)
   — the ground for excluding a claim layer, the reason agent teams leave the
   foundation docs.
 
@@ -273,3 +273,9 @@ the issues own progress.
   - the prior-art carve-out is stated in the Outcome;
   - four parentheticals are added to the Trim set;
   - the vision's Why now paragraph is re-wrapped.
+- 2026-10-28: Milestone QA accepted (close-out sweep). No implementation
+  decision went unrecorded: #285 (PR #286) applied issue A as specified. QA:
+  all 20 Verification checks matched, and a fresh session, without tools,
+  answered that `/loop` is no scheduler, that worktrees are plain
+  `git worktree` for resume, and that agent teams are excluded.
+  Always-loaded bytes after the milestone: 17,892; constitution: 10,489.
