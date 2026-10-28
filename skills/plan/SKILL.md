@@ -24,6 +24,8 @@ phase is the spec-acceptance gate: genuinely-open decisions (AskUserQuestion,
 never guess) plus the human-prerequisites handover (a multi-phase run stops
 once per phase). On blockers, park instead of dying (see If blocked).
 
+Naming: in everything the human reads, name an issue, PR or milestone by number and short title (`#238 implement split`), and a PR also by its branch — never a bare number.
+
 ## Preconditions
 
 - Read `${CLAUDE_PLUGIN_ROOT}/skills/shared/preflight.md` first, once per run:
@@ -204,11 +206,7 @@ feeds the existing acceptance gate (step 6), never a second human stop.
 
 ## Close out
 
-- When the milestone's issues all close, `/loopkit:implement`'s milestone QA
-  gate archives the spec and updates the roadmap. The closed milestone is the
-  "done" signal — never add a status marker to a spec.
-- Exception: a living-spec milestone never closes out — see
-  `${CLAUDE_SKILL_DIR}/references/living-spec.md`.
+After acceptance, Read `${CLAUDE_SKILL_DIR}/references/acceptance.md` for the close-out.
 
 ## If blocked — park, don't die
 
