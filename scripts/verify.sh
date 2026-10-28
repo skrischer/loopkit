@@ -239,6 +239,267 @@ else
   fail=1
 fi
 
+# --- Skill-structure guards (7-11) -------------------------------------------
+# docs/specs/spec-skill-structure.md owns the rules. Each guard is its own
+# check, none folded into guard 5 (whose note limits it to the ordering
+# invariant). Shared helpers first.
+
+skill_files=(skills/*/SKILL.md)
+ref_files=()
+for f in skills/*/references/*.md skills/shared/*.md; do
+  [ -f "$f" ] && ref_files+=("$f")
+done
+
+# Line number of the closing frontmatter `---` (2..30), empty if absent.
+fm_close() {
+  awk 'NR==1 && $0!="---" { exit }
+       NR>1 && NR<=30 && $0=="---" { print NR; exit }' "$1"
+}
+
+# Token that opens a plugin path: first segment skills|templates|references|shared
+# at a word boundary. A preceding `/` (e.g. `${CLAUDE_SKILL_DIR}/references/`,
+# `../shared/`) is not a boundary, so substituted and dotted forms do not match.
+bare_pat='(^|[[:space:]`("'"'"'[])(skills|templates|references|shared)/'
+
+# 7. Plugin-path guard — a plugin path must resolve in a TARGET project, where
+#    the working directory is the project and the plugin lives elsewhere. A bare
+#    repo-relative path (`skills/shared/x.md`) resolves only inside loopkit itself;
+#    Claude Code substitutes ${CLAUDE_SKILL_DIR} / ${CLAUDE_PLUGIN_ROOT} only in a
+#    SKILL.md body (not in Read files, the Bash env, or a description). So:
+#    SKILL.md (body and description): no bare match and no `../` or `./` plugin
+#    path (a dot path with a segment skills|templates|references|shared or a skill
+#    directory name). Target-project dot paths (`../<repo>-worktrees/...`,
+#    `../loopkit-priorart/<project>`) are not plugin paths and pass.
+#    references/*.md and shared/*.md: no bare match (a `../` or `./` form is
+#    allowed; guard 9 resolves it) and no `${CLAUDE_`.
+echo "-- plugin-path guard (no repo-relative plugin path; no \${CLAUDE_ in referenced files) --"
+
+path_fail=0
+skill_dirs="$(for d in skills/*/; do basename "$d"; done | paste -sd'|')"
+for f in "${skill_files[@]}"; do
+  while IFS= read -r hit; do
+    [ -n "$hit" ] || continue
+    echo "  $f:$hit"
+    echo "      bare repo-relative plugin path in a SKILL.md (body or description). Use \${CLAUDE_SKILL_DIR}/... or \${CLAUDE_PLUGIN_ROOT}/skills/shared/..."
+    path_fail=1
+  done < <(grep -nE -e "$bare_pat" -- "$f" || true)
+  while IFS=: read -r ln tok; do
+    [ -n "$tok" ] || continue
+    if printf '%s\n' "$tok" | tr '/' '\n' | grep -qxE "skills|templates|references|shared|$skill_dirs"; then
+      echo "  $f:$ln: $tok"
+      echo "      ../ or ./ plugin path in a SKILL.md — relative plugin paths are allowed only in reference and shared files."
+      path_fail=1
+    fi
+  done < <(grep -noE '\.\.?/[A-Za-z0-9_./<>{}$-]*' -- "$f" || true)
+done
+for f in "${ref_files[@]}"; do
+  while IFS= read -r hit; do
+    [ -n "$hit" ] || continue
+    echo "  $f:$hit"
+    echo "      bare repo-relative plugin path in a referenced file. Use a path relative to this file (../shared/x.md)."
+    path_fail=1
+  done < <(grep -nE -e "$bare_pat" -- "$f" || true)
+  while IFS= read -r hit; do
+    [ -n "$hit" ] || continue
+    echo "  $f:$hit"
+    echo "      \${CLAUDE_...} in a referenced file — substitution happens only in a SKILL.md, so it would reach the reader unexpanded."
+    path_fail=1
+  done < <(grep -nF -e '${CLAUDE_' -- "$f" || true)
+done
+if [ "$path_fail" -eq 0 ]; then
+  echo "  plugin-path guard: OK"
+else
+  echo "  plugin-path guard: FAILED"
+  fail=1
+fi
+
+# 8. Guard-line / end-line guard — a compaction re-attaches only the first 5,000
+#    tokens of a skill, silently cutting the rest. The end line is the sentinel
+#    that tells a whole copy from a cut one; the guard line near the top tells a
+#    cut copy to Read the full file. The guard line must NOT quote the end line:
+#    a quoted copy would survive in a truncated skill and fake completeness.
+echo "-- guard-line / end-line guard (truncation sentinel on every skill) --"
+
+line_fail=0
+for f in "${skill_files[@]}"; do
+  name="$(basename "$(dirname "$f")")"
+  h1="$(grep -n -m1 '^# ' -- "$f" | cut -d: -f1 || true)"
+  ok=0
+  if [ -n "$h1" ]; then
+    for off in 1 2 3; do
+      line="$(sed -n "$((h1 + off))p" "$f")"
+      if printf '%s' "$line" | grep -qF -e '> Truncation guard:' \
+         && printf '%s' "$line" | grep -qF -e 'end-of-skill line' \
+         && printf '%s' "$line" | grep -qF -e '${CLAUDE_SKILL_DIR}/SKILL.md'; then
+        ok=1
+        if printf '%s' "$line" | grep -qF -e 'End of /loopkit:'; then
+          echo "  $f:$((h1 + off)): the guard line quotes the end line ('End of /loopkit:'); a quoted copy fakes completeness in a cut skill."
+          line_fail=1
+        fi
+      fi
+    done
+  fi
+  if [ "$ok" -eq 0 ]; then
+    echo "  $f: no '> Truncation guard:' line (with 'end-of-skill line' and '\${CLAUDE_SKILL_DIR}/SKILL.md') within 3 lines after the H1."
+    line_fail=1
+  fi
+  last="$(grep -v '^[[:space:]]*$' -- "$f" | tail -n 1 || true)"
+  if [ "$last" != "End of /loopkit:$name." ]; then
+    echo "  $f: last non-empty line is not exactly 'End of /loopkit:$name.'"
+    line_fail=1
+  fi
+done
+ic="skills/implement/references/issue-contract.md"
+last="$(grep -v '^[[:space:]]*$' -- "$ic" | tail -n 1 || true)"
+if [ "$last" != "End of issue contract." ]; then
+  echo "  $ic: last non-empty line is not exactly 'End of issue contract.'"
+  line_fail=1
+fi
+if [ "$line_fail" -eq 0 ]; then
+  echo "  guard-line / end-line guard: OK (${#skill_files[@]} skills + issue contract)"
+else
+  echo "  guard-line / end-line guard: FAILED"
+  fail=1
+fi
+
+# 9. Reference-link guard — a core is only as good as its pointers: an on-demand
+#    file nothing links to is never read, and a pointer to a missing file sends
+#    the model after nothing. Checks: (a) every skills/<n>/references/<f>.md is
+#    named in its SKILL.md as ${CLAUDE_SKILL_DIR}/references/<f>.md; (b) every
+#    ${CLAUDE_SKILL_DIR}/... and ${CLAUDE_PLUGIN_ROOT}/... path in a SKILL.md
+#    exists (skill dir / repo root); (c) every ../ or ./ path in a reference or
+#    shared file resolves relative to that file (target-project paths with a
+#    <placeholder> are skipped); (d) every reference and shared file opens with
+#    the paths-relative header, because a Read file gets no substitution.
+echo "-- reference-link guard (pointers exist, references linked, relative paths resolve) --"
+
+link_fail=0
+for f in "${skill_files[@]}"; do
+  d="$(dirname "$f")"
+  for r in "$d"/references/*.md; do
+    [ -f "$r" ] || continue
+    if ! grep -qF -e "\${CLAUDE_SKILL_DIR}/references/$(basename "$r")" -- "$f"; then
+      echo "  $f does not link $r as \${CLAUDE_SKILL_DIR}/references/$(basename "$r")"
+      link_fail=1
+    fi
+  done
+  while IFS= read -r tok; do
+    [ -n "$tok" ] || continue
+    tok="$(printf '%s' "$tok" | sed -E 's/[.,:;)]+$//')"
+    case "$tok" in
+      '${CLAUDE_SKILL_DIR}'/*) target="$d/${tok#'${CLAUDE_SKILL_DIR}'/}" ;;
+      '${CLAUDE_PLUGIN_ROOT}'/*) target="${tok#'${CLAUDE_PLUGIN_ROOT}'/}" ;;
+      *) continue ;;
+    esac
+    if [ ! -e "$target" ]; then
+      echo "  $f points at $tok, which does not exist ($target)"
+      link_fail=1
+    fi
+  done < <(grep -oE '\$\{CLAUDE_(SKILL_DIR|PLUGIN_ROOT)\}/[^[:space:]`"'"'"'>]*' -- "$f" | sort -u || true)
+done
+hdr='> Paths in this file are relative to this file.'
+for f in "${ref_files[@]}"; do
+  d="$(dirname "$f")"
+  if ! head -n 5 -- "$f" | grep -qxF -e "$hdr"; then
+    echo "  $f lacks the header line '$hdr' near the top."
+    link_fail=1
+  fi
+  while IFS= read -r tok; do
+    [ -n "$tok" ] || continue
+    tok="$(printf '%s' "$tok" | sed -E 's/[.,:;)]+$//')"
+    case "$tok" in
+      *'<'*|*'>'*)
+        # Placeholder path: a target-project path (../<repo>-worktrees/...) is
+        # skipped; one with a plugin segment (../inception/templates/<file>)
+        # must resolve up to its first placeholder segment.
+        printf '%s\n' "$tok" | tr '/' '\n' | grep -qxE "skills|templates|references|shared|$skill_dirs" || continue
+        tok="${tok%%<*}"
+        ;;
+    esac
+    if [ ! -e "$d/$tok" ]; then
+      echo "  $f: relative path $tok does not resolve from $d"
+      link_fail=1
+    fi
+  done < <(grep -oE '(^|[^A-Za-z0-9_.}/-])\.\.?/[A-Za-z0-9_./<>-]*' -- "$f" | sed -E 's/^[^.]*//' | sort -u || true)
+done
+if [ "$link_fail" -eq 0 ]; then
+  echo "  reference-link guard: OK"
+else
+  echo "  reference-link guard: FAILED"
+  fail=1
+fi
+
+# 10. Frontmatter guard — `claude plugin validate` accepts a malformed
+#     `argument-hint` (scratch-tested), and an unclosed block silently turns the
+#     whole skill into frontmatter. PyYAML is not an allowed dependency, so the
+#     mechanical floor is: block closed by a second `---` within 30 lines, any
+#     `argument-hint:` a double-quoted string without `"` or `\`, and a
+#     description of at most 700 characters (trigger text, not mechanics), and
+#     no ${CLAUDE_ path anywhere in the frontmatter (no substitution there).
+echo "-- frontmatter guard (block closed, argument-hint form, description length) --"
+
+fm_fail=0
+for f in "${skill_files[@]}"; do
+  c="$(fm_close "$f")"
+  if [ -z "$c" ]; then
+    echo "  $f: frontmatter does not start with --- and close with a second --- within 30 lines."
+    fm_fail=1
+    continue
+  fi
+  while IFS= read -r h; do
+    [ -n "$h" ] || continue
+    if ! printf '%s\n' "$h" | grep -qE '^argument-hint: "[^"\\]*"$'; then
+      echo "  $f: argument-hint is not a plain double-quoted string: $h"
+      fm_fail=1
+    fi
+  done < <(sed -n "2,$((c - 1))p" "$f" | grep -E '^argument-hint:' || true)
+  desc="$(sed -n "2,$((c - 1))p" "$f" | awk '
+    /^description:/ { sub(/^description:[[:space:]]*/, ""); d = $0; on = 1; next }
+    on && (/^[[:space:]]/ || /^$/) { sub(/^[[:space:]]+/, ""); d = d " " $0; next }
+    { on = 0 }
+    END { print d }')"
+  desc="${desc#\"}"; desc="${desc%\"}"
+  if sed -n "2,$((c - 1))p" "$f" | grep -qF -e '${CLAUDE_'; then
+    echo "  $f: \${CLAUDE_...} in the frontmatter — a description (or hint) gets no substitution, and a plugin path there is forbidden."
+    fm_fail=1
+  fi
+  dlen="$(printf '%s' "$desc" | LC_ALL=C.UTF-8 wc -m | tr -d ' ')"
+  if [ "$dlen" -gt 700 ]; then
+    echo "  $f: description is $dlen characters (limit 700). Keep trigger text: what, when, argument forms."
+    fm_fail=1
+  fi
+done
+if [ "$fm_fail" -eq 0 ]; then
+  echo "  frontmatter guard: OK"
+else
+  echo "  frontmatter guard: FAILED"
+  fail=1
+fi
+
+# 11. Body-size guard — after a compaction Claude Code re-attaches only the first
+#     5,000 tokens of a skill (~13,500 body bytes at ~2.70 bytes/token); the rest
+#     is cut and, with it, the gates. 12,800 bytes after the closing frontmatter
+#     `---` keeps ~260 tokens of headroom. Frontmatter does not count.
+echo "-- body-size guard (SKILL.md body <= 12800 bytes) --"
+
+body_limit=12800
+size_fail=0
+for f in "${skill_files[@]}"; do
+  c="$(fm_close "$f")"
+  [ -n "$c" ] || continue   # unclosed block is guard 10's failure
+  size="$(tail -n +"$((c + 1))" -- "$f" | wc -c | tr -d ' ')"
+  if [ "$size" -gt "$body_limit" ]; then
+    echo "  $f: body is $size bytes (limit $body_limit). Move post-gate or subagent-only text to references/, never a STOP gate."
+    size_fail=1
+  fi
+done
+if [ "$size_fail" -eq 0 ]; then
+  echo "  body-size guard: OK (all ${#skill_files[@]} bodies <= $body_limit bytes)"
+else
+  echo "  body-size guard: FAILED"
+  fail=1
+fi
+
 echo
 if [ "$fail" -eq 0 ]; then
   echo "PASS: loopkit Verify — all checks green"
