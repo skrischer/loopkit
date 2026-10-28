@@ -19,9 +19,10 @@ exact remedy. INSTRUCT the fix, never auto-run `gh auth login` or
   1. If the `Token scopes:` line of `gh auth status` is present, it must contain
      every required scope.
   2. If that line is ABSENT (fine-grained PAT / GitHub App / `GH_TOKEN` report no
-     classic scopes), do NOT parse — probe instead:
+     classic scopes), do NOT parse — probe each scope the caller requires instead:
      `gh api graphql -f query='{viewer{projectsV2(first:1){nodes{id}}}}'`
-     (project access) and `gh repo view >/dev/null` (repo access); a non-zero
+     (`project` access — only when the caller requires `project`) and
+     `gh repo view >/dev/null` (`repo` access); a non-zero
      exit whose stderr matches `INSUFFICIENT_SCOPES` or mentions `project`
      (case-insensitive) = missing scope.
   Missing `project` -> remedy: `gh auth refresh -s project` *(OAuth login; for a
