@@ -227,7 +227,9 @@ marker, not a reconstructed history; changes from here forward are recorded abov
 - Foundation docs (vision, constitution, architecture, prior-art, roadmap) and
   the per-project contracts (`docs/workflow.md`, `docs/design.md`).
 
-[Unreleased]: https://github.com/skrischer/loopkit/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/skrischer/loopkit/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/skrischer/loopkit/compare/v2.2.1...v2.3.0
+[2.2.1]: https://github.com/skrischer/loopkit/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/skrischer/loopkit/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/skrischer/loopkit/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/skrischer/loopkit/releases/tag/v2.0.0
