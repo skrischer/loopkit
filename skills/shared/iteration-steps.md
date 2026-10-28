@@ -39,10 +39,10 @@ reviewed at spec-acceptance) — the sparring is a dialog, not a gate.
 
 **Research mode — ASK, never assume.** Present the choice before researching:
 
-- **deep-research** — the deep-research skill: deep, multi-source. COST: it fans
-  out ~100 subagents that inherit the session model — run on a cost-appropriate
-  model (e.g. Opus); a heavy model (Fable) multiplies the cost ~100x and can
-  exhaust the session limit. Switch the session model before triggering, not
+- **deep-research** — the deep-research skill: deep, multi-source. This is
+  the expensive mode: it fans out many subagents that inherit the session model,
+  so a top-tier session model multiplies the cost and can exhaust the session
+  limit. Suggest switching to a cheaper session model before triggering it, not
   during.
 - **websearch** — a handful of focused WebSearch/WebFetch lookups; cheap, fast,
   enough for a landscape comparison.

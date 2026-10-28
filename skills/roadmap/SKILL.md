@@ -73,7 +73,7 @@ differentiation, idea harvest), the ASK-first research-mode choice
   spec-acceptance); the roadmap seed commits no design artifact.
 - **Research mode is ASKED per idea** (per the shared reference's ASK-first
   choice) — default to the cheapest mode that settles the idea; the reference
-  details when `none` applies and `deep-research`'s ~100-subagent fan-out cost,
+  details when `none` applies and what `deep-research`'s fan-out costs,
   so reserve the heavy mode.
 - The **existence** check may honestly conclude "reuse X, don't build" — record
   that verdict in `docs/prior-art.md` and drop the idea from seeding. Every idea

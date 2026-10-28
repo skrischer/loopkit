@@ -45,7 +45,7 @@ terminal running `/ship`.
 Exactly one file carries the version today; a second must stay metadata-consistent:
 
 - **`.claude-plugin/plugin.json` -> `version`** — the single source of the version
-  number. Bump it to the new `X.Y.Z` (currently `2.0.0`).
+  number. Bump it to the new `X.Y.Z`.
 - **`.claude-plugin/marketplace.json`** — carries **no `version` field** (name /
   source / description / owner only). "Keep it consistent" here means the shared
   **description / metadata** that appears in both manifests (the plugin

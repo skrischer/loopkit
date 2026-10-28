@@ -1,7 +1,7 @@
 # loopkit
 
-Spec-driven loop engineering for Claude Code. Five skills take a project from
-zero to two parallel, attended development loops — tech-stack-agnostic, with
+Spec-driven loop engineering for Claude Code. Six skills take a project from
+zero to attended development loops — tech-stack-agnostic, with
 GitHub issues, milestones, and a project board as the mandatory state machine.
 
 - `/loopkit:inception` — Phase-0 dialog: vision, constitution, prior-art,
@@ -25,16 +25,21 @@ GitHub issues, milestones, and a project board as the mandatory state machine.
   project: per idea offers a research mode, spars the idea against prior art, then
   seeds one or more roadmap phases with backing prior-art. Records any
   foundation-doc impact onto the seeded phase; runs no readiness sweep.
+- `/loopkit:ship` — cuts a release: bumps the version, updates the changelog,
+  tags, and publishes a GitHub release per the project's `docs/release.md`;
+  `--dry-run` previews without publishing.
 
 ## The loop model
 
-Two attended interactive Claude Code sessions (subscription auth — no headless
+Attended interactive Claude Code sessions (subscription auth — no headless
 mode, no API keys, no detached schedulers), synchronized only through GitHub:
 
 ```
-/loop /loopkit:plan ...        # producer: roadmap -> merged specs -> issues
-/loop /loopkit:implement ...   # consumer: unblocked Todo issues -> merged PRs
+/loop /loopkit:plan <phase...>        # producer: roadmap phase -> merged spec -> milestone + issues
+/loop /loopkit:implement <milestone>  # orchestrator: one milestone's issue DAG -> merged PRs -> QA gate
 ```
+
+Independent milestones run as separate orchestrators, one session each.
 
 The exact loop prompts live in each project's `docs/workflow.md` (Loops
 section). Machine gates run per PR (single Verify command + agent review);
