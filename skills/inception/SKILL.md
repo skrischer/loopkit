@@ -277,12 +277,21 @@ Fill `templates/settings.json` into the project's `.claude/settings.json` —
 plugins cannot ship permission rules, so the loops' autonomy must be granted
 per project:
 
-- Ships `defaultMode: bypassPermissions` so the loops run autonomously. Deny
-  rules apply in EVERY mode, bypassPermissions included — deny always wins.
-  (Under bypassPermissions the `allow` list has no effect; deny/ask stay
-  enforced.) The template's deny list ships the constitution hard limits
-  concretely into `.claude/settings.json` — the enforced single source; no
-  prose re-enumerates them.
+- Ships `defaultMode: acceptEdits` plus an `allow` list (`Bash`, `WebFetch`,
+  `WebSearch`) so the loops run without prompts. Claude Code ignores
+  `bypassPermissions` and `auto` as a project-level `defaultMode` (the session
+  starts in Manual mode); a human who wants `auto` sets it in
+  `~/.claude/settings.json` or starts with `--permission-mode auto`. Deny rules
+  apply in EVERY mode — deny always wins. The template's deny list ships the
+  constitution hard limits concretely into `.claude/settings.json` — the
+  enforced single source; no prose re-enumerates them.
+- Deny rules match command text: a guardrail, not a security boundary. They
+  guard the usual forms, not every way to run a program; the template repeats
+  each git limit for the `git -C <path>` form, and the skills' never-force
+  rules stay as the second layer.
+- **`--here`:** a project `defaultMode` of `bypassPermissions` or `auto` is a
+  gap (it silently starts sessions in Manual mode) — propose the
+  `acceptEdits` + `allow` form at this gate.
 - Extend the deny list with the stack's destructive commands against shared
   state: replace the template's `<STACK_DESTRUCTIVE_DB_COMMAND>` placeholder
   with what this stack actually has (e.g. `supabase db reset`,
@@ -337,8 +346,8 @@ produced the gap report in Step 0):
       or recorded `none` (not releasable, no file)
 - [ ] Every roadmap phase has prior-art coverage to seed its spec (or an explicit
       greenfield "no prior art" note)
-- [ ] `.claude/settings.json` in place: `defaultMode: bypassPermissions` with
-      deny rules covering every constitution hard limit (deny wins in all modes)
+- [ ] `.claude/settings.json` in place: `defaultMode: acceptEdits` with an
+      `allow` list, and deny rules covering every constitution hard limit
 - [ ] Provisioning: `.env.example` complete and every value the project needs
       is provided — collect missing secrets from the user NOW, not mid-loop
 - [ ] Initial commit exists on the base branch. If the branch is unborn,
