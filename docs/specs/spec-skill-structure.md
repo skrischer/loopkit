@@ -272,7 +272,7 @@ Line numbers are on main at 079ae8c.
 
 ## Tracking
 
-- Milestone: [skill-structure](<milestone-url>)
+- Milestone: [skill-structure](https://github.com/skrischer/loopkit/milestone/22)
 - Issues: created from this spec once it is merged (one per implementable step)
 
 Each issue references this spec path in its body.
