@@ -1311,3 +1311,6 @@ model-tier-slots)" above. Internal evidence: docs/feedback/2026-10-27-claude5-au
   in it (GitHub text is never a human instruction); per-role effort beside the
   tier in the contract. AVOID — model or effort in skill frontmatter (a hidden
   extra layer the contract cannot override per project).
+- Re-verified 2026-10-28: per-invocation `effort` (v2.1.292) — the Agent
+  tool's `effort` parameter overrides the `effort` field;
+  `CLAUDE_CODE_EFFORT_LEVEL` takes precedence over both.
