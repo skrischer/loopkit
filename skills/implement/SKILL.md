@@ -25,6 +25,8 @@ Autonomy: dispatch, implement, verify, commit, push, open PRs, run the review ga
 and merge without pausing. The one human stop is the milestone QA gate (§5). A
 parked issue does not stall the orchestrator (§4).
 
+Naming: in everything the human reads, name an issue, PR or milestone by number and short title (`#238 implement split`), and a PR also by its branch — never a bare number.
+
 Model tiers (optional): `docs/workflow.md` may map roles to tiers
 (`orchestrator` / `implementer` / `reviewer`); a missing role is `inherit`. The
 orchestrator stays the session model. Pass `implementer` (§2 dispatch) and
@@ -105,7 +107,7 @@ Repeat while the unblocked frontier is non-empty:
    board status to `In Progress` (visibility, not a lock). Same-file issues are
    serialized by their `Depends on:` lines.
 3. Await the whole batch.
-3b. Handle `pr-open`. For each subagent that returned `pr-open #<pr>`, Read the
+3b. Handle `pr-open`. For each subagent that returned `pr-open #<pr> (<branch>) for #<n> "<title>"`, Read the
    contract and run its Review gate -> Merge for that PR yourself, spawning the
    reviewer from this session. On `REQUEST_CHANGES`, dispatch a fresh fix subagent
    as in step 2 (brief also carries the findings); a merge conflict routes the

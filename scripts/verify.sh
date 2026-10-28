@@ -502,6 +502,26 @@ else
   fail=1
 fi
 
+# 12. Naming-rule guard — the implement and plan cores carry one identical rule
+#     line (issues, PRs and milestones named by number and title in human-facing
+#     output). A later slimming pass must not drop it silently.
+echo "-- naming-rule guard (identical rule line in the implement and plan cores) --"
+
+name_rule='Naming: in everything the human reads, name an issue, PR or milestone by number and short title (`#238 implement split`), and a PR also by its branch — never a bare number.'
+name_fail=0
+for s in implement plan; do
+  if ! grep -qxF -e "$name_rule" -- "skills/$s/SKILL.md"; then
+    echo "  skills/$s/SKILL.md lacks the naming rule line (exact text, own line)."
+    name_fail=1
+  fi
+done
+if [ "$name_fail" -eq 0 ]; then
+  echo "  naming-rule guard: OK"
+else
+  echo "  naming-rule guard: FAILED"
+  fail=1
+fi
+
 echo
 if [ "$fail" -eq 0 ]; then
   echo "PASS: loopkit Verify — all checks green"

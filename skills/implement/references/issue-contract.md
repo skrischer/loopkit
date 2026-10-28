@@ -40,7 +40,7 @@ dispatch). Its steps:
   - **fix dispatch** (the brief carries review findings or a merge conflict) ->
     re-attach the branch and resume at Implement with the findings, then Verify
     and push. Review and merge if the Agent tool is available, else return
-    `pr-open #<pr>` again. This overrides the open-PR case below.
+    the `pr-open` report (form under Report back) again. This overrides the open-PR case below.
   - **open PR for the issue** -> skip Implement; continue from the Review gate ->
     Merge stage (below) on the existing branch.
   - **branch with commits/diff but no PR** -> re-attach and continue from Verify
@@ -129,7 +129,7 @@ dispatch). Its steps:
   - **`pr-open` fallback.** If the Agent tool is unavailable (depth limit, a
     `tools` list without `Agent`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`) or the
     reviewer spawn errors, stop after `gh pr create`, leave `$wt` in place and the
-    board at `In Progress`, and return `pr-open #<pr>`. The orchestrator runs the
+    board at `In Progress`, and return `pr-open #<pr> (<branch>) for #<n> "<title>"`. The orchestrator runs the
     review gate and merge. Solo mode never takes this path: the main session always
     has the Agent tool and runs the review gate itself.
 - **Merge and clean up (autonomous — no human stop).** After `APPROVE` and green
@@ -179,9 +179,13 @@ dispatch). Its steps:
   has uncommitted changes, leave it and report it. The branch holds no merged PR,
   so it is not deleted here. The orchestrator runs the same cleanup when it parks a
   `pr-open` issue.
-- **Report back** to the orchestrator: `merged` (issue closed), `escalated`
-  (`needs:planning` — a design fork; issue number + the question), `parked`
-  (`blocked:human` — a human prerequisite; issue number + reason), or `pr-open #<pr>`.
+- **Report back** to the orchestrator, naming the issue by number and title and
+  a PR by number and branch, so the orchestrator never needs an extra `gh` call:
+  - `merged #<n> "<title>" via PR #<pr> (<branch>)` — issue closed;
+  - `escalated #<n> "<title>": <question>` — `needs:planning`, a design fork;
+  - `parked #<n> "<title>": <reason>` — `blocked:human`, a human prerequisite;
+  - `pr-open #<pr> (<branch>) for #<n> "<title>"`.
+
   `pr-open` is the one non-terminal report: the PR is open and unreviewed, and the
   orchestrator completes it. Merged, escalated and parked are the only terminal
   states; any other return — the issue left open with no such label — is a failed
