@@ -116,7 +116,7 @@ foundation — `/loopkit:plan` requires a GitHub repo:
   as is.
 - Otherwise find the GitHub repo and wire it up:
   - Look for a repo matching the directory name
-    (`gh repo list --json name,url,isEmpty`) or ask for the link.
+    (`gh repo list --limit 100 --json name,url,isEmpty`) or ask for the link.
   - For an existing repo, initialize and connect it (state it, no gate): `git init`, `git remote add origin <url>`, `git fetch origin`. If the
     remote has commits, check out its default branch; if empty, create the base
     branch locally.
@@ -132,7 +132,8 @@ than asking where you can:
   URL/number; if none exists, create one (`gh project create`) on explicit
   confirmation, never silently. `none` is not a valid value. Then record the
   field-ID recipe: `gh project field-list <number> --owner <owner>
-  --format json --jq '.fields[]|select(.name=="Status")'` returns the Status
+  --limit 100 --format json
+  --jq '.fields[]|select(.name=="Status")'` returns the Status
   field id + the Todo / In Progress / Done option ids; write them into the
   contract's `<status-field-id>` / `<...-option-id>` placeholders so
   `plan`/`implement` skip re-discovery.

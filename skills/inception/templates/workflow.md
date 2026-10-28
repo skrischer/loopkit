@@ -26,7 +26,8 @@
   ProjectV2 Status field `<status-field-id>`; option IDs — Todo
   `<todo-option-id>`, In Progress `<in-progress-option-id>`, Done
   `<done-option-id>`. Re-derive with `gh project field-list <number> --owner
-  <owner> --format json --jq '.fields[]|select(.name=="Status")'` (returns the
+  <owner> --limit 100 --format json
+  --jq '.fields[]|select(.name=="Status")'` (returns the
   field id + option ids).
 
 `/loopkit:plan` requires a GitHub repo; specs are the local single source of
