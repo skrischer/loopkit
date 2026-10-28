@@ -13,8 +13,8 @@ Spec-driven loop engineering for Claude Code — developed via its own loops (do
 - `docs/prior-art.md` — the challenge + tool/loop-engineering landscape, indexed
   by concern.
 - `docs/architecture.md` — components, boundaries, flows, where new code goes.
-- `docs/roadmap.md` — the phase and feature catalogue; the human points `/loopkit:plan` at
-  a phase.
+- `docs/roadmap.md` — the phase and feature catalogue; the human points
+  `/loopkit:plan` at a phase.
 - `docs/workflow.md` — the operational contract the skills read (repo, board,
   commands, gates, loops).
 - `docs/release.md` — the release contract `/loopkit:ship` reads (versioning,
