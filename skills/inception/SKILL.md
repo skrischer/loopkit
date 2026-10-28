@@ -153,11 +153,12 @@ than asking where you can:
   - **Build** — the full check for app-affecting changes.
 - **QA-gate default** — the milestone QA check type (review / UI check / smoke
   test).
-- **Model tiers (optional)** — if the project routes roles to model tiers, fill
-  the role->tier field (orchestrator / implementer / reviewer). Absent or a role
-  unset -> `inherit`. Model names live only in the contract.
-- Worktree convention, branch/spec naming, issue conventions, gates, autonomy
-  and loop prompts are fixed by the template — fill only the placeholders (repo
+- **Model tiers (optional)** — if the project routes roles to model tiers or
+  effort, fill each role's tier and, optionally, its effort (orchestrator /
+  implementer / reviewer). Absent or unset -> `inherit`. Model names live only
+  in the contract.
+- Worktree convention, branch/spec naming, issue conventions, gates,
+  precedence, autonomy and loop prompts are fixed by the template — fill only the placeholders (repo
   name, iteration ceiling).
 
 GATE: present the filled contract before writing `docs/workflow.md`.
@@ -199,9 +200,9 @@ artifact):
   autonomous commits, pushes, merges, dependency installs and `.env` edits are
   explicitly granted; hard limits live in `.claude/settings.json`.
 - Write a `# Compact Instructions` section — a few lines, a directive not a
-  state dump, re-injected after a compaction: keep the active milestone target
-  and the wave issues still running, and re-derive the unblocked frontier from
-  GitHub afterwards.
+  state dump, re-injected after a compaction: keep the active milestone target,
+  the wave issues still running and any in-session instruction the human gave
+  for this run, and re-derive the unblocked frontier from GitHub afterwards.
 
 ## Close out — loop readiness
 

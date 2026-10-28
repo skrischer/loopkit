@@ -781,3 +781,6 @@ Each issue references this spec path in its body.
   ```
   The confirming review simulated this move: implement 12,803 → 12,316 bytes,
   Verify green (reference-link and plugin-path guards included).
+- 2026-10-28: #273 implemented as specified: no fork. Inception core body grew
+  11,151 → 11,248 bytes (cap 12,800). The `--here` Precedence-section gap rides
+  the readiness-checklist `docs/workflow.md` item, so Step 7 gained no text.

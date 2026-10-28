@@ -33,8 +33,8 @@ win.
 
 # Compact Instructions
 
-When compacting mid-`/loopkit:implement`, keep the active milestone target and
-which issues of the current wave are still running; drop resolved subagent
-chatter. After a compaction, re-derive the unblocked frontier from GitHub
+When compacting mid-`/loopkit:implement`, keep the active milestone target,
+which issues of the current wave are still running and any in-session
+instruction the human gave for this run; drop resolved subagent chatter. After a compaction, re-derive the unblocked frontier from GitHub
 (milestone, open issues, `Depends on:` edges, board status) before the next
 wave — state lives on GitHub, never in the summary.

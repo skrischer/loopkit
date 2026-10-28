@@ -10,9 +10,12 @@ produces the gap report in Step 0.
 - [ ] Bootstrap turns a fresh worktree runnable, proven by running it
 - [ ] Project board exists with `Todo` / `In Progress` / `Done`, and its
       field-ID recipe (Status field id + option ids) is recorded in the contract
-- [ ] `docs/workflow.md` complete — no placeholders left
-- [ ] Model tiers (optional) — if the project routes roles to tiers, the
-      role->tier field is filled; else absent (default `inherit`)
+- [ ] `docs/workflow.md` complete — no placeholders left, and the template's
+      Precedence section present
+- [ ] Model tiers (optional) — if the project routes roles to tiers or effort,
+      each role's tier is filled and its effort is filled or unset (unset =
+      `inherit`; a tiers-only contract is no gap); else absent (default
+      `inherit`)
 - [ ] `docs/design.md` complete (design-surface project) — no placeholders left;
       or recorded `none` (neither surface, no file)
 - [ ] `docs/release.md` complete (releasable project) — no placeholders left;
