@@ -59,7 +59,8 @@
    `depends-on`.
 4. **Implement cycle (orchestrator):** human points it at one milestone -> read
    spec + issues -> compute the issue DAG -> fan out in-session subagents along
-   the frontier (each: worktree -> implement -> Verify -> review -> merge) ->
+   the frontier (each: worktree -> implement -> Verify -> review -> merge, or
+   `pr-open` -> the orchestrator reviews and merges) ->
    board mirrors status -> **milestone-QA gate (human)** -> archive spec + close
    milestone.
 5. **Milestone parallelization:** a second orchestrator on an independent
