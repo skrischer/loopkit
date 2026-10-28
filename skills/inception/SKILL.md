@@ -29,7 +29,7 @@ in English.
 project, read the codebase and every existing artifact, then diff them against
 the current templates' mandatory fields (the readiness checklist). Present the
 gap report as the first gate, then run only the steps that close gaps —
-reconcile and extend, never blind-overwrite; surface conflicts at that gate. Extending a roadmap phase opens a prior-art gap for it — close both. A
+reconcile and extend, never blind-overwrite; surface conflicts at the artifact's gate. Adding or extending a roadmap phase opens a prior-art gap for it — close both. A
 fully loop-ready project yields "all green — nothing to do".
 
 ## Artifacts and their character (strict separation, no duplication)
@@ -41,15 +41,15 @@ fully loop-ready project yields "all green — nothing to do".
 | docs/prior-art.md | descriptive, living: indexed by concern, not by project |
 | docs/architecture.md | structural, living, most volatile: components, boundaries, flows, where new code goes |
 
-Templates live in `${CLAUDE_SKILL_DIR}/templates/` — copy the structure, fill
-it, never duplicate content across artifacts.
+Templates live in `${CLAUDE_SKILL_DIR}/templates/` — fill them, never
+duplicate content.
 
 ## Step 0 — Determine mode (no gate)
 
 Preflight first, before mode detection and any `gh repo view`: Read
 `${CLAUDE_PLUGIN_ROOT}/skills/shared/preflight.md` and run it. Required scopes:
-`repo` + `project`. The clean-base check does not apply (a greenfield directory
-has no base branch).
+`repo` + `project`. The clean-base check does not apply (greenfield: no base
+branch).
 
 - `$ARGUMENTS` is `--here` -> brownfield.
 - Otherwise auto-detect: a codebase in the working directory -> brownfield
@@ -167,7 +167,7 @@ Decide design surface: does this project render a user-facing interface
 (web/app/CLI-with-rich-output) or would a visualisation
 (flow / state / architecture / concept) materially clarify recurring
 decisions? Neither -> record `none` in the readiness checklist and skip to
-Step 8. Either -> Read `${CLAUDE_SKILL_DIR}/references/design-contract.md` and
+Step 7c. Either -> Read `${CLAUDE_SKILL_DIR}/references/design-contract.md` and
 fill the contract from it (it carries this step's GATE).
 
 ## Step 7c — Release contract (gate 7c, optional — releasable projects only)
@@ -206,7 +206,7 @@ autonomy must be granted per project:
 - **Conflict check:** read the user-level `~/.claude/settings.json`. Its deny
   rules and PreToolUse hooks beat every project setting (a global
   `Bash(npm install*)` deny silently kills Bootstrap). Surface each rule that
-  collides with the Autonomy section and ask the user to relax it.
+  collides with the Autonomy section and ask the user to relax it (their edit, never yours).
 
 GATE: present the settings before writing; merge with an existing file, never
 overwrite silently.

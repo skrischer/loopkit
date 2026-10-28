@@ -12,8 +12,8 @@ vision/constitution where you can rather than asking:
 
 - **kind** — set the front-matter `kind` (`ui` / `concept` / `both`). Per the
   template's "How to fill" note this is prune-on-fill: for `concept`, delete
-  the color/type/spacing/radii/shadow token blocks and fill the **Diagram
-  medium** section (medium + where diagrams live) instead; for `ui`/`both`,
+  the color/type/spacing/radii/shadow token blocks and fill the Diagram
+  medium section (medium + where diagrams live) instead; for `ui`/`both`,
   keep the token blocks.
 - **Design tool / MCP** — the editor this project uses (e.g. Paper MCP /
   Figma / Superdesign / v0 / Claude artifacts, or a diagram tool for a concept
