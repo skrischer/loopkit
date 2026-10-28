@@ -313,9 +313,10 @@ artifact):
   merges, dependency installs, and `.env` edits are explicitly granted; hard
   limits live in `.claude/settings.json`.
 - Write a `# Compact Instructions` section — it loads every session and is
-  re-injected after a compaction, so keep it to a few lines: a directive, not a
-  state dump. Keep the active milestone target through a compaction, and
-  re-derive the unblocked frontier from GitHub afterwards.
+  re-injected after a compaction, so keep it to a few lines — a directive, not
+  a state dump: have it keep the active milestone target and the wave issues
+  still running through a compaction, and re-derive the unblocked frontier from
+  GitHub afterwards.
 
 ## Close out — loop readiness
 
