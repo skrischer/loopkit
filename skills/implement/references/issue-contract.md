@@ -29,7 +29,7 @@ dispatch). Its steps:
   spec to reopen; escalate it `needs:planning` the same way (the planner gives it
   a spec or tightens its body).
 - **Branch + worktree (idempotent — a per-dispatch invariant).** Pick a branch
-  from the contract's naming (`feat/<scope>`, `fix/<scope>`, `chore/<scope>`).
+  from `docs/workflow.md`'s naming (`feat/<scope>`, `fix/<scope>`, `chore/<scope>`).
   Always work in a worktree — never the main checkout. Before
   `git worktree add -b <branch>`, re-derive the branch's work state from GitHub +
   the branch (never a local resume file) and re-attach instead of colliding.
@@ -74,7 +74,7 @@ dispatch). Its steps:
   git worktree add "$wt" -b <branch> "$base"   # fresh: no existing branch/PR and $wt absent
   git worktree add "$wt" <branch>               # re-attach an existing branch when $wt is absent
   ```
-  Run the contract's Bootstrap command inside the worktree (deps + env) —
+  Run `docs/workflow.md`'s Bootstrap command inside the worktree (deps + env) —
   verification cannot run in an un-bootstrapped worktree.
 - **Implement (in `$wt`).** Keep the change minimal. Follow the project's
   `docs/constitution.md` — it owns the language-specific rules; this skill does
@@ -93,7 +93,7 @@ dispatch). Its steps:
   resolved by reading OSS; and it does not apply to a `track:adhoc`
   issue (no spec, hence no linked prior art). Proportional: only when it unsticks a
   real technical struggle, not routinely.
-- **Verify.** Run the contract's Verify command after every change set; fix
+- **Verify.** Run `docs/workflow.md`'s Verify command after every change set; fix
   until green. Run Test if the project has one, and Build before opening
   an app-affecting PR. Bounded retry: apply `docs/workflow.md`'s no-progress
   rule — a repeated failure stops and parks the issue (see Escalate or park),
@@ -111,12 +111,12 @@ dispatch). Its steps:
 - **Review gate (machine gate).** Review the branch with a fresh context via the
   Agent tool (`general-purpose`, or a reviewer agent the project defines), run as
   a nested subagent of this one — it needs Claude Code >= v2.1.219 for default
-  nesting. Pass the contract's `reviewer` tier as its `model` (default `inherit`),
+  nesting. Pass `docs/workflow.md`'s `reviewer` tier as its `model` (default `inherit`),
   seeded with the diff (`git -C "$wt" diff "$base"...HEAD`) and the project's own
   constitution/CLAUDE.md rules. No-source-change exception: when the PR diff
   touches only `docs/`, templates, or `*.md` (no source or config), this review
   may drop to the `reviewer` role's documented no-source-change cheaper tier (the
-  contract's `reviewer` line may note a fallback — never substitute the
+  `docs/workflow.md` `reviewer` line may note a fallback — never substitute the
   `implementer` tier for a review); any source/config touch keeps the full
   `reviewer` tier, and when in doubt use the full tier. Ask for a verdict whose
   first line is `VERDICT: APPROVE` or `VERDICT: REQUEST_CHANGES`, with findings.
@@ -165,7 +165,7 @@ dispatch). Its steps:
     underspecified. Label the issue `needs:planning` (not `blocked:human`),
     comment the exact question, leave the board at `Todo`, stop the issue, and
     return the escalation. Resolution: the human re-runs `/loopkit:plan` on the
-    spec, which settles the fork and returns the issue to the frontier; the
+    spec, which settles the fork and returns the issue to the frontier (clarification stays in planning, where vision / constitution / prior-art are in context); the
     implementer never resolves it itself and never asks the human directly.
   - `blocked:human` — a human prerequisite (routes to human delivery): a secret,
     external provisioning, an ambiguous branch/worktree collision, or a repeated

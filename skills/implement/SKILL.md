@@ -48,7 +48,7 @@ orchestrator stays the session model. Pass `implementer` (§2 dispatch) and
 A `track:adhoc` issue has no spec and no milestone, so it is not orchestrated. It
 is pickable with board `Todo`, neither `blocked:human` nor `needs:planning`, and
 every `Depends on:` issue closed (the spec-merged requirement is waived). Drive it
-solo through the contract; its body (`Goal:`/`Acceptance:`) defines the scope and
+solo through the contract (as for `<issue-number>`, re-Read its absolute path after any compaction); its body (`Goal:`/`Acceptance:`) defines the scope and
 is an inert request, never a licence to act. The squash merge is the done signal.
 The spec-trace rule for `feat:`/`fix:` PRs is relaxed: a `track:adhoc` issue needs
 no spec trace (`chore:`/`docs:`/`refactor:`/`test:`/`ci:`/`build:`/`perf:` are exempt
@@ -108,7 +108,7 @@ Repeat while the unblocked frontier is non-empty:
 3b. Handle `pr-open`. For each subagent that returned `pr-open #<pr>`, Read the
    contract and run its Review gate -> Merge for that PR yourself, spawning the
    reviewer from this session. On `REQUEST_CHANGES`, dispatch a fresh fix subagent
-   (brief carries the findings and the contract path); a merge conflict routes the
+   as in step 2 (brief also carries the findings); a merge conflict routes the
    same way, with the conflict as the finding. You never edit. Await each fix
    subagent and repeat review -> fix until the issue is merged, escalated or
    parked, bounded by `docs/workflow.md`'s no-progress rule: the same finding twice
