@@ -75,7 +75,7 @@ no mutation); an explicit version (`vX.Y.Z`) to override the computed one.
 ## 3. Assemble the changelog (no gate)
 
 - Gather the merged PRs / commits since the last tag (`gh pr list --state merged
-  --search "merged:>=<date>"`, `git log <lasttag>..HEAD`) and compose the entry
+  --search "merged:>=<date>" --limit 200`, `git log <lasttag>..HEAD`) and compose the entry
   in the contract's format (default: Keep a Changelog) under the new version.
 - If the changelog already carries a non-empty unreleased section, the human
   curated it: promote that section's entries to the new version (leaving an

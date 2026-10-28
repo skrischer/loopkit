@@ -116,7 +116,7 @@ foundation — `/loopkit:plan` requires a GitHub repo:
   as is.
 - Otherwise find the GitHub repo and wire it up:
   - Look for a repo matching the directory name
-    (`gh repo list --json name,url,isEmpty`) or ask for the link.
+    (`gh repo list --limit 100 --json name,url,isEmpty`) or ask for the link.
   - For an existing repo, initialize and connect it (state it, no gate): `git init`, `git remote add origin <url>`, `git fetch origin`. If the
     remote has commits, check out its default branch; if empty, create the base
     branch locally.
