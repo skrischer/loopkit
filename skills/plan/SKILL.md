@@ -1,6 +1,6 @@
 ---
 name: plan
-description: "Drive one planning cycle end-to-end — survey readiness, draft a spec (the local single source of truth) with any human prerequisites, review it via the in-session Agent tool, and stop once per phase at the spec-acceptance gate. Then, on the spec branch, fold in the milestone + roadmap link, merge once (the merge is acceptance), and create the issues (with dependencies) + board entries. Loop-capable: without an argument it reports the roadmap's unplanned phases and asks which to plan (never auto-picks), reporting \"fully planned\" when none remains. Multi-phase: name one phase or an ordered set, each driven as its own cycle in order. Reads docs/workflow.md for project specifics."
+description: "Plan one roadmap phase, or an ordered set of phases, into an accepted spec, a milestone and dependency-ordered issues, stopping once per phase at the spec-acceptance gate; also opens a living-spec theme on request. Use when the human names a phase to plan or asks what is left to plan. With no argument it lists the unplanned phases and asks which to plan (never auto-picks), or reports \"fully planned\". Arguments: none, one phase, or several phases in order."
 argument-hint: "[phase ...]"
 ---
 
