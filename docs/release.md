@@ -13,8 +13,8 @@
 
 loopkit is a **Claude Code plugin**. A release is a `git` tag `vX.Y.Z` plus a
 matching GitHub Release, cut over everything merged into `main` since the last
-tag. It bundles one or more milestones (and any `track:adhoc` work); `/ship` is
-**not** tied 1:1 to a milestone — the human cuts a release when there is
+tag. It bundles one or more milestones (and any `track:adhoc` work);
+`/loopkit:ship` is **not** tied 1:1 to a milestone — the human cuts a release when there is
 something worth publishing (a closed milestone is a natural moment). Publishing
 is entirely human-invoked: the human's `/loopkit:ship` invocation authorizes the
 publish, which then runs through to `gh release create` autonomously (a summary
@@ -22,7 +22,7 @@ is printed before publishing — there is **no separate confirmation stop**, and
 this is NOT a third gate). A distinct dry-run mode previews without publishing;
 that dry-run is what the milestone-QA check exercises. There is **no CI or
 GitHub-Actions release bot** — nothing publishes loopkit except a human at a
-terminal running `/ship`.
+terminal running `/loopkit:ship`.
 
 ## Versioning scheme
 
@@ -135,7 +135,7 @@ Exactly one file carries the version today; a second must stay metadata-consiste
 - Curate `CHANGELOG.md` before invoking (review with `--dry-run`) and pass the
   section by `--notes-file`.
 - Run `bash scripts/verify.sh` green before tagging; publish only on the human's
-  `/ship` invocation.
+  `/loopkit:ship` invocation.
 
 **Don't**
 

@@ -1,10 +1,11 @@
 # [Project] — Roadmap
 
-> Living document: the sequenced queue of phases. The hand-off to `/plan`, which
-> picks the next phase, creates its spec + issues, and links them back here.
+> Living document: the sequenced queue of phases. The hand-off to
+> `/loopkit:plan`; the human points it at a phase, and it creates the spec +
+> issues and links them back here.
 > No status markers — progress lives in the GitHub issues and milestones each
-> phase links to. Specs (created by `/plan`) carry no lifecycle state either;
-> a spec is "accepted" once merged on the default branch with a milestone and
+> phase links to. Specs (created by `/loopkit:plan`) carry no
+> lifecycle state either; a spec is "accepted" once merged on the default branch with a milestone and
 > issues.
 
 ## Phase overview
@@ -15,8 +16,8 @@
 | 2 | [Next phase] | — | — |
 | 3 | [Later phase] | — | — |
 
-A phase gets a Spec link once `/plan` drafts it, and a Milestone link once the
-spec is merged. The milestone (open/closed + issue progress) is where status
+A phase gets a Spec link once `/loopkit:plan` drafts it, and a Milestone
+link once the spec is merged. The milestone (open/closed + issue progress) is where status
 lives.
 
 ## North star

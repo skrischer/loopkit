@@ -159,9 +159,9 @@ asking where you can:
 - **Repository** — `gh repo view --json nameWithOwner` (now resolvable).
 - **Base branch** — `git symbolic-ref refs/remotes/origin/HEAD` (fallback:
   `main`).
-- **GitHub Project board — mandatory.** It is the loops' queue and claim
-  mechanism (`Todo` / `In Progress` / `Done`). Ask for the existing project
-  URL/number; if none exists, create one (`gh project create`) on explicit
+- **GitHub Project board — mandatory.** It is the loops' queue and status
+  display (`Todo` / `In Progress` / `Done`), not a claim or lock. Ask for the existing
+  project URL/number; if none exists, create one (`gh project create`) on explicit
   confirmation, never silently. `none` is not a valid value. Then **record the
   board field-ID recipe** into the contract's board section — per-project data,
   like the Verify command: `gh project field-list <number> --owner <owner>
@@ -267,7 +267,7 @@ entirely (no `docs/release.md`, no gate).
   placeholder.
 - **`--here`:** a missing or placeholder-stale `docs/release.md` on a releasable
   project is a gap that routes here (Step 7c) — never a second bootstrap inside
-  `/ship`; a non-releasable project's absent file is not a gap.
+  `/loopkit:ship`; a non-releasable project's absent file is not a gap.
 
 GATE: present the filled contract before writing `docs/release.md` (skip the gate
 entirely when the project is not releasable).

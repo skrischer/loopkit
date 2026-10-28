@@ -1,8 +1,8 @@
 # Roadmap
 
-> Living document: the catalogue of phases. The hand-off to `/plan`, which the
-> human points at a phase; `/plan` then drafts its spec + issues and links them
-> back here. No status markers and no current-focus pointer — the human chooses
+> Living document: the catalogue of phases. The hand-off to `/loopkit:plan`;
+> the human points it at a phase, and it then drafts its spec + issues and
+> links them back here. No status markers and no current-focus pointer — the human chooses
 > what to plan next; progress lives in the GitHub milestone each phase links to.
 
 ## Phase overview
