@@ -31,8 +31,10 @@ spec-acceptance gate (the constitution's clarification corollary). They touch
       - worktrees, because resume re-attaches a deterministic branch;
       - the wave fan-out, because `/batch` reads no GitHub state.
 
-      The vision's Why now binds only the primitives that fit. No foundation
-      doc claims that loopkit binds or wraps `/plan`, `/batch` or worktrees.
+      The vision's Why now binds only the primitives that fit. No vision,
+      constitution or architecture text claims that loopkit binds or wraps
+      `/plan`, `/batch` or worktrees. The prior-art verdict that still says so
+      is corrected by its dated line.
 - [ ] "Scheduler" is defined once, in the constitution: anything that starts a
       run without the human. The vision says "no external scheduler" and names
       `/loop` as the human's in-session repetition. The constitution's Don'ts
@@ -155,9 +157,13 @@ none
 | Design principle: "the `docs/workflow.md` sibling" | Tech stack row "Design contract" |
 | Design principle: "the tool is an editor, not a second source of truth" | `docs/design.md`: "the tool is the editor, the committed file is the state" |
 | Design principle: "never a third gate" | Exactly two human gates |
+| Design principle: "(proportional ceremony)" | The Proportional ceremony principle |
+| Design principle: "chosen per project there" | `docs/design.md` (the medium it records) |
 | Release principle: the `gh release create` / `git tag` commands | `docs/release.md` |
 | Release principle: the contract's field list | `docs/release.md`'s own sections |
-| Release principle: the tool examples semantic-release and release-please | Dropped. They appear nowhere, and the binding "hardcodes no release tool" stays. The template lists its own examples (`gh release create`, `npm publish`, `goreleaser`) |
+| Release principle: the tool examples semantic-release and release-please | `docs/prior-art.md`'s release-please and semantic-release entries. The binding "hardcodes no release tool" stays, and the template lists its own examples (`gh release create`, `npm publish`, `goreleaser`) |
+| Release principle: "(a change ships when the human cuts a release; a one-liner needs none)" | The vision, Scope In (the release-phase line) |
+| Release principle: "(upholds subscription-auth and the `gh`+`git` runtime)" | The Subscription auth principle, and the Tech stack "Runtime" row |
 | Release principle: shell-hygiene | The trust-boundary principle, and `docs/release.md`'s Trust boundary section |
 | Release principle: "a summary is printed, not a third gate" | `docs/release.md`, and Exactly two human gates |
 | Two gates: "delivered or produced during planning" | Architecture Key flow 3 and `skills/design/SKILL.md` |
@@ -261,3 +267,9 @@ the issues own progress.
   - The changelog line is explicit about commit, PR and issue text.
   - Precedent, trim homes, checks, byte ceilings, the QA expectation and
     wrapping are fixed.
+- 2026-10-28: Review round 2 returned APPROVE. Its four non-blocking notes are
+  applied before the gate:
+  - the semantic-release and release-please homes are named;
+  - the prior-art carve-out is stated in the Outcome;
+  - four parentheticals are added to the Trim set;
+  - the vision's Why now paragraph is re-wrapped.
