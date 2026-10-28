@@ -1,374 +1,243 @@
 ---
 name: inception
-description: "Phase-0 inception dialog that runs BEFORE any spec work — clarify the goal, research prior art, then derive vision, constitution, and architecture artifacts plus roadmap, workflow contract, an optional design contract and an optional release contract, GitHub project board, project permission settings, and CLAUDE.md wiring, leaving the project loop-ready for /loopkit:plan and /loopkit:implement. On an existing project (--here) it doubles as a loop-readiness check that diffs the project against the contract and closes only the gaps. Arguments: a project pitch (greenfield) or --here (brownfield)."
+description: "Phase-0 inception dialog, run before any spec work: clarify the goal, research prior art, derive vision, constitution, architecture, roadmap, workflow contract (plus optional design and release contracts), project board, permission settings and CLAUDE.md wiring, leaving the project loop-ready for /loopkit:plan and /loopkit:implement. With --here on an existing project it is a loop-readiness check that closes only the gaps. Arguments: a project pitch (greenfield) or --here (brownfield)."
+argument-hint: "[pitch | --here]"
 disable-model-invocation: true
 ---
 
 # /loopkit:inception — Phase-0 inception (before specs)
 
-Codifies the phase BEFORE spec-driven development (constitution -> specify ->
-plan -> tasks). Produces four foundation artifacts in `docs/` (vision,
-constitution, prior-art, architecture), a `docs/roadmap.md` sequencing the work
-into plannable phases, a `docs/workflow.md` operational contract, an optional
-`docs/design.md` design contract (design-surface projects), an optional
-`docs/release.md` release contract (releasable projects), a GitHub Project board,
-and the project's `.claude/settings.json` permissions — the
-hand-off to the `/loopkit:plan` and `/loopkit:implement` sibling skills, which
-then run as attended loops (one plan session, one orchestrator per milestone)
-over GitHub issues, milestones, and the board. Strictly separate intent
-(what/why) from implementation (how); the tech stack belongs in the
-constitution, never in feature specs.
+> Truncation guard: if the end-of-skill line is missing from your copy of this skill, it was cut after a compaction — Read ${CLAUDE_SKILL_DIR}/SKILL.md in full before continuing (in a full-file Read, ${CLAUDE_SKILL_DIR} means the directory this SKILL.md sits in).
+
+Codifies the phase before spec-driven development: four foundation artifacts
+(table below), `docs/roadmap.md`, the `docs/workflow.md` contract, optional
+`docs/design.md` and `docs/release.md`, a GitHub Project board and the project's
+`.claude/settings.json` — the hand-off to `/loopkit:plan` and
+`/loopkit:implement`. Keep intent (what/why) apart from implementation (how); the tech stack
+belongs in the constitution.
 
 **Interaction model:** guided dialog, never one-shot. Human gates: after the
 goal draft, before finalizing each artifact (prior-art, vision, constitution,
 architecture), before the roadmap, before the workflow contract, before the
 design contract (design-surface projects), before the release contract
 (releasable projects), and before writing the permission settings. At each
-gate, present the draft and confirm
-via AskUserQuestion before writing the final file. Converse in the user's
-language; all artifacts and the CLAUDE.md wiring are written in English.
+gate, present the draft and confirm via AskUserQuestion before writing the final
+file. Converse in the user's language; write all artifacts and the CLAUDE.md wiring
+in English.
 
 **Brownfield = readiness check + gap closure:** with `--here` on an existing
-project, first read the codebase and every existing artifact, then diff them
-against the current templates' mandatory fields (the readiness checklist in
-Close out). Present the gap report as the first gate, then run ONLY the steps
-that close gaps — reconcile and extend existing artifacts, never
-blind-overwrite; surface conflicts at the artifact's gate. Adding or extending a
-roadmap phase opens a prior-art gap for that phase's concern — close both, not
-just the roadmap. Idempotent: on a fully loop-ready project the result is "all
-green — nothing to do".
+project, read the codebase and every existing artifact, then diff them against
+the current templates' mandatory fields (the readiness checklist). Present the
+gap report as the first gate, then run only the steps that close gaps —
+reconcile and extend, never blind-overwrite; surface conflicts at the artifact's gate. Adding or extending a roadmap phase opens a prior-art gap for it — close both. A
+fully loop-ready project yields "all green — nothing to do".
 
 ## Artifacts and their character (strict separation, no duplication)
 
-| File                 | Character                        | Content                                              |
-| -------------------- | -------------------------------- | ---------------------------------------------------- |
-| docs/vision.md       | normative                        | what/why, implementation-free                        |
-| docs/constitution.md | normative, binding               | rules; every principle verifiable and specific       |
-| docs/prior-art.md    | descriptive, living              | indexed by concern, not by project                   |
-| docs/architecture.md | structural, living, most volatile| components, boundaries, flows, where new code goes   |
+| File | Character |
+| --- | --- |
+| docs/vision.md | normative: what/why, implementation-free |
+| docs/constitution.md | normative, binding: every principle verifiable and specific |
+| docs/prior-art.md | descriptive, living: indexed by concern, not by project |
+| docs/architecture.md | structural, living, most volatile: components, boundaries, flows, where new code goes |
 
-Templates live in `templates/` next to this file — copy the structure, fill
-it, never duplicate content across artifacts.
+Templates live in `${CLAUDE_SKILL_DIR}/templates/` — fill them, never
+duplicate content.
 
 ## Step 0 — Determine mode (no gate)
 
-**Preflight (the LITERAL FIRST action — before mode detection, before any
-`gh repo view`, before the `$ARGUMENTS` branch).** Every loopkit op hard-depends
-on `git` and an authenticated `gh` with the `repo` + `project` scopes; verify
-that now so nothing fails cryptically mid-flow (e.g. board creation in Step 7).
-Run all checks, then on ANY failure STOP and list EVERY problem at once with the
-exact remedy — INSTRUCT the fix, never auto-run `gh auth login`/`gh auth refresh`
-(those are interactive browser/device flows):
-
-- **Tools on PATH.** `command -v git` and `command -v gh` (then `git --version` /
-  `gh --version`). Missing -> remedy: "install git / gh — https://cli.github.com".
-- **`gh` authenticated.** `gh auth status`. Not authenticated -> remedy:
-  `gh auth login`.
-- **Token scopes — required: `repo` + `project` (two-step check).**
-  1. If the `Token scopes:` line of `gh auth status` is present, it must contain
-     `repo` and `project`.
-  2. If that line is ABSENT (fine-grained PAT / GitHub App / `GH_TOKEN` report no
-     classic scopes), do NOT parse — probe instead:
-     `gh api graphql -f query='{viewer{projectsV2(first:1){nodes{id}}}}'`
-     (project access) and `gh repo view >/dev/null` (repo access); a non-zero
-     exit whose stderr matches `INSUFFICIENT_SCOPES` or mentions `project`
-     (case-insensitive) = missing scope.
-  Missing `project` -> remedy: `gh auth refresh -s project` *(OAuth login; for a
-  PAT or `GH_TOKEN`, `gh auth refresh` does not apply — re-create the token with
-  the `project` scope instead)*. **Project-scope landmine:** `gh auth login` does
-  NOT grant `project` by default, so a "correctly authed" user still fails board
-  creation without it — this is the specific gap the check exists to catch.
+Preflight first, before mode detection and any `gh repo view`: Read
+`${CLAUDE_PLUGIN_ROOT}/skills/shared/preflight.md` and run it. Required scopes:
+`repo` + `project`. The clean-base check does not apply (greenfield: no base
+branch).
 
 - `$ARGUMENTS` is `--here` -> brownfield.
-- Otherwise auto-detect: working directory contains a codebase -> brownfield
-  (treat any pitch text as extra context); empty -> greenfield with
-  `$ARGUMENTS` as the pitch.
-- Empty directory and no pitch: ask for the pitch first.
-- State the detected mode in one line and continue.
-- Brownfield only: before anything else, read the existing codebase and
-  EXTRACT the lived conventions, structure, and stack. Never invent what the
-  code already answers. Also read `docs/workflow.md`, `.claude/settings.json`,
-  and the GitHub state (`gh repo view`, milestones, board) — then present the
-  readiness gap report (GATE) and skip every step below whose output already
-  meets the current template.
+- Otherwise auto-detect: a codebase in the working directory -> brownfield
+  (pitch text is extra context); empty -> greenfield with `$ARGUMENTS` as the
+  pitch. Empty and no pitch: ask for the pitch first.
+- State the detected mode in one line.
+- Brownfield only: first read the existing codebase and extract the lived
+  conventions, structure and stack; never invent what the code already answers.
+  Also read `docs/workflow.md`, `.claude/settings.json` and the GitHub state
+  (`gh repo view`, milestones, board). Then Read
+  `${CLAUDE_SKILL_DIR}/references/readiness-checklist.md`, present the readiness
+  gap report (GATE) from it, and skip every step whose output already meets the
+  current template.
 
 ## Step 1 — Rough goal (gate 1)
 
 Work out with the user: problem, why now, target users, measurable success
 criteria. Short dialog, not a form. GATE: confirm the goal summary before
-research starts.
+research.
 
 ## Step 2 — Prior-art challenge (gate 2)
 
-Run the prior-art challenge per `skills/shared/iteration-steps.md` — the
-challenge lens (existence, USP, differentiation, idea harvest), the ASK-first
+Run the prior-art challenge per `${CLAUDE_PLUGIN_ROOT}/skills/shared/iteration-steps.md` (Read it first) — the
+challenge lens (existence, USP, differentiation, idea harvest), the ask-first
 research-mode choice, and filling `docs/prior-art.md`. Inception framing: the
-challenge answers are the direct input to the vision (Step 3: USP, non-goals) —
-research runs here so Step 3 can consume it.
+challenge answers are the direct input to the vision (Step 3: USP, non-goals).
 
 GATE: present the challenge answers and the per-entry verdicts before finalizing.
 
 ## Step 3 — Sharpen the vision (gate 3)
 
 Informed by the research: goal + scope (in/out) + explicit non-goals ->
-`docs/vision.md`. Keep it to ~1 page — it is loaded into context permanently.
+`docs/vision.md`, ~1 page (loaded permanently).
 GATE before finalizing.
 
 ## Step 4 — Derive the constitution (gate 4)
 
 Tech stack with rationale, architecture principles, conventions, quality
-gates, a "don't" list -> `docs/constitution.md`. Every principle must be
-verifiable and specific ("max function length 50 lines", not "clean code").
-Keep it to ~1 page — loaded permanently. Brownfield: write the TARGET state;
+gates, a "don't" list -> `docs/constitution.md`. Every principle verifiable and
+specific ("max function length 50 lines", not "clean code"). ~1 page, loaded
+permanently. Brownfield: write the target state;
 mark known deviations as tech debt instead of normalizing the status quo.
 GATE before finalizing.
 
 ## Step 5 — Seed the architecture (gate 5)
 
-Seed the architecture per `skills/shared/iteration-steps.md` ->
-`docs/architecture.md`. GATE before finalizing.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/shared/iteration-steps.md` and seed the
+architecture per it -> `docs/architecture.md`. GATE before finalizing.
 
 ## Step 6 — Seed the roadmap (gate 6)
 
-Seed the roadmap per `skills/shared/iteration-steps.md`, filling this skill's
-`templates/roadmap.md` into `docs/roadmap.md` and deriving the phases from the
-vision scope and the architecture seed. GATE before finalizing.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/shared/iteration-steps.md` and seed the
+roadmap per it, filling `${CLAUDE_SKILL_DIR}/templates/roadmap.md` into
+`docs/roadmap.md` and deriving the phases from the vision scope and the
+architecture seed. GATE before finalizing.
 
 ## Step 7 — Establish the workflow contract (gate 7)
 
-The operational hand-off to the `/loopkit:plan` and `/loopkit:implement`
-sibling skills: they read `docs/workflow.md` instead of hardcoding project
-specifics.
+The hand-off to `/loopkit:plan` and `/loopkit:implement`: they read
+`docs/workflow.md` instead of hardcoding project specifics. First ensure the git
+foundation — `/loopkit:plan` requires a GitHub repo:
 
-First, ensure the **git foundation** the contract (and the loops) depend on —
-`/loopkit:plan` requires a GitHub repo:
-
-- Check `git rev-parse --is-inside-work-tree`. If it is already a git repo with
-  an `origin` remote, use it.
-- If it is NOT a git repo, find the GitHub repo and wire it up:
+- `git rev-parse --is-inside-work-tree`: a repo with an `origin` remote is used
+  as is.
+- Otherwise find the GitHub repo and wire it up:
   - Look for a repo matching the directory name
-    (`gh repo list --json name,url,isEmpty`), or ask the user for the link.
-  - For an existing repo, initialize and connect it (state what you do, no
-    separate gate — it is plumbing): `git init`, `git remote add origin <url>`,
-    `git fetch origin`. If the remote has commits, check out its default branch;
-    if it is empty, create the base branch locally.
-  - If NO repo can be found, ask the user — and only **create** one
-    (`gh repo create`) on explicit confirmation, never silently.
+    (`gh repo list --json name,url,isEmpty`) or ask for the link.
+  - For an existing repo, initialize and connect it (state it, no gate): `git init`, `git remote add origin <url>`, `git fetch origin`. If the
+    remote has commits, check out its default branch; if empty, create the base
+    branch locally.
+  - If none exists, create one (`gh repo create`) only on explicit confirmation.
 
-Then fill the `templates/workflow.md` template, deriving values rather than
-asking where you can:
+Then fill `${CLAUDE_SKILL_DIR}/templates/workflow.md`, deriving values rather
+than asking where you can:
 
 - **Repository** — `gh repo view --json nameWithOwner` (now resolvable).
-- **Base branch** — `git symbolic-ref refs/remotes/origin/HEAD` (fallback:
-  `main`).
-- **GitHub Project board — mandatory.** It is the loops' queue and status
-  display (`Todo` / `In Progress` / `Done`), not a claim or lock. Ask for the
-  existing project URL/number; if none exists, create one (`gh project create`)
-  on explicit confirmation, never silently. `none` is not a valid value. Then
-  **record the board field-ID recipe** into the contract's board section —
-  per-project data, like the Verify command:
-  `gh project field-list <number> --owner <owner>
-  --format json --jq '.fields[]|select(.name=="Status")'` returns the ProjectV2
-  Status field id + the Todo / In Progress / Done option ids; write the concrete
-  values into the contract's `<status-field-id>` / `<...-option-id>`
-  placeholders so `plan`/`implement` set status without re-discovering them.
+- **Base branch** — `git symbolic-ref refs/remotes/origin/HEAD` (fallback `main`).
+- **GitHub Project board (mandatory).** It is the loops' queue and status
+  display (`Todo` / `In Progress` / `Done`). Ask for the existing project
+  URL/number; if none exists, create one (`gh project create`) on explicit
+  confirmation, never silently. `none` is not a valid value. Then record the
+  field-ID recipe: `gh project field-list <number> --owner <owner>
+  --format json --jq '.fields[]|select(.name=="Status")'` returns the Status
+  field id + the Todo / In Progress / Done option ids; write them into the
+  contract's `<status-field-id>` / `<...-option-id>` placeholders so
+  `plan`/`implement` skip re-discovery.
 - **Brownfield backfill:** put every existing open issue onto the board
-  (`Todo`, or its real state) AND retrofit the issue conventions on the
-  existing issue bodies — above all a parseable `Depends on: #N` line per
-  issue, derived from the specs' phase and step order. The implement loop's
-  unblocked check reads exactly that line; prose dependencies are invisible
-  to it and let issues get picked too early.
+  (`Todo`, or its real state) and retrofit the issue conventions on existing
+  bodies — above all a parseable `Depends on: #N` line per issue, derived from
+  the specs' phase and step order. The unblocked check
+  reads exactly that line; prose dependencies let issues get picked too early.
 - **Commands** — derived from the stack just fixed in the constitution:
-  - **Bootstrap** — makes a fresh clone or worktree runnable (install deps
-    from the lockfile, copy env files). Run it once to prove it works.
-  - **Verify** — ONE non-interactive command for the per-iteration gate. If
-    the stack has no single command, create one as part of this step (e.g. an
-    npm script chaining lint + typecheck). Run it once and record its measured
-    duration in the contract — iteration cost burns attended-session usage.
-  - **Test** — the test command, or `none yet` with its defined consequence
-    (acceptance items no machine check covers go to the milestone-QA gate).
+  - **Bootstrap** — makes a fresh clone or worktree runnable (deps from the
+    lockfile, env files). Run it once to prove it works.
+  - **Verify** — one non-interactive per-iteration gate command; create one
+    if the stack has none (e.g. an npm script chaining lint + typecheck). Run it
+    once and record its duration in the contract.
+  - **Test** — the test command, or `none yet` (acceptance items no machine
+    check covers go to the milestone-QA gate).
   - **Build** — the full check for app-affecting changes.
-- **QA-gate default** — the check type for the milestone QA gate (review /
-  UI check / smoke test).
-- **Model tiers (OPTIONAL)** — if the project routes roles to model tiers, fill
-  the role->tier field (orchestrator / implementer / reviewer); per-project data
-  like the Verify command. Absent or a role unset -> `inherit`. Model names live
-  only in the contract, never in skill prose.
-- Worktree convention, branch/spec naming, issue conventions, gates, autonomy,
-  and the loop prompts are fixed by the template — leave them as-is and fill
-  the placeholders (repo name, iteration ceiling).
+- **QA-gate default** — the milestone QA check type (review / UI check / smoke
+  test).
+- **Model tiers (optional)** — if the project routes roles to model tiers, fill
+  the role->tier field (orchestrator / implementer / reviewer). Absent or a role
+  unset -> `inherit`. Model names live only in the contract.
+- Worktree convention, branch/spec naming, issue conventions, gates, autonomy
+  and loop prompts are fixed by the template — fill only the placeholders (repo
+  name, iteration ceiling).
 
 GATE: present the filled contract before writing `docs/workflow.md`.
 
-## Step 7b — Design contract (gate 7b, OPTIONAL — design-surface only)
+## Step 7b — Design contract (gate 7b, optional — design-surface only)
 
-The design sibling of the workflow contract: `/loopkit:design` and the loops
-read `docs/design.md` instead of hardcoding a design tool. Proportional — only a
-project with a design surface gets it; a project with neither records `none` and
-skips this step entirely (no `docs/design.md`, no gate).
+Decide design surface: does this project render a user-facing interface
+(web/app/CLI-with-rich-output) or would a visualisation
+(flow / state / architecture / concept) materially clarify recurring
+decisions? Neither -> record `none` in the readiness checklist and skip to
+Step 7c. Either -> Read `${CLAUDE_SKILL_DIR}/references/design-contract.md` and
+fill the contract from it (it carries this step's GATE).
 
-- **Decide design surface.** Does this project render a user-facing interface
-  (web/app/CLI-with-rich-output) **OR** would a visualisation
-  (flow / state / architecture / concept) materially clarify recurring
-  decisions? Neither -> record `none` in the Close out checklist and skip to
-  Step 8. Either -> fill the contract.
-- Fill `templates/design.md` into `docs/design.md`, deriving values from the
-  vision/constitution where you can rather than asking:
-  - **kind** — set the front-matter `kind` (`ui` / `concept` / `both`). Per the
-    template's "How to fill" note this is prune-on-fill: for `concept`, DELETE
-    the color/type/spacing/radii/shadow token blocks and fill the **Diagram
-    medium** section (medium + where diagrams live) instead; for `ui`/`both`,
-    keep the token blocks.
-  - **Design tool / MCP** — the editor this project uses (e.g. Paper MCP /
-    Figma / Superdesign / v0 / Claude artifacts, or a diagram tool for a concept
-    project); ask the user, pick exactly one primary. The tool is the editor,
-    never the source of truth.
-  - **Where designs live** — the working surface (file/URL) AND the committed
-    token / asset / diagram paths in the repo.
-  - **Durable form** — a file committed to the repo (tokens / exported image /
-    screenshot / committed diagram); an external-tool URL is not durable state
-    (constitution: GitHub-only durable state). Leave the template's rule intact.
-  - **Review path** — which reviewer/skill checks the design; it is reviewed AT
-    the spec-acceptance gate, not a third stop.
-  - **Handoff format** — how `/loopkit:implement` consumes the committed
-    artifact.
-  - **Tokens / Diagram medium, Components, Do's/Don'ts** — for `ui`/`both` fill
-    the front-matter tokens and the component rules; for `concept` fill the
-    Diagram medium instead. Derive from the design intent.
+## Step 7c — Release contract (gate 7c, optional — releasable projects only)
 
-GATE: present the filled contract before writing `docs/design.md` (skip the gate
-entirely when the design surface is `none`).
-
-## Step 7c — Release contract (gate 7c, OPTIONAL — releasable projects only)
-
-The release sibling of the workflow contract: `/loopkit:ship` reads
-`docs/release.md` instead of hardcoding a release tool. Proportional — only a
-project with a versioned release/publish concept gets it; a throwaway /
-experiment / unversioned-internal project records `none` and skips this step
-entirely (no `docs/release.md`, no gate).
-
-- **Decide releasability.** Does this project ship a versioned release — a
-  library / plugin / binary / deployed service / hosted site? No -> record `none`
-  in the Close out checklist and skip to Step 8. Yes -> fill the contract.
-  (Release applicability is broader than design-surface — more projects publish
-  than render UI — so the yes-rate is higher; the OPTIONAL framing still holds.)
-- Fill `templates/release.md` into `docs/release.md`, deriving values from the
-  vision/constitution/stack where you can rather than asking:
-  - **Versioning scheme** — semver / CalVer / build number, and how the next
-    version is computed from the range since the last tag.
-  - **Version-bearing files** — the file(s) carrying the version string to bump;
-    name the single source and any metadata-consistent siblings.
-  - **Tag format** — the tag shape; the tag must match the version exactly.
-  - **Changelog** — source range + format/file; the human curates the unreleased
-    section before invoking (reviewed with `--dry-run`).
-  - **Publish target + command** — the native in-session `gh` / tooling command;
-    release notes passed by file, never inlined.
-  - **Pre-publish Verify** — reference this project's Verify (from
-    `docs/workflow.md`); do not restate the command.
-  The template's invariant prose (human-invoked, tag == version, trust boundary,
-  durable state, G1 = A) is loopkit-fixed — leave it intact, it is not a
-  placeholder.
-- **`--here`:** a missing or placeholder-stale `docs/release.md` on a releasable
-  project is a gap that routes here (Step 7c) — never a second bootstrap inside
-  `/loopkit:ship`; a non-releasable project's absent file is not a gap.
-
-GATE: present the filled contract before writing `docs/release.md` (skip the gate
-entirely when the project is not releasable).
+Decide releasability: does this project ship a versioned release — a
+library / plugin / binary / deployed service / hosted site? No -> record `none`
+in the readiness checklist and skip to Step 8. Yes -> Read
+`${CLAUDE_SKILL_DIR}/references/release-contract.md` and fill the contract from
+it (it carries this step's GATE and the `--here` gap routing).
 
 ## Step 8 — Project permissions (gate 8)
 
-Fill `templates/settings.json` into the project's `.claude/settings.json` —
-plugins cannot ship permission rules, so the loops' autonomy must be granted
-per project:
+Fill `${CLAUDE_SKILL_DIR}/templates/settings.json` into the project's
+`.claude/settings.json` — plugins cannot ship permission rules, so the loops'
+autonomy must be granted per project:
 
 - Ships `defaultMode: acceptEdits` plus an `allow` list (`Bash`, `WebFetch`,
-  `WebSearch`). `acceptEdits` auto-approves file edits only inside the working
-  directory or `additionalDirectories`, so edits in the loop worktrees under
-  `../<repo>-worktrees/` still prompt. Claude Code ignores two values as a
-  project-level `defaultMode`: `bypassPermissions` (the session starts in
-  Manual mode) and `auto` (it falls back to the built-in default). The
-  project's `acceptEdits` outranks both the built-in default and a
-  `defaultMode` in `~/.claude/settings.json`; a human who wants `auto` starts
-  with `--permission-mode auto`. Deny rules apply in EVERY mode — deny always
-  wins. The template's deny list ships the constitution hard limits concretely
-  into `.claude/settings.json` — the enforced single source; no prose
-  re-enumerates them.
-- Deny rules match command text: a guardrail, not a security boundary. They
-  guard the usual forms, not every way to run a program; the template repeats
-  each git limit for the `git -C <path>` form, and the skills' never-force
-  rules stay as the second layer.
+  `WebSearch`). `acceptEdits` auto-approves edits only inside the working
+  directory or `additionalDirectories`, so edits in worktrees under
+  `../<repo>-worktrees/` still prompt. Claude Code ignores `bypassPermissions`
+  and `auto` as a project-level `defaultMode`; a human who wants `auto` starts
+  with `--permission-mode auto`. Deny rules apply in every mode. The template's
+  deny list ships the hard limits concretely — the enforced single source; no
+  prose re-enumerates them.
+- Deny rules match command text: a guardrail, not a security boundary. The
+  template repeats each git limit for the `git -C <path>` form, and the skills'
+  never-force rules stay as the second layer.
 - **`--here`:** a project `defaultMode` other than `acceptEdits` is a gap —
-  `bypassPermissions` starts sessions in Manual mode and `auto` never takes
-  effect from a project file — propose the `acceptEdits` + `allow` form at
-  this gate.
-- Extend the deny list with the stack's destructive commands against shared
-  state: replace the template's `<STACK_DESTRUCTIVE_DB_COMMAND>` placeholder
-  with what this stack actually has (e.g. `supabase db reset`,
-  `prisma migrate reset`), or drop it if the stack has none.
-- The contract's Autonomy section is the human-readable counterpart: it
-  explicitly grants autonomous commits, pushes, merges, dependency installs,
-  and `.env` edits to the skills, overriding any stricter global user rules.
-- **Conflict check:** read the user-level `~/.claude/settings.json`. Deny
-  rules and PreToolUse hooks there beat every project setting — a global
-  `Bash(npm install*)` deny silently kills Bootstrap, and no project file can
-  override it. Surface every global rule that collides with the contract's
-  Autonomy section and ask the user to relax it (their edit, never yours).
+  propose the `acceptEdits` + `allow` form at this gate.
+- Replace the template's `<STACK_DESTRUCTIVE_DB_COMMAND>` deny placeholder with
+  the stack's destructive commands against shared state (e.g. `supabase db
+  reset`, `prisma migrate reset`), or drop it if the stack has none.
+- The contract's Autonomy section is the human-readable counterpart: it grants
+  the skills autonomous commits, pushes, merges, dependency installs and `.env`
+  edits, overriding any stricter global user rules.
+- **Conflict check:** read the user-level `~/.claude/settings.json`. Its deny
+  rules and PreToolUse hooks beat every project setting (a global
+  `Bash(npm install*)` deny silently kills Bootstrap). Surface each rule that
+  collides with the Autonomy section and ask the user to relax it (their edit, never yours).
 
 GATE: present the settings before writing; merge with an existing file, never
 overwrite silently.
 
 ## Step 9 — Wire CLAUDE.md (no gate)
 
-Create or extend the project `CLAUDE.md` (last, so it can reference every
+Create or extend the project `CLAUDE.md` (last, so it references every
 artifact):
 - Reference `@docs/vision.md` and `@docs/constitution.md` (always in context).
 - List `docs/prior-art.md`, `docs/architecture.md`, `docs/roadmap.md`, and
-  `docs/workflow.md` as on-demand references — explicitly NOT loaded permanently
+  `docs/workflow.md` as on-demand references — explicitly not loaded permanently
   (token budget).
-- State the contract's Autonomy grant directly in `CLAUDE.md` — the
-  always-in-context counterpart to stricter global user rules (which are also
-  always in context): within the loopkit skills, autonomous commits, pushes,
-  merges, dependency installs, and `.env` edits are explicitly granted; hard
-  limits live in `.claude/settings.json`.
-- Write a `# Compact Instructions` section — it loads every session and is
-  re-injected after a compaction, so keep it to a few lines — a directive, not
-  a state dump: have it keep the active milestone target and the wave issues
-  still running through a compaction, and re-derive the unblocked frontier from
+- State the contract's Autonomy grant in `CLAUDE.md`, the always-in-context
+  counterpart to stricter global user rules: within the loopkit skills,
+  autonomous commits, pushes, merges, dependency installs and `.env` edits are
+  explicitly granted; hard limits live in `.claude/settings.json`.
+- Write a `# Compact Instructions` section — a few lines, a directive not a
+  state dump, re-injected after a compaction: keep the active milestone target
+  and the wave issues still running, and re-derive the unblocked frontier from
   GitHub afterwards.
 
 ## Close out — loop readiness
 
-Walk this checklist and show the result (brownfield: the same checklist that
-produced the gap report in Step 0):
-
-- [ ] gh + git available and authorized — gh authenticated with the repo + project scopes (Step 0 preflight)
-- [ ] Verify is ONE command, runs green, duration recorded in the contract
-- [ ] Bootstrap turns a fresh worktree runnable, proven by running it
-- [ ] Project board exists with `Todo` / `In Progress` / `Done`, and its
-      field-ID recipe (Status field id + option ids) is recorded in the contract
-- [ ] `docs/workflow.md` complete — no placeholders left
-- [ ] Model tiers (OPTIONAL) — if the project routes roles to tiers, the
-      role->tier field is filled; else absent (default `inherit`)
-- [ ] `docs/design.md` complete (design-surface project) — no placeholders left;
-      or recorded `none` (neither surface, no file)
-- [ ] `docs/release.md` complete (releasable project) — no placeholders left;
-      or recorded `none` (not releasable, no file)
-- [ ] Every roadmap phase has prior-art coverage to seed its spec (or an explicit
-      greenfield "no prior art" note)
-- [ ] `.claude/settings.json` in place: `defaultMode: acceptEdits` with an
-      `allow` list, and deny rules covering every constitution hard limit
-- [ ] Provisioning: `.env.example` complete and every value the project needs
-      is provided — collect missing secrets from the user NOW, not mid-loop
-- [ ] Initial commit exists on the base branch. If the branch is unborn,
-      `/loopkit:plan` cannot branch a worktree from it: prompt the user and,
-      only on their explicit confirmation, stage, commit, and push the
-      inception output.
-
-Show the list of created and changed files for sign-off, then print the
-`/loop` start commands (plan, implement) from the contract's Loops section —
-ready to paste into the plan session and one orchestrator session per
-milestone; `/loopkit:roadmap` is invoked directly, per idea.
+Read `${CLAUDE_SKILL_DIR}/references/readiness-checklist.md`, walk it and show
+the result. Show the created and changed files for sign-off, then print the `/loop` start
+commands (plan, implement) from the contract's Loops section, ready to paste
+into the plan session and one orchestrator session per milestone.
+`/loopkit:roadmap` is invoked directly, per idea.
 
 ## If blocked
 
 Stop and ask. No workarounds, no skipped gates.
+
+End of /loopkit:inception.
