@@ -66,7 +66,7 @@ this is a seed, not a final design.
 ## Roadmap seeding
 
 The roadmap is the content hand-off to `/loopkit:plan`: the sequenced queue of
-phases it picks the next one from. Break the work into ordered, plannable phases,
+phases the human points it at. Break the work into ordered, plannable phases,
 derived from the scope and the architecture seed. From the roadmap template into
 `docs/roadmap.md`:
 

@@ -161,8 +161,8 @@ asking where you can:
   `main`).
 - **GitHub Project board — mandatory.** It is the loops' queue and status
   display (`Todo` / `In Progress` / `Done`), not a claim or lock. Ask for the existing
-  project URL/number; if none exists, create one (`gh project create`) on explicit
-  confirmation, never silently. `none` is not a valid value. Then **record the
+  project URL/number; if none exists, create one (`gh project create`) on
+  explicit confirmation, never silently. `none` is not a valid value. Then **record the
   board field-ID recipe** into the contract's board section — per-project data,
   like the Verify command: `gh project field-list <number> --owner <owner>
   --format json --jq '.fields[]|select(.name=="Status")'` returns the ProjectV2

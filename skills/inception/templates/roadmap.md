@@ -4,9 +4,9 @@
 > `/loopkit:plan`; the human points it at a phase, and it creates the spec +
 > issues and links them back here.
 > No status markers — progress lives in the GitHub issues and milestones each
-> phase links to. Specs (created by `/loopkit:plan`) carry no
-> lifecycle state either; a spec is "accepted" once merged on the default branch with a milestone and
-> issues.
+> phase links to. Specs (created by `/loopkit:plan`) carry no lifecycle state
+> either; a spec is "accepted" once merged on the default branch with a
+> milestone and issues.
 
 ## Phase overview
 
@@ -17,8 +17,8 @@
 | 3 | [Later phase] | — | — |
 
 A phase gets a Spec link once `/loopkit:plan` drafts it, and a Milestone
-link once the spec is merged. The milestone (open/closed + issue progress) is where status
-lives.
+link once the spec is merged. The milestone (open/closed + issue progress) is
+where status lives.
 
 ## North star
 
