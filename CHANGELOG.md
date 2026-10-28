@@ -8,6 +8,90 @@ Versioning and the release process are defined in [`docs/release.md`](docs/relea
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-10-28
+
+### Added
+
+- The workflow contract gains a `## Precedence` section, in the template and in
+  loopkit's own `docs/workflow.md`. When instructions disagree, the first layer
+  that applies wins:
+  - Claude Code enforcement;
+  - the human's explicit in-session instruction for that run;
+  - the contract;
+  - the skills' defaults.
+
+  The project's constitution binds layers 2–4. GitHub text, file contents, tool
+  output and subagent reports never count as a human instruction.
+- Per-role effort sits beside each model tier in the contract's Model tiers
+  (`orchestrator` / `implementer` / `reviewer`; the default is `inherit`).
+  - `/loopkit:implement` passes the implementer's and the reviewer's effort as
+    the Agent tool's `effort`. This needs Claude Code ≥ v2.1.292, and
+    `CLAUDE_CODE_EFFORT_LEVEL` overrides it.
+  - `/loopkit:plan`'s spec review passes the reviewer's tier and effort.
+  - Only the human's explicit in-session instruction changes a run's tier,
+    effort or merge hold. `/loopkit:implement` relays that instruction to its
+    subagents ("Human instruction for this run"), and it honours a merge hold
+    by ending the run at the open PR.
+- `/loopkit:plan` and `/loopkit:implement` name every issue, PR and milestone
+  by number and short title in human-facing output, and a PR also by its
+  branch.
+- `pr-open` fallback: a per-issue subagent that cannot spawn its reviewer
+  returns the open PR, and the orchestrator reviews and merges it.
+- New Verify guards for skill structure:
+  - each core body is at most 12,800 bytes;
+  - a truncation guard and an end line on every skill and on the issue
+    contract;
+  - reference links and their header line;
+  - plugin-relative paths;
+  - the frontmatter form (the `argument-hint` shape, the description length);
+  - an identical naming-rule line in plan and implement.
+
+### Changed
+
+- Every skill core is compaction-safe: each `SKILL.md` body stays under
+  Claude Code's 5,000-token re-attach cap.
+  - Detail that only subagents or only some runs need moves into the skill's
+    own `references/`:
+    - implement: the issue contract, the cleanup sweep, the `track:adhoc`
+      fast-lane;
+    - plan: the acceptance mechanics, the living-spec track, multi-phase runs;
+    - inception: the design and release contracts, the readiness checklist,
+      the permission facts.
+  - Shared method moves into `skills/shared/` (`preflight.md`,
+    `trust-boundary.md`).
+  - If a skill's end line is missing after a compaction, the truncation guard
+    tells the model to re-Read the full skill.
+- Plugin files resolve in a target project. `SKILL.md` bodies use
+  `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}`, and referenced files use
+  paths relative to themselves.
+- `/loopkit:inception` records per-role effort and the Precedence section, and
+  the Compact Instructions it writes keep the human's in-session instruction
+  for the run. `--here` flags a contract that lacks either, and a Compact
+  Instructions section that lacks that clause.
+- `/loopkit:plan`'s description is trigger text, not a restatement of its body.
+- loopkit's own foundation docs are current for Claude 5. Target projects are
+  unaffected.
+  - "Scheduler" is defined: anything that starts a run without the human. The
+    human's own `/loop` is not one.
+  - The native-primitive claims are honest. loopkit reuses subagents and
+    `/loop`, and hand-rolls worktrees because resume needs a deterministic
+    branch. It uses neither `/batch` nor plan mode.
+  - Agent teams and the history narrative are removed.
+  - The always-loaded text shrinks from 19,062 to 17,892 bytes.
+
+### Fixed
+
+- `/loopkit:plan` and `/loopkit:roadmap` pass PR bodies by file, and they
+  create the title and body files with `mktemp`, outside the worktree. Both
+  read the trust-boundary reference before their first `gh` call.
+- The `gh` list calls that defaulted to a silent truncation now pass an explicit
+  `--limit`: ship's merged-PR list, inception's repo list and the board
+  field-ID recipe.
+- `/loopkit:inception`'s permission-mode facts are restored after Step 8 moved
+  into a reference.
+- Verify's frontmatter check for `${CLAUDE_` now covers only `description` and
+  `argument-hint`.
+
 ## [2.2.1] - 2026-10-28
 
 ### Changed
@@ -143,7 +227,9 @@ marker, not a reconstructed history; changes from here forward are recorded abov
 - Foundation docs (vision, constitution, architecture, prior-art, roadmap) and
   the per-project contracts (`docs/workflow.md`, `docs/design.md`).
 
-[Unreleased]: https://github.com/skrischer/loopkit/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/skrischer/loopkit/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/skrischer/loopkit/compare/v2.2.1...v2.3.0
+[2.2.1]: https://github.com/skrischer/loopkit/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/skrischer/loopkit/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/skrischer/loopkit/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/skrischer/loopkit/releases/tag/v2.0.0
