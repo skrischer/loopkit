@@ -519,8 +519,7 @@ their key phrases. The wording is the implementer's, within the body budget.
 
 ## Tracking
 
-- Milestone: created at acceptance (the folded flow), together with the
-  roadmap link on the spec branch and one merge.
+- Milestone: [contract-precedence](https://github.com/skrischer/loopkit/milestone/24)
 - Issues: created from this spec once it is merged, one per implementable step.
 
 Each issue references this spec path in its body.
