@@ -19,10 +19,11 @@ human the engineer.
 "Loop engineering" crystallized as a named practice in mid-2026 (Cherny,
 Osmani, Steinberger — going viral). Claude Code ships the primitives natively
 (`/plan`, `/loop`, `/batch`, skills, worktrees, sub-agents). The building blocks
-exist; what is missing is an opinionated, attended methodology that binds them
-to durable GitHub state and matches process weight to change size. Prior-art
-research — who has done this well or badly — is the substrate every loopkit
-artifact derives from, not a one-time survey.
+exist; what is missing is an opinionated, attended methodology that binds the
+ones that fit — skills, sub-agents, the human's `/loop` — to durable GitHub
+state and matches process weight to change size. Prior-art research — who has
+done this well or badly — is the substrate every loopkit artifact derives from,
+not a one-time survey.
 
 ## Target users
 
@@ -39,7 +40,8 @@ full spec -> milestone -> dependency-ordered issues for real features, a
 lightweight fast-lane for bugs and QoL, a living-spec track for ongoing themes —
 all synchronized through GitHub issues, milestones, and a Project board as the
 single durable state machine, under subscription auth, with no headless mode and
-no schedulers. You stay the engineer; the loop does the typing.
+no external scheduler — repetition is the human's own in-session `/loop`. You
+stay the engineer; the loop does the typing.
 
 ## Success criteria
 
@@ -57,7 +59,7 @@ no schedulers. You stay the engineer; the loop does the typing.
 - Ceremony is proportional: the artifact count for a change correlates with its
   size (no spec for a one-liner).
 - loopkit runs entirely on subscription auth — no API key, no headless flag, no
-  scheduler (verifiable by grep over the skills).
+  skill that schedules a run (verifiable by grep over the skills).
 - A merged milestone reaches a tagged, published release through `/ship` — no CI
   bot, no scheduler — driven by the project's `docs/release.md` contract.
 
@@ -76,8 +78,8 @@ no schedulers. You stay the engineer; the loop does the typing.
   no CI bot or scheduler; optional and proportional (a one-liner needs none).
 - GitHub issues, milestones, and the Project board as the sole durable state.
 - The attended producer/orchestrator model: producer `/plan` + per-milestone
-  orchestrator `/implement` that fans out in-session subagents/agent-teams along
-  the issue frontier; independent milestones run as independent orchestrators.
+  orchestrator `/implement` that fans out in-session subagents along the issue
+  frontier; independent milestones run as independent orchestrators.
 - Guardrails: the Verify gate, in-session agent review, bounded retry, and human
   gates at spec-acceptance and milestone-QA.
 - Dependency representation at milestone and issue level — the unblocked
@@ -85,12 +87,12 @@ no schedulers. You stay the engineer; the loop does the typing.
 
 ### Out
 
-- Headless / unattended / scheduled execution; API-key auth.
+- Headless, unattended, or externally scheduled execution (cron, CI, a cloud or
+  desktop scheduled task); API-key auth.
 - Local databases, JSON state files, daemons — GitHub is the only state.
 - Spec-as-source / bidirectional code<->spec generation (Tessl's territory)
   beyond a living-spec track.
-- Reimplementing native primitives loopkit can reuse (`/batch` fan-out, plan
-  mode).
+- Reimplementing a native primitive where it fits the loop as it is.
 - Claim arbitration of any kind (peer loops competing for issues, atomic locks,
   local coordinators) — parallelism comes from orchestrator ownership, not
   claiming.

@@ -191,6 +191,12 @@ not as a pattern to copy.
 - Notes: OPEN — what is `/implement`'s delta over native `/batch` beyond
   GitHub-state sync + milestone-QA gate + dependency-ordering? (-> architecture).
   ADOPT — lean on native primitives instead of reimplementing them.
+- Re-verified 2026-10-28 (foundation-currency): loopkit uses in-session
+  subagents (the Agent tool) and runs under the human's `/loop`; it uses neither
+  plan mode nor `/batch`, and hand-rolls `git worktree`. The OPEN delta over
+  `/batch`, settled: `/batch` decomposes the task itself and reads no GitHub
+  state, while `/implement` walks the milestone's `Depends on:` graph in waves,
+  with a per-issue review gate and the milestone-QA gate.
 
 ## Planned vs ad-hoc work boundary — loopkit's headline USP
 
@@ -1285,6 +1291,14 @@ above. Internal evidence: docs/feedback/2026-10-27-claude5-audit.md F19/F24/F26/
   and what is hand-rolled on purpose (worktrees: resume needs deterministic
   branch names); define "no scheduler" as no external or unattended scheduler.
   AVOID — claiming a wrap the skills do not perform.
+- Re-verified 2026-10-28 (foundation-currency): `/loop` tasks fire only while
+  the session is open and idle; a scheduled fire runs only skills Claude may
+  invoke on its own. Agent teams need `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`,
+  and teammates self-claim tasks from a shared list under file locking — a
+  claim layer. A subagent's `isolation: worktree` checkout is removed when it
+  finishes without changes; `worktree.baseRef` takes `fresh` or `head`, never
+  a branch name; an existing branch needs `git worktree add`
+  (https://code.claude.com/docs/en/worktrees).
 
 ## Layer precedence + per-role effort in the workflow contract (feature: contract-precedence)
 

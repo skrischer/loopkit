@@ -2,9 +2,6 @@
 
 > Structural, living document — the most volatile artifact. Update whenever a
 > change alters components, boundaries, or flows.
->
-> This describes the orchestrator model, which `/loopkit:implement` now
-> implements (the P1–P6 brownfield roadmap is complete).
 
 ## Component map
 
@@ -12,12 +9,12 @@
 | --------- | -------------- |
 | `skills/inception/` | Phase-0 dialog -> foundation artifacts + workflow contract + board + settings + CLAUDE.md; includes the challenge lens |
 | `skills/plan/` | Producer: roadmap phase -> spec (+ prior-art links) -> milestone + issues with two-level `depends-on` |
-| `skills/implement/` | Milestone orchestrator: plan the issue DAG -> fan out in-session subagents/agent-teams along the frontier -> QA gate |
+| `skills/implement/` | Milestone orchestrator: plan the issue DAG -> fan out in-session subagents along the frontier -> QA gate |
 | `skills/design/` | The optional `/loopkit:design` skill, planning-time: for a UI surface OR a decision-clarifying visualisation (flow/architecture/concept), reads `docs/design.md`, delivers/produces a design, hands off a committed file (that renders in the review surface) referenced by the spec |
 | `skills/roadmap/` | Iteration entry point: raw idea -> prior-art sparring -> seeds 1..n roadmap rows + backing prior-art (no readiness sweep); reads `skills/shared/iteration-steps.md` |
 | `skills/ship/` | The `/loopkit:ship` release phase, human-invoked: reads `docs/release.md`, finalizes merged work into a published release (version -> changelog -> tag -> publish) via native `gh`+`git`; no CI bot, hardcodes no tool |
 | `skills/*/references/` | Subagent-only or some-runs-only detail a core `SKILL.md` links with when to read it — not skills |
-| `skills/shared/` | Plugin-shipped shared references, not skills: `iteration-steps.md` (prior-art challenge / architecture seed / roadmap seeding — inception, roadmap), `preflight.md` (the `gh`/`git` preflight — inception, plan, implement, roadmap, ship), `trust-boundary.md` (read-discipline, shell-hygiene, capability separation — plan, implement, ship) |
+| `skills/shared/` | Plugin-shipped shared references, not skills: `iteration-steps.md` (prior-art challenge / architecture seed / roadmap seeding — inception, roadmap), `preflight.md` (the `gh`/`git` preflight — inception, plan, implement, roadmap, ship), `trust-boundary.md` (read-discipline, shell-hygiene, capability separation — plan, implement, roadmap, ship) |
 | `skills/*/templates/` | Pure artifact blueprints, filled into target projects by inception |
 | `.claude-plugin/` | `plugin.json` + `marketplace.json` |
 | `docs/` (target project) | vision/constitution/prior-art/architecture + `roadmap.md` + `workflow.md` + `design.md` + `release.md` |
