@@ -183,7 +183,7 @@ spec is moved to `docs/specs/archive/`.
 
 ## Prior art
 
-- [Skill structure for Claude 5 — compaction re-attach, progressive disclosure, plugin-relative paths (feature: skill-structure)](../prior-art.md#skill-structure-for-claude-5--compaction-re-attach-progressive-disclosure-plugin-relative-paths-feature-skill-structure)
+- [Skill structure for Claude 5 — compaction re-attach, progressive disclosure, plugin-relative paths (feature: skill-structure)](../../prior-art.md#skill-structure-for-claude-5--compaction-re-attach-progressive-disclosure-plugin-relative-paths-feature-skill-structure)
   - Claude Code docs: the re-attach cap and the substitution rules. ADOPT a
     core holding everything a run needs to reach its gate, with plugin variables
     in skill content.
@@ -193,7 +193,7 @@ spec is moved to `docs/specs/archive/`.
     `permission-template-hardening`.
   - Anthropic's Claude 5 context-engineering essay: the register pass, with
     emphasis only where it guards a real failure.
-- [Structural verification of a Claude Code plugin — reuse the native validator (feature: structural-verify)](../prior-art.md#structural-verification-of-a-claude-code-plugin--reuse-the-native-validator-feature-structural-verify)
+- [Structural verification of a Claude Code plugin — reuse the native validator (feature: structural-verify)](../../prior-art.md#structural-verification-of-a-claude-code-plugin--reuse-the-native-validator-feature-structural-verify)
   - `claude plugin validate` is the structural floor.
   - Claude Code #25380 is a caution that the validator rejects extended
     frontmatter fields, so a new field like `argument-hint` must still pass
@@ -201,11 +201,11 @@ spec is moved to `docs/specs/archive/`.
   - The reverse gap — the validator accepting a malformed `argument-hint` — was
     shown by the round-1 scratch test, so Verify adds its own frontmatter check
     instead of trusting guard 2.
-- [Foundation-doc context budget (feature: foundation-dedup)](../prior-art.md#foundation-doc-context-budget-feature-foundation-dedup)
+- [Foundation-doc context budget (feature: foundation-dedup)](../../prior-art.md#foundation-doc-context-budget-feature-foundation-dedup)
   - The precedent for slimming descriptions to ~700 characters.
   - Plan, implement and design are the loopkit descriptions left in the model's
     listing once inception, roadmap and ship carry `disable-model-invocation`.
-- [Model-tier-per-agent — role-to-tier routing in the contract (feature: model-tier-slots)](../prior-art.md#model-tier-per-agent--role-to-tier-routing-in-the-contract-feature-model-tier-slots)
+- [Model-tier-per-agent — role-to-tier routing in the contract (feature: model-tier-slots)](../../prior-art.md#model-tier-per-agent--role-to-tier-routing-in-the-contract-feature-model-tier-slots)
   — the reviewer-tier routing that the moved review gate keeps unchanged, on
   both the subagent and the `pr-open` path.
 
@@ -381,6 +381,7 @@ restructure, a site may sit in its skill's core or a reference.
 | inception:181 | commands derived from the stack fixed in the constitution |
 | inception:216, :256 | design/release contracts derive values from vision/constitution |
 | inception:324 | Step 9 `@docs/constitution.md` import |
+| inception `references/readiness-checklist.md` (new) | the `CLAUDE.md` wiring item names the `@docs/constitution.md` import (this spec's own checklist decision) |
 
 Removed (no hit left after the dispositions table): implement:278, plan:157,
 plan:210, plan:274, ship:84, ship:144, inception:230, inception:293 and
@@ -437,3 +438,31 @@ inception:359.
   target (body ≤ 12,800 bytes after the frontmatter, enforced by Verify, plus
   the guard line and end line) and accepted the spec with its constitution and
   architecture edits.
+- 2026-10-28: Milestone QA (accepted). The opus review pass found the keep list
+  complete and two Outcome gaps plus two out-of-class edits, fixed in the same
+  milestone: #249 (plan description as trigger text), #250 (register pass over
+  the shared references, which #237 had created verbatim), #251 (inception
+  Step 8 moved to `references/permissions.md`, restoring the permission-mode
+  facts PR #232 had corrected and freeing 1,662 core bytes) and #252 (Verify's
+  frontmatter `${CLAUDE_` check scoped to `description`/`argument-hint`, since
+  `allowed-tools` rules are substituted).
+- 2026-10-28: Human QA, run in tmux sessions with `--plugin-dir` on main: the
+  target-project preflight resolves `${CLAUDE_PLUGIN_ROOT}` to the absolute
+  plugin path; `/loopkit:ship` shows its `argument-hint`, and only plan,
+  implement and design are in the model's skill listing; after `/compact` the
+  re-attached implement, plan and inception copies each end with their end
+  line (the sentinel, not the guard); with
+  `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1` the `pr-open` path ran end to end on
+  scratch milestone #23 (#258, PR #259) — subagent `pr-open`, orchestrator
+  review, a fix subagent on REQUEST_CHANGES, re-review, merge, no re-dispatch.
+  Nested review ran in every other issue of this milestone.
+- 2026-10-28: Decisions made during implementation and not named above: "prefer
+  existing patterns" was dropped with the other trained defaults (audit F23
+  quotes it); inception 7b's "neither" branch now skips to Step 7c (it skipped
+  the release contract by pointing at Step 8); inception's repo check now reads
+  "Otherwise", which also covers a repo without `origin`; the readiness-checklist
+  constitution mention gained its allow-list row above.
+- 2026-10-28: Budget after the milestone: plan's core body is 12,797 of 12,800
+  bytes, so the next plan edit moves post-gate text out first (#257 moves the
+  Close out into `references/acceptance.md`); inception 11,125; implement
+  11,222.
