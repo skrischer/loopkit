@@ -105,7 +105,9 @@ fi
 #    deliberately does NOT scan instructional Markdown, because a skill
 #    legitimately NAMES a forbidden token in order to forbid it. That rationale
 #    is about token-prohibition greps and does not carry to an ordering
-#    assertion, so this guard reads skills/*/SKILL.md — for this ONE invariant
+#    assertion, so this guard reads skills/*/SKILL.md and
+#    skills/*/references/*.md (a merge fence may move into a reference; an
+#    unmatched glob is skipped by the -f test) — for this ONE invariant
 #    only. Do not grow it into a general skill-prose linter.
 #
 #    It matches COMMAND lines inside fenced code blocks only (fence-tracked and
@@ -119,7 +121,7 @@ echo "-- merge-ordering guard (worktree removed before --delete-branch) --"
 
 order_fail=0
 order_sites=0
-for f in skills/*/SKILL.md; do
+for f in skills/*/SKILL.md skills/*/references/*.md; do
   [ -f "$f" ] || continue
   out="$(
     awk -v file="$f" '
