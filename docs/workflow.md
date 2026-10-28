@@ -3,8 +3,7 @@
 > Operational contract for the loopkit skills (`/loopkit:plan`,
 > `/loopkit:implement`) — the single source for the branch model, commands,
 > gates, and loop behavior of this project. Filled during inception; the skills
-> read it instead of hardcoding specifics. The skills now fully match this
-> contract (the P1–P6 brownfield roadmap is complete).
+> read it instead of hardcoding specifics.
 
 ## Environment prerequisites
 
