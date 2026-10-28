@@ -1,6 +1,7 @@
 ---
 name: roadmap
-description: "Prior-art-driven idea-sparring loop that turns raw ideas into seeded roadmap phases — the lighter iteration entry point on an already-loop-ready project. Per idea it offers a research mode (asked, never assumed), spars the idea against the findings, then seeds 1..n roadmap rows plus backing prior-art entries. Runs NO loop-readiness sweep (/loopkit:inception --here's job) and never edits a foundation doc — a foundation-doc impact is recorded ONTO the seeded phase for its later /loopkit:plan cycle. Reads skills/shared/iteration-steps.md and docs/workflow.md for project specifics. Only run when the user explicitly invokes it. Arguments: one or more raw ideas (or empty — then ask)."
+description: "Prior-art-driven idea-sparring loop that turns raw ideas into seeded roadmap phases — the lighter iteration entry point on an already-loop-ready project. Per idea it offers a research mode (asked, never assumed), spars the idea against the findings, then seeds 1..n roadmap rows plus backing prior-art entries. Runs NO loop-readiness sweep (/loopkit:inception --here's job) and never edits a foundation doc — a foundation-doc impact is recorded ONTO the seeded phase for its later /loopkit:plan cycle. Reads skills/shared/iteration-steps.md and docs/workflow.md for project specifics. Arguments: one or more raw ideas (or empty — then ask)."
+disable-model-invocation: true
 ---
 
 # /loopkit:roadmap — spar a raw idea into seeded roadmap phases
