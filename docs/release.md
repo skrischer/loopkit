@@ -17,12 +17,13 @@ tag. It bundles one or more milestones (and any `track:adhoc` work);
 `/loopkit:ship` is **not** tied 1:1 to a milestone — the human cuts a release
 when there is something worth publishing (a closed milestone is a natural
 moment). Publishing is entirely human-invoked: the human's `/loopkit:ship`
-invocation authorizes the publish, which then runs through to `gh release
-create` autonomously (a summary is printed before publishing — there is **no separate confirmation stop**, and
-this is NOT a third gate). A distinct dry-run mode previews without publishing;
-that dry-run is what the milestone-QA check exercises. There is **no CI or
-GitHub-Actions release bot** — nothing publishes loopkit except a human at a
-terminal running `/loopkit:ship`.
+invocation authorizes the publish, which then runs through to
+`gh release create` autonomously (a summary is printed before publishing —
+there is **no separate confirmation stop**, and this is NOT a third gate). A
+distinct dry-run mode previews without publishing; that dry-run is what the
+milestone-QA check exercises. There is **no CI or GitHub-Actions release bot**
+— nothing publishes loopkit except a human at a terminal running
+`/loopkit:ship`.
 
 ## Versioning scheme
 

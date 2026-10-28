@@ -164,7 +164,8 @@ asking where you can:
   existing project URL/number; if none exists, create one (`gh project create`)
   on explicit confirmation, never silently. `none` is not a valid value. Then
   **record the board field-ID recipe** into the contract's board section —
-  per-project data, like the Verify command: `gh project field-list <number> --owner <owner>
+  per-project data, like the Verify command:
+  `gh project field-list <number> --owner <owner>
   --format json --jq '.fields[]|select(.name=="Status")'` returns the ProjectV2
   Status field id + the Todo / In Progress / Done option ids; write the concrete
   values into the contract's `<status-field-id>` / `<...-option-id>`
