@@ -34,8 +34,9 @@ no field the loop runs exactly as today. The orchestrator is **not** an
 Agent-dispatched subagent, so it stays the **session model** (unchanged); only
 the `implementer` (§2 dispatch) and `reviewer` (§3 review gate) tiers are passed
 to the **native Agent-tool `model` selection** — reuse it, build nothing.
-Foot-gun: the `CLAUDE_CODE_SUBAGENT_MODEL` env var **globally overrides** all
-per-role routing.
+The per-call `model` takes precedence over `CLAUDE_CODE_SUBAGENT_MODEL`, which
+is only a default; the env var overrides this routing only when
+`CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` is also set.
 
 ## Entry — what to orchestrate
 
@@ -159,14 +160,13 @@ escalated (`needs:planning`), parked (`blocked:human`), or cross-milestone-block
    wave. The board may show `Todo`/`In Progress`/`Done` for human visibility, but
    it is **not** a claim or lock — ownership, not claiming, keeps waves correct.
 
-**Wave boundary — the only safe `/compact` point.** After step 3 (**await done**)
-and step 4 (GitHub re-read), before step 5 recomputes, sits a hard **barrier**: no
-subagent is live and all state is re-derivable from GitHub. This is the **ONLY**
-place the orchestrator MAY invoke the native `/compact` — **never mid-wave**, which
-would drop live subagent context. When context runs high it MAY `/compact` here,
-relying on the target `CLAUDE.md`'s **`# Compact Instructions`** section (written by
-inception) to preserve the milestone target + unblocked frontier — both re-derivable
-from GitHub. Reuse the native compactor; add no such section here.
+**Wave boundary — the safe compaction point.** After step 4 (GitHub re-read) and
+before step 5, no subagent is live and all state is re-derivable from GitHub. You
+cannot run `/compact` yourself: if context is running high here, say in your
+progress output that this is a safe point for the human to run it, and keep
+going — it is not a stop. Auto-compaction can still fire mid-wave, which is why
+every dispatch re-derives its work state from GitHub (§3) and the frontier is
+always recomputed from GitHub, never from memory.
 
 **Every dispatched issue resolves to exactly one terminal state** — merged /
 escalated (`needs:planning`) / parked (`blocked:human`) (§3 report-back). A
@@ -299,8 +299,9 @@ dispatch). Its steps:
   `gh pr create --base "$base"` with a body restating the change, the
   verification done, and `Closes #<n>`.
 - **Review gate (in-session, machine gate).** Review the branch with a **fresh
-  context via the Agent tool** (`general-purpose` or `code-reviewer`) — pass the
-  contract's **`reviewer`** tier as its `model` (default `inherit`) — seeded with
+  context via the Agent tool** (`general-purpose`, or a reviewer agent the
+  project defines) — pass the contract's **`reviewer`** tier as its `model`
+  (default `inherit`) — seeded with
   the diff (`git -C "$wt" diff "$base"...HEAD`) and the constitution/CLAUDE.md
   rules. **No-source-change exception:** when the PR diff touches **only**
   `docs/`, templates, or `*.md` (no source or config), this review MAY drop to
