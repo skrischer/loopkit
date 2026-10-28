@@ -781,3 +781,7 @@ Each issue references this spec path in its body.
   ```
   The confirming review simulated this move: implement 12,803 → 12,316 bytes,
   Verify green (reference-link and plugin-path guards included).
+- 2026-10-28: Implement fallback applied (#272). The edited implement body
+  measured 13,062 bytes, over 12,800, so the move above ran as written: the
+  `### track:adhoc fast-lane` body is in `skills/implement/references/adhoc.md`
+  and the body is 11,428 → 12,594 bytes.
