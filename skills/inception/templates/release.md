@@ -42,8 +42,9 @@ bot** — nothing publishes except a human at a terminal running `/ship`.
   since the last tag — feat: -> minor, fix: -> patch, a `!` marker or a
   BREAKING CHANGE: footer -> major, docs:/chore:/refactor: alone -> patch; the
   highest bump among the range wins; if nothing warrants a release, cut none>`.
-- **Human-overridable at the pre-publish preview:** the computed version is a
-  proposal, not a verdict — the human may set any valid version instead.
+- **Human-overridable at invocation:** the computed version is a proposal, not
+  a verdict — review it with `/loopkit:ship --dry-run` and pass any valid
+  version as the explicit argument instead.
 - Enumerate the range with `<e.g. git log <last-tag>..HEAD>`; the last tag is
   `<e.g. git describe --tags --abbrev=0>`.
 
@@ -62,7 +63,7 @@ bot** — nothing publishes except a human at a terminal running `/ship`.
 - **Format:** `<TAG_FORMAT>` — `<e.g. vX.Y.Z (leading v) | X.Y.Z | release-YYYY.MM>`.
 - The tag **must match the version-bearing file's version exactly** (tag ==
   version). A tag/version mismatch is a **release-blocking error**, not a
-  warning — for many publish targets it is the #1 rejection cause.
+  warning.
 - Tag the release commit (the one that bumped the version and finalized the
   changelog), then push the tag: `<e.g. git tag <TAG> && git push origin <TAG>>`.
 
@@ -73,9 +74,10 @@ bot** — nothing publishes except a human at a terminal running `/ship`.
 - **Format / file:** `<CHANGELOG_FORMAT>` — `<e.g. CHANGELOG.md at the repo root
   in Keep a Changelog format, entries grouped under Added / Changed / Fixed /
   Removed>`.
-- **The human curates it at the preview.** The generated entries are a draft:
-  the human edits wording, drops noise, and promotes the unreleased section to
-  the new version heading as part of the release commit.
+- **The human curates it before invoking.** The generated entries are a draft;
+  review them with `--dry-run`. To change the wording, edit the unreleased
+  section on the base branch first. The release commit promotes it to the new
+  version heading.
 - The changelog is the source of the published release notes (see below).
 
 ## Publish target + command
@@ -126,7 +128,8 @@ bot** — nothing publishes except a human at a terminal running `/ship`.
 **Do**
 
 - Bump the version-bearing file(s) and tag to match the version exactly.
-- Curate the changelog at the preview and pass its section by file, not inline.
+- Curate the changelog before invoking (review with `--dry-run`) and pass its
+  section by file, not inline.
 - Run this project's Verify green before tagging; publish only on the human's
   `/ship` invocation.
 
