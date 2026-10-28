@@ -235,6 +235,7 @@ confidence, action, route.
 - **Flag:** the audit did not read loopkit's own `.claude/settings.json`. If it
   uses bypassPermissions, the dogfood sessions start in Manual mode too.
 - **Routed to:** fast-lane #222; remainder in `permission-template-hardening`.
+- **Corrected 2026-10-28 (PR #232 review):** a project-level `auto` falls back to the built-in default, not Manual mode; a project `defaultMode` outranks `~/.claude/settings.json`, so the user-level opt-in does not work against the template — `--permission-mode auto` does; `acceptEdits` auto-approves only inside the working directory or `additionalDirectories`.
 
 ### F04 — Paths that resolve only inside the loopkit repo (T2) — High
 

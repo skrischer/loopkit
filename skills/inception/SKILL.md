@@ -278,20 +278,25 @@ plugins cannot ship permission rules, so the loops' autonomy must be granted
 per project:
 
 - Ships `defaultMode: acceptEdits` plus an `allow` list (`Bash`, `WebFetch`,
-  `WebSearch`) so the loops run without prompts. Claude Code ignores
-  `bypassPermissions` and `auto` as a project-level `defaultMode` (the session
-  starts in Manual mode); a human who wants `auto` sets it in
-  `~/.claude/settings.json` or starts with `--permission-mode auto`. Deny rules
-  apply in EVERY mode — deny always wins. The template's deny list ships the
-  constitution hard limits concretely into `.claude/settings.json` — the
-  enforced single source; no prose re-enumerates them.
+  `WebSearch`). `acceptEdits` auto-approves file edits only inside the working
+  directory or `additionalDirectories`, so edits in the loop worktrees under
+  `../<repo>-worktrees/` still prompt. Claude Code ignores two values as a
+  project-level `defaultMode`: `bypassPermissions` (the session starts in
+  Manual mode) and `auto` (it falls back to the built-in default). The
+  project's `acceptEdits` outranks both the built-in default and a
+  `defaultMode` in `~/.claude/settings.json`; a human who wants `auto` starts
+  with `--permission-mode auto`. Deny rules apply in EVERY mode — deny always
+  wins. The template's deny list ships the constitution hard limits concretely
+  into `.claude/settings.json` — the enforced single source; no prose
+  re-enumerates them.
 - Deny rules match command text: a guardrail, not a security boundary. They
   guard the usual forms, not every way to run a program; the template repeats
   each git limit for the `git -C <path>` form, and the skills' never-force
   rules stay as the second layer.
-- **`--here`:** a project `defaultMode` of `bypassPermissions` or `auto` is a
-  gap (it silently starts sessions in Manual mode) — propose the
-  `acceptEdits` + `allow` form at this gate.
+- **`--here`:** a project `defaultMode` other than `acceptEdits` is a gap —
+  `bypassPermissions` starts sessions in Manual mode and `auto` never takes
+  effect from a project file — propose the `acceptEdits` + `allow` form at
+  this gate.
 - Extend the deny list with the stack's destructive commands against shared
   state: replace the template's `<STACK_DESTRUCTIVE_DB_COMMAND>` placeholder
   with what this stack actually has (e.g. `supabase db reset`,
