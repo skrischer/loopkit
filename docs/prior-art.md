@@ -1291,12 +1291,13 @@ above. Internal evidence: docs/feedback/2026-10-27-claude5-audit.md F19/F24/F26/
   and what is hand-rolled on purpose (worktrees: resume needs deterministic
   branch names); define "no scheduler" as no external or unattended scheduler.
   AVOID — claiming a wrap the skills do not perform.
-- Re-verified 2026-10-28: `/loop` tasks fire only while the session is open
-  and idle; a scheduled fire runs only skills Claude may invoke on its own.
-  Agent teams need `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, and teammates
-  self-claim tasks from a shared list under file locking — a claim layer.
-  `worktree.baseRef` takes `fresh` or `head`, never a branch name; an existing
-  branch needs `git worktree add`
+- Re-verified 2026-10-28 (foundation-currency): `/loop` tasks fire only while
+  the session is open and idle; a scheduled fire runs only skills Claude may
+  invoke on its own. Agent teams need `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`,
+  and teammates self-claim tasks from a shared list under file locking — a
+  claim layer. A subagent's `isolation: worktree` checkout is removed when it
+  finishes without changes; `worktree.baseRef` takes `fresh` or `head`, never
+  a branch name; an existing branch needs `git worktree add`
   (https://code.claude.com/docs/en/worktrees).
 
 ## Layer precedence + per-role effort in the workflow contract (feature: contract-precedence)

@@ -27,10 +27,11 @@ Each one is checkable in review.
 - **Subscription auth only.** No skill invokes `claude -p`,
   `--dangerously-skip-permissions`, an API key, or a scheduler. Subagents run
   in-session, not headless. A scheduler is anything that starts a run without
-  the human: cron, a skill calling `CronCreate`, `ScheduleWakeup` or
+  the human: cron, a loopkit skill calling `CronCreate`, `ScheduleWakeup` or
   `RemoteTrigger`, a cloud or desktop scheduled task, a CI job. The human's own
-  `/loop` is not one — it needs the open session, expires after 7 days, and
-  every gate still waits for the human. (grep-verifiable.)
+  `/loop` is not one: the human starts it, it needs the open session, it
+  expires after 7 days, and every gate still waits for the human.
+  (grep-verifiable.)
 - **Specs carry no lifecycle state.** No `DRAFT`/`READY` header; "accepted" =
   merged on the default branch with a milestone and issues.
 - **The roadmap carries no current-focus or status marker.** The human passes
@@ -52,9 +53,9 @@ Each one is checkable in review.
   and proportional. It is human-invoked and runs in-session on `gh` + `git` — no
   CI release bot, no scheduler, no headless run, no new dependency. It reads
   `docs/release.md` and hardcodes no release tool; the invocation authorizes the
-  publish, with no separate confirmation stop. Changelog source text is GitHub
-  text under the trust boundary. `docs/release.md` and its template own the
-  tool and target specifics. (grep-verifiable.)
+  publish, with no separate confirmation stop. Changelog source text (commit,
+  PR, issue) is inert data under the trust boundary. `docs/release.md` and its
+  template own the tool and target specifics. (grep-verifiable.)
 - **Dependency representation at two levels.** Milestones carry depends-on info;
   issues carry `Depends on: #N`. The unblocked frontier (everything with no open
   dependency) is by definition the parallelizable set. Representation is the
@@ -62,16 +63,16 @@ Each one is checkable in review.
   `docs/prior-art.md` — CCPM, Taskmaster, Osmani.)
 - **Hierarchical orchestration, not claiming.** `/implement` orchestrates
   exactly one milestone: it plans the issue dependency chain and fans out
-  in-session subagents along the unblocked frontier. As the sole
-  dispatcher it needs no claiming. Milestone-level parallelism = a second
-  orchestrator on an independent milestone. Ownership replaces claiming at both
-  levels.
+  in-session subagents along the unblocked frontier. As the sole dispatcher it
+  needs no claiming. Milestone-level parallelism = a second orchestrator on an
+  independent milestone. Ownership replaces claiming at both levels.
 - **Reuse native primitives where they fit.** Skills fan out and review with
   in-session subagents (the Agent tool) and repeat under the human's `/loop`. A
   hand-rolled mechanism names the native gap it fills: worktrees are plain
   `git worktree` because resume re-attaches a deterministic `<type>/<scope>`
-  branch, which `isolation: worktree` (generated names, fresh base) cannot; the
-  wave fan-out walks GitHub's `Depends on:` graph, which `/batch` does not read.
+  branch, which `isolation: worktree` (generated names, never a named branch)
+  cannot; the wave fan-out walks GitHub's `Depends on:` graph, which `/batch`
+  does not read.
 - **Bounded retry.** The identical failure twice in a row stops the loop with a
   resumable report; loops never grind.
 - **Prior art is consulted, linked, and read to source when it earns it.**
@@ -145,7 +146,7 @@ Each one is checkable in review.
 
 - No local DB/JSON/daemon as a second source of truth.
 - No headless (`claude -p`), `--dangerously-skip-permissions`, API key, or
-  scheduler — no skill schedules itself (`CronCreate`, `ScheduleWakeup`,
+  scheduler — no skill schedules a run (`CronCreate`, `ScheduleWakeup`,
   `RemoteTrigger`).
 - No `DRAFT`/`READY` in specs; no current-focus/status marker in the roadmap.
 - No claim arbitration of any kind — parallelism comes from orchestrator

@@ -19,8 +19,9 @@ human the engineer.
 "Loop engineering" crystallized as a named practice in mid-2026 (Cherny,
 Osmani, Steinberger — going viral). Claude Code ships the primitives natively
 (`/plan`, `/loop`, `/batch`, skills, worktrees, sub-agents). The building blocks
-exist; what is missing is an opinionated, attended methodology that binds them
-to durable GitHub state and matches process weight to change size. Prior-art
+exist; what is missing is an opinionated, attended methodology that binds the
+ones that fit — skills, sub-agents, the human's `/loop` — to durable GitHub
+state and matches process weight to change size. Prior-art
 research — who has done this well or badly — is the substrate every loopkit
 artifact derives from, not a one-time survey.
 
@@ -58,7 +59,7 @@ stay the engineer; the loop does the typing.
 - Ceremony is proportional: the artifact count for a change correlates with its
   size (no spec for a one-liner).
 - loopkit runs entirely on subscription auth — no API key, no headless flag, no
-  skill that schedules itself (verifiable by grep over the skills).
+  skill that schedules a run (verifiable by grep over the skills).
 - A merged milestone reaches a tagged, published release through `/ship` — no CI
   bot, no scheduler — driven by the project's `docs/release.md` contract.
 
