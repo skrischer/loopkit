@@ -1328,3 +1328,166 @@ model-tier-slots)" above. Internal evidence: docs/feedback/2026-10-27-claude5-au
 - Re-verified 2026-10-28: per-invocation `effort` (v2.1.292) — the Agent
   tool's `effort` parameter overrides the `effort` field;
   `CLAUDE_CODE_EFFORT_LEVEL` takes precedence over both.
+
+## Non-blocking asks to the human — one deterministic marker (feature: ask-marker)
+
+The orchestrator asks the human things that do not stop the run — "type
+`/loopkit:ship`", "may I merge this PR?", "plan phase 4 now?" — in plain prose,
+then keeps working on notification-triggered turns, and the ask scrolls away.
+Nothing separates an ask from narration, so neither the human nor a tool can
+find the open ones. Native `AskUserQuestion` covers only the blocking case.
+
+### loopkit dogfooding finding (relay, loopkit) — the originating evidence
+
+- Path: orchestrator session transcripts of the relay project (11 days) and of
+  a loopkit session, analysed read-only on 2026-10-28 (scripts outside the
+  repo, discarded)
+- License: n/a (internal evidence)
+- Verdict: reference-only — relay: 165 plain-text asks to the human (34 direct
+  questions, 23 offers, 108 requests such as "Sag Bescheid"); 65 % were
+  followed by tool calls before the next human message (median 25, p90 173); a
+  scrolled-away ask waited a median 52 min for the next human message (16 min
+  overall); 30 orchestrator texts re-ask an earlier one. Hand-checked: 10 of 14
+  scrolled-away questions went unanswered, against 3 of 10 that stayed
+  visible. loopkit: one "please type `/loopkit:ship`" ask repeated 9 times over
+  about 5.3 h. About 15 human messages were status queries ("what is waiting
+  for me right now?").
+- Date: 2026-10-28
+- Notes: ADOPT — one grep-verifiable line form for a non-blocking ask, so a
+  tool can hold it until the human's next message; a heuristic (question
+  marks, request phrases) is too noisy to be the signal. AVOID — re-asking as
+  the remedy (30 re-asks added noise, not answers).
+
+### Claude Code agent view — "Needs input" covers only a waiting session (first-party)
+
+- Path: https://code.claude.com/docs/en/agent-view
+- License: n/a (first-party docs)
+- Verdict: reference-only — a session groups under `Needs input` when "Claude
+  is waiting on something only you can provide: an answer to a question, a
+  permission decision …"; a session that asked in prose and kept working stays
+  `Working`, so the non-blocking ask is invisible there. "Subagents and
+  teammates a session spawns aren't listed as separate rows."
+- Date: 2026-10-28
+- Notes: ADOPT — "needs you" first in the ordering. AVOID — rebuilding a
+  multi-session dashboard; agent view owns that.
+
+## In-session status pane — loopkit state and session signals in one view (feature: status-pane)
+
+The human follows a milestone run by asking ("is everything still running?",
+"what are my tasks right now?"): in relay up to 7 background agents ran at
+once, 86 `AskUserQuestion` gates waited a median 2.9 min but up to 3.5 h, and
+milestone progress existed only as narration ("N of M issues merged", 113
+times). Claude Code mods let a plugin draw a pane beside the chat and a status
+line from GitHub reads and session hooks. Builds on "Non-blocking asks to the
+human — one deterministic marker (feature: ask-marker)" above.
+
+### Claude Code mods — panes, status line and session hooks (first-party)
+
+- Path: https://code.claude.com/docs/en/plugins/mods/interface;
+  https://betterstack.com/community/guides/ai/claude-code-mods/ (secondary)
+- License: n/a (first-party docs)
+- Verdict: reuse — the native primitive. A plugin's `hooks/hooks.json` names a
+  TSX module that Claude Code compiles itself (no build step); `$.ui.open` plus
+  a `ui.render` hook draw a pane, `$.ui.status` sets the status line;
+  `agent.spawn` and `$.agent.list` expose running subagents (description, type,
+  status), `tool.call` an open `AskUserQuestion`, `turn.complete` the answer
+  text, `prompt.submit` the human's message, `session.compact` a compaction;
+  `$.process.run` takes argv, no shell. Early access in Claude Code 2.1.312. A
+  GitHub-only proof of concept validated and ran on 2026-10-28, outside the
+  repo.
+- Date: 2026-10-28
+- Notes: ADOPT — read-only hooks, argv-only `gh`, session-scoped atoms
+  (ephemeral, like within-milestone subagent coordination), `claude plugin
+  validate` / `claude plugin test` as the check. AVOID — a pane that acts
+  (approve, merge); state in a file; parsing transcripts (internal, unversioned
+  fields).
+
+### jarrodwatts/claude-hud — status line read from the transcript
+
+- Path: https://github.com/jarrodwatts/claude-hud
+- License: MIT
+- Verdict: reference-only — a status-line command: model, path, branch,
+  context and rate-limit usage by default; tools, running agents and todo
+  progress as opt-in lines, read from the session transcript. Shows no
+  question waiting for the human and no loopkit state.
+- Date: 2026-10-28
+- Notes: ADOPT — a compact one-line summary with opt-in detail. AVOID — the
+  transcript as the data source.
+
+### mercurialsolo/claudectl — multi-session TUI with a needs-input state
+
+- Path: https://docs.rs/crate/claudectl/0.19.0/source/README.md
+- License: MIT
+- Verdict: reference-only — a terminal dashboard across sessions with
+  Processing / Needs Input / Waiting / Idle / Finished states and
+  approve-from-dashboard.
+- Date: 2026-10-28
+- Notes: ADOPT — a small, explicit state taxonomy. AVOID — approving from the
+  dashboard: it adds a state-changing leg to a surface fed by untrusted text
+  (trust boundary).
+
+### callmemorgan/agents-statusline — subagents in the status line
+
+- Path: https://pkg.go.dev/github.com/callmemorgan/agents-statusline
+- License: MIT
+- Verdict: reference-only — a themeable status line (cost, context, limits)
+  with a per-task subagent display through the `subagentStatusLine` setting.
+- Date: 2026-10-28
+- Notes: ADOPT — one row per running task. AVOID — an install step outside the
+  plugin.
+
+### automazeio/ccpm `/pm:epic-status` — progress from issue state
+
+- Path: https://raw.githubusercontent.com/automazeio/ccpm/main/README.md
+- License: unverified
+- Verdict: reference-only — epic progress as a percentage derived from issue
+  state, on demand.
+- Date: 2026-10-28
+- Notes: ADOPT — the percentage from GitHub (closed of all issues), never from
+  narration. AVOID — on demand only; the pane re-reads after a merge and at
+  turn end.
+
+### DEV — "The machine keeps up, you don't" (second-screen dashboard)
+
+- Path: https://dev.to/steima/the-machine-keeps-up-you-dont-building-a-second-screen-for-claude-code-2jc2
+- License: n/a (article)
+- Verdict: avoid (the mechanism) — hooks post events to a localhost server for
+  a second screen; the pain matches, the server is a daemon and a second
+  source of truth.
+- Date: 2026-10-28
+- Notes: ADOPT — the problem framing (the human loses track of a fast loop).
+  AVOID — a local server or event store.
+
+## Session health meters — context, usage limits, heartbeat, event feed (feature: session-meters)
+
+Beyond what waits and what runs, a long orchestrator run fails in ways the
+human sees only afterwards. Builds on "In-session status pane — loopkit state
+and session signals in one view (feature: status-pane)" above.
+
+### loopkit dogfooding finding (relay) — session health evidence
+
+- Path: relay orchestrator session transcript, analysed read-only on
+  2026-10-28
+- License: n/a (internal evidence)
+- Verdict: reference-only — 31 compactions (28 automatic, median 383k tokens
+  before) with `/autocompact` tuned by hand; 9 usage-limit stops (resume after
+  10 min to 15 h); 474 silence reminders (median 3.6 min after the last text);
+  49 failed or killed tasks; 46 merge failures in Bash output; 209 tasks
+  re-notified, one Monitor 45 times; 40 % of orchestrator texts carry three or
+  more bare `#N` references. The usage-limit state appears only as `rate_limit`
+  error text with the reset time in prose — no hook source identified yet.
+- Date: 2026-10-28
+- Notes: ADOPT — one row per task with repeats collapsed; a title next to
+  every `#N` in the feed. AVOID — a feed that mirrors every event (the noise it
+  should remove).
+
+### jarrodwatts/claude-hud — context and rate-limit line
+
+- Path: https://github.com/jarrodwatts/claude-hud
+- License: MIT
+- Verdict: reference-only — context usage and subscriber rate-limit usage are
+  its default second line (see the status-pane concern above).
+- Date: 2026-10-28
+- Notes: ADOPT — context fill and limit as two numbers in one line. AVOID —
+  duplicating a meter Claude Code's own status line already shows (check at
+  plan time).
