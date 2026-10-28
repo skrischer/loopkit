@@ -2,7 +2,7 @@
 
 > Paths in this file are relative to this file.
 
-> Plugin-shipped shared reference — NOT a skill. The generic, reusable
+> Plugin-shipped shared reference — not a skill. The generic, reusable
 > methodology for the three steps both `/loopkit:inception` (one-time bootstrap)
 > and `/loopkit:roadmap` (ongoing iteration) perform: the prior-art challenge,
 > the architecture seed, and roadmap seeding. Each calling skill supplies its own
@@ -14,7 +14,7 @@
 
 ## Prior-art challenge
 
-Prior art is not just catalogued — it CHALLENGES the work. Derive the challenge
+Prior art is not just catalogued — it challenges the work. Derive the challenge
 questions from the goal (or the raw idea) and answer them from the findings:
 
 - **Existence** — does an existing tool already solve this well enough to make it
@@ -31,16 +31,16 @@ may spawn roadmap items. Conversely, every plannable roadmap phase must be backe
 by at least one prior-art concern (or an explicit `greenfield — no prior art`
 note), because `/loopkit:plan` seeds specs from prior art.
 
-When the decision the harvest surfaces is **design-shaped** — a flow, a state
-machine, an architecture, a UI, or a concept — an **exploratory** visualisation
-MAY be sketched right here to settle it (e.g. "how did others build a date-range
-picker" -> sketch the variants -> pick one). This sketch is a sparring aid, NOT
+When the decision the harvest surfaces is design-shaped — a flow, a state
+machine, an architecture, a UI, or a concept — an exploratory visualisation
+may be sketched right here to settle it (e.g. "how did others build a date-range
+picker" -> sketch the variants -> pick one). This sketch is a sparring aid, not
 the durable artifact: it is never committed here (no roadmap seed, no inception
 bootstrap commits it). The durable, reviewed design is produced later in the
 `/loopkit:plan` cycle of whichever phase covers it (referenced by the spec,
 reviewed at spec-acceptance) — the sparring is a dialog, not a gate.
 
-**Research mode — ASK, never assume.** Present the choice before researching:
+**Research mode — ask, never assume.** Present the choice before researching:
 
 - **deep-research** — the deep-research skill: deep, multi-source. This is
   the expensive mode: it fans out many subagents that inherit the session model,
@@ -49,7 +49,7 @@ reviewed at spec-acceptance) — the sparring is a dialog, not a gate.
   during.
 - **websearch** — a handful of focused WebSearch/WebFetch lookups; cheap, fast,
   enough for a landscape comparison.
-- **none** — offer ONLY when `docs/prior-art.md` already exists with relevant
+- **none** — offer only when `docs/prior-art.md` already exists with relevant
   entries: reuse what is there, skip fresh research.
 
 Look for exemplary, preferably OSS projects that solve the problem or its
