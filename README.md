@@ -1,17 +1,19 @@
 # loopkit
 
-Spec-driven loop engineering for Claude Code. Five skills take a project from
-zero to two parallel, attended development loops — tech-stack-agnostic, with
-GitHub issues, milestones, and a project board as the mandatory state machine.
+Spec-driven loop engineering for Claude Code. Six skills take a project from
+zero to attended development loops — tech-stack-agnostic, with GitHub issues,
+milestones, and a project board as the mandatory state machine.
 
 - `/loopkit:inception` — Phase-0 dialog: vision, constitution, prior-art,
-  architecture, roadmap, workflow contract, project board, permission
+  architecture, roadmap, workflow contract, optional design and release
+  contracts (`docs/design.md`, `docs/release.md`), project board, permission
   settings, CLAUDE.md wiring. On existing projects (`--here`) it runs as a
   loop-readiness check and closes only the gaps. Idempotent.
 - `/loopkit:plan` — one planning cycle: readiness -> spec (incl. human
-  prerequisites) -> milestone + issues with `Depends on:` edges + board
-  entries -> roadmap update. One human stop: the spec-acceptance gate (the
-  merge is the acceptance — specs carry no lifecycle marker).
+  prerequisites) -> one human stop, the spec-acceptance gate -> milestone +
+  roadmap link on the spec branch -> one squash-merge (the merge is the
+  acceptance — specs carry no lifecycle marker) -> issues with `Depends on:`
+  edges + board entries.
 - `/loopkit:implement` — orchestrate one milestone: build the issue DAG from
   the `Depends on:` edges and fan out in-session subagents along the unblocked
   frontier -> bootstrapped worktree -> implement -> verify -> PR -> in-session
@@ -20,21 +22,27 @@ GitHub issues, milestones, and a project board as the mandatory state machine.
   single issue or a `track:adhoc` fast-lane issue solo.
 - `/loopkit:design` — optional planning-time design step: reads `docs/design.md`,
   accepts or produces a design, hands off one committed file referenced by the
-  spec and reviewed at the spec-acceptance gate. Skipped for non-UI work.
+  spec and reviewed at the spec-acceptance gate. Skipped when a change has no UI
+  surface and needs no clarifying visualisation.
 - `/loopkit:roadmap` — prior-art-driven idea-sparring loop on an already-loop-ready
   project: per idea offers a research mode, spars the idea against prior art, then
   seeds one or more roadmap phases with backing prior-art. Records any
   foundation-doc impact onto the seeded phase; runs no readiness sweep.
+- `/loopkit:ship` — cuts a release: bumps the version, updates the changelog,
+  tags, and publishes a GitHub release per the project's `docs/release.md`;
+  `--dry-run` previews without publishing.
 
 ## The loop model
 
-Two attended interactive Claude Code sessions (subscription auth — no headless
+Attended interactive Claude Code sessions (subscription auth — no headless
 mode, no API keys, no detached schedulers), synchronized only through GitHub:
 
 ```
-/loop /loopkit:plan ...        # producer: roadmap -> merged specs -> issues
-/loop /loopkit:implement ...   # consumer: unblocked Todo issues -> merged PRs
+/loop /loopkit:plan <phase...>        # producer: roadmap phase -> accepted spec + milestone -> issues
+/loop /loopkit:implement <milestone>  # orchestrator: one milestone's issue DAG -> merged PRs -> QA gate
 ```
+
+Independent milestones run as separate orchestrators, one session each.
 
 The exact loop prompts live in each project's `docs/workflow.md` (Loops
 section). Machine gates run per PR (single Verify command + agent review);
