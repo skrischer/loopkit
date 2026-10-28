@@ -16,7 +16,8 @@
 | `skills/design/` | The optional `/loopkit:design` skill, planning-time: for a UI surface OR a decision-clarifying visualisation (flow/architecture/concept), reads `docs/design.md`, delivers/produces a design, hands off a committed file (that renders in the review surface) referenced by the spec |
 | `skills/roadmap/` | Iteration entry point: raw idea -> prior-art sparring -> seeds 1..n roadmap rows + backing prior-art (no readiness sweep); reads `skills/shared/iteration-steps.md` |
 | `skills/ship/` | The `/loopkit:ship` release phase, human-invoked: reads `docs/release.md`, finalizes merged work into a published release (version -> changelog -> tag -> publish) via native `gh`+`git`; no CI bot, hardcodes no tool |
-| `skills/shared/` | Plugin-shipped shared reference (`iteration-steps.md`): the prior-art challenge / architecture-seed / roadmap-seeding steps inception and roadmap both read — not a skill |
+| `skills/*/references/` | On-demand detail a core `SKILL.md` links with when to read it — implement's per-issue contract (read by its subagents) and cleanup sweep, plan's post-gate and living-spec paths, inception's design/release-contract steps; keeps each core inside the compaction re-attach cap — not skills |
+| `skills/shared/` | Plugin-shipped shared references, not skills: `iteration-steps.md` (prior-art challenge / architecture seed / roadmap seeding — inception, roadmap), `preflight.md` (the `gh`/`git` preflight — every skill), `trust-boundary.md` (read-discipline, shell-hygiene, capability separation — plan, implement, ship) |
 | `skills/*/templates/` | Pure artifact blueprints, filled into target projects by inception |
 | `.claude-plugin/` | `plugin.json` + `marketplace.json` |
 | `docs/` (target project) | vision/constitution/prior-art/architecture + `roadmap.md` + `workflow.md` + `design.md` + `release.md` |
@@ -28,8 +29,10 @@
   (inception produces it; plan/implement consume it).
 - The six skills do not know each other's internals — handoff is only through
   GitHub state, `docs/` artifacts, and the plugin-shipped `skills/shared/`
-  reference (inception and roadmap both read `skills/shared/iteration-steps.md`;
-  neither reaches into the other).
+  references; a skill's `references/` are its own, never read by another skill.
+- Skills reach plugin files by plugin-relative path (`${CLAUDE_SKILL_DIR}`,
+  `${CLAUDE_PLUGIN_ROOT}`) — in a target project the working directory is the
+  project, not the plugin.
 - Foundation docs keep strict character separation — no duplicated content.
 - Orchestrator <-> subagents is in-session and ephemeral; orchestrator <->
   orchestrator is only through GitHub (independent milestones, no shared state).
@@ -81,8 +84,10 @@
 - How merged work is finalized into a published release -> `skills/ship/`.
 - Per-project release parameters (versioning, changelog, tag, publish targets) ->
   the `release.md` template (NOT the skill — the skill reads it).
-- The shared prior-art / architecture-seed / roadmap-seeding steps (read by both
-  inception and roadmap) -> `skills/shared/iteration-steps.md` (NOT a skill).
+- Method several skills share (iteration steps, preflight, trust boundary) ->
+  `skills/shared/` (NOT a skill).
+- Detail one skill needs only on some runs, or only in its subagents ->
+  `skills/<name>/references/`, linked from the core with when to read it.
 - Per-project parameters (commands, board, naming) -> the `workflow.md` template
   (NOT the skill — skills read it).
 - Per-project design parameters (tool, reviewer, handoff form) -> the `design.md`
