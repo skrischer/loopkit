@@ -183,8 +183,8 @@ second human stop.
   git worktree add "$wt" -b docs/<scope> "$base"
   ```
 - Write the spec into the worktree, then operate **only** via `git -C "$wt"`,
-  never `cd` — `git -C` targets the worktree's branch directly and sidesteps any
-  push-guard on the main checkout.
+  never `cd` — `git -C` targets the worktree's branch directly, so nothing
+  lands on the main checkout.
   ```
   git -C "$wt" add docs/specs/spec-<scope>.md
   git -C "$wt" commit -m "docs(spec): ..."

@@ -294,8 +294,7 @@ dispatch). Its steps:
   Conventional Commits; the body references the spec (omit for a `track:adhoc`
   issue) and ends with `Closes #<n>`. Stage specific files (the spec Decision-log
   edit among them); never blind `git add -A`. Push via
-  `git -C "$wt" push -u origin <branch>` (phrased this way it does not start with
-  `git push`, bypassing any push-guard). Never push to the base branch. Then
+  `git -C "$wt" push -u origin <branch>`. Never push to the base branch. Then
   `gh pr create --base "$base"` with a body restating the change, the
   verification done, and `Closes #<n>`.
 - **Review gate (in-session, machine gate).** Review the branch with a **fresh

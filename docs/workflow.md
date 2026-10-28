@@ -36,8 +36,9 @@ truth, milestones and issues are created on GitHub from them.
   checkout. The loops run from the main checkout and never modify it except
   fast-forward pulls.
 - Path convention: `../loopkit-worktrees/<branch-with-slashes-as-dashes>`.
-- Operate via `git -C <worktree>`, never `cd` into it (a `git -C ... push` does
-  not start with `git push`, so it bypasses any push-guard on the main checkout).
+- Operate via `git -C <worktree>`, never `cd` into it (`git -C` targets
+  the worktree's branch without moving the shell, so no command lands on the
+  main checkout by accident).
 
 ## Commands
 
