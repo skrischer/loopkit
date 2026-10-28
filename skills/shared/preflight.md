@@ -2,12 +2,12 @@
 
 > Paths in this file are relative to this file.
 
-> Plugin-shipped shared reference — NOT a skill. The environment checks every
+> Plugin-shipped shared reference — not a skill. The environment checks every
 > loopkit skill runs once at the start of a run, authored once. The calling skill
 > names the scopes it requires and says whether the clean-base check applies.
 
-Run all checks, then on ANY failure STOP and list EVERY problem at once with the
-exact remedy. INSTRUCT the fix, never auto-run `gh auth login` or
+Run all checks, then on any failure STOP and list every problem at once with the
+exact remedy. Instruct the fix, never auto-run `gh auth login` or
 `gh auth refresh` (interactive browser/device flows).
 
 - **Tools on PATH.** `command -v git` and `command -v gh` (then `git --version` /
@@ -18,8 +18,8 @@ exact remedy. INSTRUCT the fix, never auto-run `gh auth login` or
   (e.g. `repo` + `project`).
   1. If the `Token scopes:` line of `gh auth status` is present, it must contain
      every required scope.
-  2. If that line is ABSENT (fine-grained PAT / GitHub App / `GH_TOKEN` report no
-     classic scopes), do NOT parse — probe each scope the caller requires instead:
+  2. If that line is absent (fine-grained PAT / GitHub App / `GH_TOKEN` report no
+     classic scopes), do not parse — probe each scope the caller requires instead:
      `gh api graphql -f query='{viewer{projectsV2(first:1){nodes{id}}}}'`
      (`project` access — only when the caller requires `project`) and
      `gh repo view >/dev/null` (`repo` access); a non-zero

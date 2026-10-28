@@ -121,7 +121,7 @@ Repeat while the unblocked frontier is non-empty:
 4. Re-read GitHub issue state (`gh issue list --milestone "<milestone>" --state all --limit 200 ...`)
    and fast-forward the main checkout (`git checkout <base> && git pull --ff-only`)
    so the next wave's worktrees branch off the merged state.
-5. Recompute the frontier and dispatch the next wave. The board is visibility only.
+5. Recompute the frontier and dispatch the next wave.
 
 Wave boundary — the safe compaction point. After step 4 and before step 5 no
 subagent is live and all state is re-derivable from GitHub. You cannot run
