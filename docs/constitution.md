@@ -129,9 +129,11 @@ Each one is checkable in review.
 
 - Skills in `skills/<name>/SKILL.md`; on-demand detail a skill links from its
   core in `skills/<name>/references/`; templates in `skills/<name>/templates/`.
-- Skills reference plugin files via `${CLAUDE_SKILL_DIR}` /
-  `${CLAUDE_PLUGIN_ROOT}` in `SKILL.md`, and by a path relative to the file
-  inside a referenced file — never by a repo-relative path, which resolves only
+- A plugin path is any path whose first segment is `skills`, `templates`,
+  `references` or `shared`. In a `SKILL.md` body it is written under
+  `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}`; inside a referenced file it
+  is relative to that file; `SKILL.md` frontmatter carries none (a description
+  gets no substitution). Never a repo-relative plugin path — it resolves only
   inside loopkit's own repo. (grep-verifiable.)
 - Foundation docs in `docs/`; specs in `docs/specs/`, archived to
   `docs/specs/archive/`.
