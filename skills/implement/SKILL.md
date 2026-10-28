@@ -162,9 +162,10 @@ escalated (`needs:planning`), parked (`blocked:human`), or cross-milestone-block
 
 **Wave boundary — the safe compaction point.** After step 4 (GitHub re-read) and
 before step 5, no subagent is live and all state is re-derivable from GitHub. You
-cannot run `/compact` yourself: if context is running high here, tell the human
-this is a safe point to run it. Auto-compaction can still fire mid-wave, which is
-why every dispatch re-derives its work state from GitHub (§3) and the frontier is
+cannot run `/compact` yourself: if context is running high here, say in your
+progress output that this is a safe point for the human to run it, and keep
+going — it is not a stop. Auto-compaction can still fire mid-wave, which is why
+every dispatch re-derives its work state from GitHub (§3) and the frontier is
 always recomputed from GitHub, never from memory.
 
 **Every dispatched issue resolves to exactly one terminal state** — merged /
@@ -298,8 +299,9 @@ dispatch). Its steps:
   `gh pr create --base "$base"` with a body restating the change, the
   verification done, and `Closes #<n>`.
 - **Review gate (in-session, machine gate).** Review the branch with a **fresh
-  context via the Agent tool** (`general-purpose`, or a reviewer agent the project defines) — pass the
-  contract's **`reviewer`** tier as its `model` (default `inherit`) — seeded with
+  context via the Agent tool** (`general-purpose`, or a reviewer agent the
+  project defines) — pass the contract's **`reviewer`** tier as its `model`
+  (default `inherit`) — seeded with
   the diff (`git -C "$wt" diff "$base"...HEAD`) and the constitution/CLAUDE.md
   rules. **No-source-change exception:** when the PR diff touches **only**
   `docs/`, templates, or `*.md` (no source or config), this review MAY drop to
