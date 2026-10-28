@@ -180,12 +180,16 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   be caught here.
   Ask for a verdict whose first line is `VERDICT: APPROVE` or
   `VERDICT: REQUEST_CHANGES`, with blocking vs non-blocking findings. The Agent
-  tool runs in-session — never shell out to a billed CLI. The reviewer's model
-  tier comes from `docs/workflow.md`'s optional role->tier field (`reviewer`;
-  default `inherit`) — no literal model name lives here.
-  The spec-acceptance review always stays top-tier despite the docs-only diff:
-  it is the planning-rigor checkpoint, so the cheaper no-source-change reviewer
-  never applies.
+  tool runs in-session — never shell out to a billed CLI. Pass the `reviewer`
+  tier and effort from `docs/workflow.md` as the Agent tool's `model` and
+  `effort`: unset or `inherit` passes none; a tier the tool rejects is passed as
+  none and the progress output says so; pass `effort` only when the tool offers
+  it (Claude Code ≥ v2.1.292). A conflict goes by the contract's Precedence
+  section. No literal model name lives here.
+  The spec-acceptance review always keeps the full `reviewer` tier and effort
+  despite the docs-only diff: it is the planning-rigor checkpoint, and only the
+  human's explicit in-session instruction can change it. The cheaper
+  no-source-change reviewer, or any other contract or skill rule, never lowers it.
   Address the findings and re-review, bounded by `docs/workflow.md`'s
   no-progress rule — a repeated failure stops and parks (see If blocked).
   The design artifact the spec references (step 3) is reviewed here with the
