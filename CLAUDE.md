@@ -33,8 +33,8 @@ win.
 
 # Compact Instructions
 
-Read only at compaction (manual `/compact` and auto-compaction) — zero permanent
-per-turn cost. When compacting mid-`/loopkit:implement`, preserve the active
-milestone target and its unblocked frontier (both re-derivable from GitHub —
-milestone number, open issues, `Depends on:` edges, board status); drop
-resolved subagent chatter. State lives on GitHub, never in this summary.
+When compacting mid-`/loopkit:implement`, keep the active milestone target and
+which issues of the current wave are still running; drop resolved subagent
+chatter. After a compaction, re-derive the unblocked frontier from GitHub
+(milestone, open issues, `Depends on:` edges, board status) before the next
+wave — state lives on GitHub, never in the summary.

@@ -312,12 +312,11 @@ artifact):
   always in context): within the loopkit skills, autonomous commits, pushes,
   merges, dependency installs, and `.env` edits are explicitly granted; hard
   limits live in `.claude/settings.json`.
-- Write a `# Compact Instructions` section — Claude Code's native compaction
-  mechanism, read ONLY at compaction time (manual `/compact` and
-  auto-compaction) at zero permanent per-turn token cost (unlike ordinary
-  always-loaded CLAUDE.md text). Keep it a terse directive, not a state dump:
-  tell the compactor to preserve the active milestone target + the unblocked
-  frontier (both re-derivable from GitHub).
+- Write a `# Compact Instructions` section — it loads every session and is
+  re-injected after a compaction, so keep it to a few lines — a directive, not
+  a state dump: have it keep the active milestone target and the wave issues
+  still running through a compaction, and re-derive the unblocked frontier from
+  GitHub afterwards.
 
 ## Close out — loop readiness
 
