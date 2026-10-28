@@ -785,3 +785,6 @@ Each issue references this spec path in its body.
   measured 13,062 bytes, over 12,800, so the move above ran as written: the
   `### track:adhoc fast-lane` body is in `skills/implement/references/adhoc.md`
   and the body is 11,428 → 12,594 bytes.
+- 2026-10-28: #273 implemented as specified: no fork. Inception core body grew
+  11,151 → 11,248 bytes (cap 12,800). The `--here` Precedence-section gap rides
+  the readiness-checklist `docs/workflow.md` item, so Step 7 gained no text.
