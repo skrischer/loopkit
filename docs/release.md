@@ -34,8 +34,9 @@ terminal running `/ship`.
   - `docs:` / `chore:` / `refactor:` alone -> patch (a release with only these is
     still a patch; if nothing warrants a release, cut none).
 - The highest bump among the commits wins.
-- **Human-overridable** at the pre-publish preview: the computed version is a
-  proposal, not a verdict — the human may set any valid semver instead.
+- **Human-overridable at invocation:** the computed version is a proposal, not
+  a verdict — review it with `/loopkit:ship --dry-run` and pass any valid
+  semver as the explicit argument (`vX.Y.Z`) instead.
 - Enumerate the range with `git log <last-tag>..HEAD` (e.g.
   `git log v2.0.0..HEAD`); the last tag is `git describe --tags --abbrev=0`.
 
@@ -56,9 +57,8 @@ Exactly one file carries the version today; a second must stay metadata-consiste
 
 - **`vX.Y.Z`** (leading `v`, e.g. `v2.0.0`).
 - The tag **must match `.claude-plugin/plugin.json` `version` exactly** (tag
-  `v2.1.0` <-> `version: "2.1.0"`). A tag/`version` mismatch is the **#1
-  marketplace-rejection cause** — treat divergence as a release-blocking error,
-  not a warning.
+  `v2.1.0` <-> `version: "2.1.0"`). A tag/`version` mismatch is a
+  release-blocking error, not a warning.
 - Tag the release commit (the commit that bumped `version` and finalized the
   changelog), then push the tag: `git tag vX.Y.Z && git push origin vX.Y.Z`.
 
@@ -68,9 +68,11 @@ Exactly one file carries the version today; a second must stay metadata-consiste
 - **Source:** the merged PRs / commits since the last tag (the same
   `git log <last-tag>..HEAD` range that drives the version). Group entries under
   Keep-a-Changelog headings (`Added` / `Changed` / `Fixed` / `Removed`).
-- **The human edits it at the preview.** The generated entries are a draft: the
-  human curates wording, drops noise, and promotes the `## [Unreleased]` section
-  to `## [X.Y.Z] - YYYY-MM-DD` as part of the release commit.
+- **The human curates it before invoking.** The generated entries are a draft;
+  review them with `--dry-run`. To change the wording, commit an edit to
+  `## [Unreleased]` on the base branch first. The release commit moves its
+  entries under `## [X.Y.Z] - YYYY-MM-DD`, leaving an empty `## [Unreleased]`
+  above it.
 - The changelog is the source of the GitHub Release notes (see below).
 
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
@@ -130,13 +132,14 @@ Exactly one file carries the version today; a second must stay metadata-consiste
 
 - Bump `.claude-plugin/plugin.json` `version` and tag `vX.Y.Z` to match it
   exactly.
-- Curate `CHANGELOG.md` at the preview and pass the section by `--notes-file`.
+- Curate `CHANGELOG.md` before invoking (review with `--dry-run`) and pass the
+  section by `--notes-file`.
 - Run `bash scripts/verify.sh` green before tagging; publish only on the human's
   `/ship` invocation.
 
 **Don't**
 
-- Let the tag and `plugin.json` `version` diverge (the #1 rejection cause).
+- Let the tag and `plugin.json` `version` diverge.
 - Inline untrusted changelog / commit text into a `gh` command.
 - Add a CI/GitHub-Actions release bot, a scheduler, or any headless publish path.
 - Treat a release-tool URL or dashboard as the release — the committed files are.
