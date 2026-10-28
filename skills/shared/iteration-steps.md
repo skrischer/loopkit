@@ -1,5 +1,7 @@
 # Shared iteration steps
 
+> Paths in this file are relative to this file.
+
 > Plugin-shipped shared reference — NOT a skill. The generic, reusable
 > methodology for the three steps both `/loopkit:inception` (one-time bootstrap)
 > and `/loopkit:roadmap` (ongoing iteration) perform: the prior-art challenge,
@@ -7,7 +9,8 @@
 > gates, ordering, and framing; this file holds only the invariant method,
 > authored once so no step prose is duplicated across skills. It reaches into no
 > skill's internals and no skill reaches into another's — the shared artifact is
-> the sanctioned handoff.
+> the sanctioned handoff. Templates are plugin-shipped artifacts, not a skill's
+> internals, so the template pointers below keep that rule.
 
 ## Prior-art challenge
 
@@ -50,7 +53,7 @@ reviewed at spec-acceptance) — the sparring is a dialog, not a gate.
   entries: reuse what is there, skip fresh research.
 
 Look for exemplary, preferably OSS projects that solve the problem or its
-sub-problems. Fill `docs/prior-art.md` from the template: per entry concern, repo
+sub-problems. Fill `docs/prior-art.md` from the template (`../inception/templates/prior-art.md`): per entry concern, repo
 + concrete path, license, verdict (reuse / reference-only / avoid + why), date,
 and the harvest notes (adopt / avoid) in Notes. Living document — gaps are fine.
 Tag each concern's `##` header with the phase it feeds — `## <Concern> (Phase N)`
@@ -67,7 +70,7 @@ this is a seed, not a final design.
 
 The roadmap is the content hand-off to `/loopkit:plan`: the sequenced queue of
 phases the human points it at. Break the work into ordered, plannable phases,
-derived from the scope and the architecture seed. From the roadmap template into
+derived from the scope and the architecture seed. From the roadmap template (`../inception/templates/roadmap.md`) into
 `docs/roadmap.md`:
 
 - A phase-overview table (Phase, Name, Spec, Milestone). Specs and milestones are
