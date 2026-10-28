@@ -132,7 +132,8 @@ than asking where you can:
   URL/number; if none exists, create one (`gh project create`) on explicit
   confirmation, never silently. `none` is not a valid value. Then record the
   field-ID recipe: `gh project field-list <number> --owner <owner>
-  --format json --jq '.fields[]|select(.name=="Status")'` returns the Status
+  --limit 100 --format json
+  --jq '.fields[]|select(.name=="Status")'` returns the Status
   field id + the Todo / In Progress / Done option ids; write them into the
   contract's `<status-field-id>` / `<...-option-id>` placeholders so
   `plan`/`implement` skip re-discovery.
