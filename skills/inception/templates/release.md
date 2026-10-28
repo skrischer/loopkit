@@ -75,9 +75,10 @@ bot** — nothing publishes except a human at a terminal running `/ship`.
   in Keep a Changelog format, entries grouped under Added / Changed / Fixed /
   Removed>`.
 - **The human curates it before invoking.** The generated entries are a draft;
-  review them with `--dry-run`. To change the wording, edit the unreleased
-  section on the base branch first. The release commit promotes it to the new
-  version heading.
+  review them with `--dry-run`. To change the wording, commit an edit to the
+  unreleased section on the base branch first. The release commit moves that
+  section's entries under the new version heading, leaving an empty unreleased
+  section above it.
 - The changelog is the source of the published release notes (see below).
 
 ## Publish target + command

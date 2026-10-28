@@ -36,7 +36,7 @@ terminal running `/ship`.
 - The highest bump among the commits wins.
 - **Human-overridable at invocation:** the computed version is a proposal, not
   a verdict — review it with `/loopkit:ship --dry-run` and pass any valid
-  semver as the explicit argument instead.
+  semver as the explicit argument (`vX.Y.Z`) instead.
 - Enumerate the range with `git log <last-tag>..HEAD` (e.g.
   `git log v2.0.0..HEAD`); the last tag is `git describe --tags --abbrev=0`.
 
@@ -69,9 +69,10 @@ Exactly one file carries the version today; a second must stay metadata-consiste
   `git log <last-tag>..HEAD` range that drives the version). Group entries under
   Keep-a-Changelog headings (`Added` / `Changed` / `Fixed` / `Removed`).
 - **The human curates it before invoking.** The generated entries are a draft;
-  review them with `--dry-run`. To change the wording, edit `## [Unreleased]`
-  on the base branch first. The release commit promotes `## [Unreleased]` to
-  `## [X.Y.Z] - YYYY-MM-DD`.
+  review them with `--dry-run`. To change the wording, commit an edit to
+  `## [Unreleased]` on the base branch first. The release commit moves its
+  entries under `## [X.Y.Z] - YYYY-MM-DD`, leaving an empty `## [Unreleased]`
+  above it.
 - The changelog is the source of the GitHub Release notes (see below).
 
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/

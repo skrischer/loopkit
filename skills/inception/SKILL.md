@@ -256,7 +256,8 @@ entirely (no `docs/release.md`, no gate).
   - **Version-bearing files** — the file(s) carrying the version string to bump;
     name the single source and any metadata-consistent siblings.
   - **Tag format** — the tag shape; the tag must match the version exactly.
-  - **Changelog** — source range + format/file; the human curates it at preview.
+  - **Changelog** — source range + format/file; the human curates the unreleased
+    section before invoking (reviewed with `--dry-run`).
   - **Publish target + command** — the native in-session `gh` / tooling command;
     release notes passed by file, never inlined.
   - **Pre-publish Verify** — reference this project's Verify (from
