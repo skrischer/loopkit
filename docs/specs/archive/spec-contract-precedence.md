@@ -323,7 +323,7 @@ lives in the GitHub issues and milestone. A completed spec is moved to
 
 ## Prior art
 
-- [Layer precedence + per-role effort in the workflow contract (feature: contract-precedence)](../prior-art.md#layer-precedence--per-role-effort-in-the-workflow-contract-feature-contract-precedence)
+- [Layer precedence + per-role effort in the workflow contract (feature: contract-precedence)](../../prior-art.md#layer-precedence--per-role-effort-in-the-workflow-contract-feature-contract-precedence)
   - ADOPT: a short numbered "first applicable layer wins" list, enforcement
     first, with the trust boundary stated in it; per-role effort next to the
     tier in the contract.
@@ -331,21 +331,21 @@ lives in the GitHub issues and milestone. A completed spec is moved to
   - The verdict predates the per-invocation Agent `effort` parameter
     (v2.1.292), which is the mechanism this spec uses. The verified quote is in
     Constraints. A dated re-verification line lands in an issue (see In scope).
-- [Model-tier-per-agent — role-to-tier routing in the contract (feature: model-tier-slots)](../prior-art.md#model-tier-per-agent--role-to-tier-routing-in-the-contract-feature-model-tier-slots)
+- [Model-tier-per-agent — role-to-tier routing in the contract (feature: model-tier-slots)](../../prior-art.md#model-tier-per-agent--role-to-tier-routing-in-the-contract-feature-model-tier-slots)
   — the role→tier field this extends:
   - model names live only in the contract;
   - the re-verified order: per-invocation, then frontmatter, then the
     `CLAUDE_CODE_SUBAGENT_MODEL` default, then the main model;
   - the spec-acceptance review stays at the top tier.
-- [State-machine trust boundary — untrusted GitHub text as instruction/shell (feature: trust-boundary)](../prior-art.md#state-machine-trust-boundary--untrusted-github-text-as-instructionshell-feature-trust-boundary)
+- [State-machine trust boundary — untrusted GitHub text as instruction/shell (feature: trust-boundary)](../../prior-art.md#state-machine-trust-boundary--untrusted-github-text-as-instructionshell-feature-trust-boundary)
   — why GitHub text is never layer 2 (Willison's plan-then-execute and Rule of
   Two), and why layer 2 cannot relax the boundary.
-- [Skill structure for Claude 5 — compaction re-attach, progressive disclosure, plugin-relative paths (feature: skill-structure)](../prior-art.md#skill-structure-for-claude-5--compaction-re-attach-progressive-disclosure-plugin-relative-paths-feature-skill-structure)
+- [Skill structure for Claude 5 — compaction re-attach, progressive disclosure, plugin-relative paths (feature: skill-structure)](../../prior-art.md#skill-structure-for-claude-5--compaction-re-attach-progressive-disclosure-plugin-relative-paths-feature-skill-structure)
   - The core budget, and the rule to link each reference with when to read it,
     which the plan-core move follows.
   - VisiTrans's compaction-state carry backs the Compact Instructions clause
     (decided at the gate).
-- [Attended-loop permission guardrails (feature: permission-template-hardening)](../prior-art.md#attended-loop-permission-guardrails-feature-permission-template-hardening)
+- [Attended-loop permission guardrails (feature: permission-template-hardening)](../../prior-art.md#attended-loop-permission-guardrails-feature-permission-template-hardening)
   — layer 1 is enforcement only where Claude Code enforces it. Deny rules match
   command text, and the hooks belong to that row.
 
@@ -784,7 +784,16 @@ Each issue references this spec path in its body.
 - 2026-10-28: Implement fallback applied (#272). The edited implement body
   measured 13,062 bytes, over 12,800, so the move above ran as written: the
   `### track:adhoc fast-lane` body is in `skills/implement/references/adhoc.md`
-  and the body is 11,428 → 12,594 bytes.
+  and the body went from main's 11,428 to 12,594 bytes.
 - 2026-10-28: #273 implemented as specified: no fork. Inception core body grew
   11,151 → 11,248 bytes (cap 12,800). The `--here` Precedence-section gap rides
-  the readiness-checklist `docs/workflow.md` item, so Step 7 gained no text.
+  the readiness-checklist `docs/workflow.md` item, so Step 7 gained no gap-reporting text.
+- 2026-10-28: Milestone QA accepted (close-out sweep). No decision was left
+  unrecorded; the two entries above were reworded for precision. QA: the
+  reviewer ran at effort `max` under the in-session instruction and at the
+  contract's `high` without it (the issue body's effort text ignored), the
+  merge hold ended the run at the open PR, the instruction survived
+  `/compact`, and plan read `references/multi-phase.md` before drafting.
+  Budget after the milestone: plan 12,650, implement 12,594, inception
+  11,248 of 12,800 bytes, so the next plan or implement core addition moves
+  text out first. Reviewer notes left open went to track:adhoc #281.
