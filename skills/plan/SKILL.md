@@ -196,7 +196,8 @@ second human stop.
 ## 6. Review + spec-acceptance gate (STOP — the milestone gate)
 
 - Review the spec with a **fresh context via the Agent tool**
-  (`general-purpose` or `code-reviewer`), seeded with the PR diff and the
+  (`general-purpose`, which loads `CLAUDE.md`; a custom reviewer agent works
+  only if it does not set `omitClaudeMd`), seeded with the PR diff and the
   decision docs (`docs/architecture.md`, `docs/prior-art.md`, any sibling spec
   it builds on). `docs/vision.md` and `docs/constitution.md` are deliberately
   **not** in this seed: CLAUDE.md's `@import` ("Always in context") already
