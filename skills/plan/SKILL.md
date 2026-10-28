@@ -45,14 +45,9 @@ Naming: in everything the human reads, name an issue, PR or milestone by number 
   (`/loopkit:plan auth-core auth-ui`). `docs/roadmap.md` is the queue of
   sequenced phases (it carries no current-focus or status marker); orient on it
   first.
-- Multi-phase run: when the human names a set, drive each phase as its own
-  full cycle in the given order — this readiness step's already-covered check
-  and track decision, then steps 2–6 and the acceptance mechanics (its own spec
-  and gate, milestone + roadmap link, one merge, issues, board) — before
-  starting the next. Never reorder the set or add an unnamed phase. A phase's milestone-level edge may depend on a sibling phase planned
-  earlier in the same run (the acceptance mechanics write it). A multi-phase run
-  may exceed the loop's iteration ceiling (`docs/workflow.md`) — split it across
-  runs when it would; each phase's cycle is independent.
+- Multi-phase run (the human names a set): Read
+  `${CLAUDE_SKILL_DIR}/references/multi-phase.md` before the first phase, and
+  re-Read it after any compaction mid-run.
 - No argument: list the phases that have no merged spec with a milestone
   and issues yet, then ask the human which one(s) to plan (`AskUserQuestion` /
   in-session question). Never auto-advance — the human names the unit of work.
