@@ -8,6 +8,52 @@ Versioning and the release process are defined in [`docs/release.md`](docs/relea
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-10-28
+
+### Changed
+
+- `/loopkit:inception`, `/loopkit:roadmap` and `/loopkit:ship` carry Claude
+  Code's native `disable-model-invocation: true`: Claude no longer loads them on
+  its own, and their descriptions leave the always-loaded skill listing. The
+  human still runs each by name. `plan`, `implement` and `design` stay
+  model-invocable (`/loop` and `/loopkit:plan` invoke them).
+- The inception settings template ships `defaultMode: acceptEdits` instead of
+  `bypassPermissions`, which Claude Code ignores in a project file (the session
+  started in Manual mode). Step 8 states the permission facts: a project-level
+  `auto` falls back to the built-in default, a project `defaultMode` outranks
+  `~/.claude/settings.json` (the opt-in for `auto` is `--permission-mode auto`),
+  and `acceptEdits` auto-approves edits only inside the working directory or
+  `additionalDirectories`. `--here` flags any other project `defaultMode` as a
+  gap.
+- The release contract (template and loopkit's own `docs/release.md`) no longer
+  points at a pre-publish preview that `/loopkit:ship` does not have: the human
+  reviews with `--dry-run`, passes an explicit `vX.Y.Z` to override the computed
+  version, and curates `## [Unreleased]` on the base branch before invoking.
+  `/loopkit:ship` promotes a curated unreleased section instead of overwriting
+  it.
+
+### Fixed
+
+- The `# Compact Instructions` section inception writes into a target
+  `CLAUDE.md` now keeps the milestone target and the running wave's issues and
+  re-derives the unblocked frontier from GitHub after a compaction.
+- `/loopkit:implement` no longer claims the orchestrator can run `/compact`: at a
+  wave boundary it tells the human this is a safe point and keeps going. The
+  subagent-model order is corrected (a per-call `model` beats
+  `CLAUDE_CODE_SUBAGENT_MODEL`, which only forces with
+  `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`), and `code-reviewer` is no longer named
+  as a built-in agent; `/loopkit:plan` names the `omitClaudeMd` condition for a
+  custom reviewer.
+- The settings template repeats each git hard limit for the `git -C <path>`
+  form, and the skills explain the `git -C … push` phrasing honestly.
+- Contract drift: inception describes the board as a queue and status display,
+  not a claim or lock; the workflow template's plan loop asks instead of
+  auto-picking the next phase; hand-offs name `/loopkit:plan` and
+  `/loopkit:ship` instead of the native `/plan` or a bare `/ship`.
+- Stale facts: the README lists six skills (with `/loopkit:ship`) and the
+  one-orchestrator-per-milestone model; `docs/release.md` no longer hardcodes a
+  current version; deep-research cost guidance names no model or cost multiple.
+
 ## [2.2.0] - 2026-07-16
 
 ### Added
