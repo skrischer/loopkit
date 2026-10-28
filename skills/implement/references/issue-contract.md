@@ -40,7 +40,7 @@ dispatch). Its steps:
   - **fix dispatch** (the brief carries review findings or a merge conflict) ->
     re-attach the branch and resume at Implement with the findings, then Verify
     and push. Review and merge if the Agent tool is available, else return
-    `pr-open #<pr>` again. This overrides the open-PR case below.
+    the `pr-open` report (form under Report back) again. This overrides the open-PR case below.
   - **open PR for the issue** -> skip Implement; continue from the Review gate ->
     Merge stage (below) on the existing branch.
   - **branch with commits/diff but no PR** -> re-attach and continue from Verify

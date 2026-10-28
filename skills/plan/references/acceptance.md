@@ -4,7 +4,7 @@
 
 > Read after the human accepts the spec at the spec-acceptance gate
 > (`../SKILL.md` §6). Covers milestone, roadmap link, the one merge, then issues
-> and board. Run it only after acceptance: a rejected spec must leave no
+> and board, and the close-out. Run it only after acceptance: a rejected spec must leave no
 > dangling milestone.
 
 Before the `gh` writes below, Read `../../shared/trust-boundary.md`.
