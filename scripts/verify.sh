@@ -435,7 +435,9 @@ fi
 #     mechanical floor is: block closed by a second `---` within 30 lines, any
 #     `argument-hint:` a double-quoted string without `"` or `\`, and a
 #     description of at most 700 characters (trigger text, not mechanics), and
-#     no ${CLAUDE_ path anywhere in the frontmatter (no substitution there).
+#     no ${CLAUDE_ in the description or argument-hint (no substitution in a
+#     description; substitution does happen in `allowed-tools` Bash rules, so
+#     the other frontmatter lines are not checked).
 echo "-- frontmatter guard (block closed, argument-hint form, description length) --"
 
 fm_fail=0
@@ -459,8 +461,8 @@ for f in "${skill_files[@]}"; do
     { on = 0 }
     END { print d }')"
   desc="${desc#\"}"; desc="${desc%\"}"
-  if sed -n "2,$((c - 1))p" "$f" | grep -qF -e '${CLAUDE_'; then
-    echo "  $f: \${CLAUDE_...} in the frontmatter — a description (or hint) gets no substitution, and a plugin path there is forbidden."
+  if { printf '%s\n' "$desc"; sed -n "2,$((c - 1))p" "$f" | grep -E '^argument-hint:' || true; } | grep -qF -e '${CLAUDE_'; then
+    echo "  $f: \${CLAUDE_...} in the description or argument-hint — no substitution there, and a plugin path is forbidden."
     fm_fail=1
   fi
   dlen="$(printf '%s' "$desc" | LC_ALL=C.UTF-8 wc -m | tr -d ' ')"
