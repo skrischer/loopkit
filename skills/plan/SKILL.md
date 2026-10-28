@@ -1,52 +1,39 @@
 ---
 name: plan
 description: "Drive one planning cycle end-to-end — survey readiness, draft a spec (the local single source of truth) with any human prerequisites, review it via the in-session Agent tool, and stop once per phase at the spec-acceptance gate. Then, on the spec branch, fold in the milestone + roadmap link, merge once (the merge is acceptance), and create the issues (with dependencies) + board entries. Loop-capable: without an argument it reports the roadmap's unplanned phases and asks which to plan (never auto-picks), reporting \"fully planned\" when none remains. Multi-phase: name one phase or an ordered set, each driven as its own cycle in order. Reads docs/workflow.md for project specifics."
+argument-hint: "[phase ...]"
 ---
 
 # /loopkit:plan — drive one planning cycle to a merged spec + issues
 
-Orchestrates the readiness -> spec-acceptance gate (milestone + roadmap link) ->
-merge -> issues + board cycle.
-Specs are the **local single source of truth**; milestones and issues are
-created on GitHub from them. The argument is the scope to plan — one phase
-(`/loopkit:plan dashboard-kpis`) or an ordered set
-(`/loopkit:plan auth-core auth-ui`), each driven as its own cycle in the named
-order — or empty, in loop mode: then the cycle reports the roadmap's unplanned
-phases and asks the human which one(s) to plan (it never auto-picks the unit of
-work).
+> Truncation guard: if the end-of-skill line is missing from your copy of this skill, it was cut after a compaction — Read ${CLAUDE_SKILL_DIR}/SKILL.md in full before continuing (in a full-file Read, ${CLAUDE_SKILL_DIR} means the directory this SKILL.md sits in).
+
+Orchestrates the readiness -> spec-acceptance gate -> merge -> issues + board
+cycle. Specs are the local single source of truth; milestones and issues are created
+on GitHub from them. The argument is the scope to plan (see Readiness).
 
 This is the planning-side sibling to `/loopkit:implement`. Both read
-**`docs/workflow.md`** (the workflow contract, produced by
-`/loopkit:inception`) for the repo, base branch, board, commands, naming,
-gates, and loop rules — never hardcode them. If `docs/workflow.md` is missing,
-stop and tell the user to run `/loopkit:inception` first.
+`docs/workflow.md` (produced by `/loopkit:inception`) for the repo, base branch,
+board, commands, naming, gates, and loop rules — never hardcode them. If it is
+missing, stop and tell the user to run `/loopkit:inception` first.
 
-**Autonomy:** survey, draft the spec, open the PR, run the review, create the
-milestone, fold the roadmap link onto the spec branch, merge, then create
-issues + board entries autonomously. **The one human stop per
-phase is the spec-acceptance gate** — the milestone gate: genuinely-open
-decisions (AskUserQuestion, never guess) plus the human-prerequisites handover
-(a multi-phase run stops once per phase, never a whole-run single stop). On
-blockers, park instead of dying (see If blocked).
+Autonomy: survey, draft the spec, open the PR, run the review, then — after
+acceptance — create the milestone, fold the roadmap link onto the spec branch,
+merge, and create issues + board entries autonomously. The one human stop per
+phase is the spec-acceptance gate: genuinely-open decisions (AskUserQuestion,
+never guess) plus the human-prerequisites handover (a multi-phase run stops
+once per phase). On blockers, park instead of dying (see If blocked).
 
 ## Preconditions
 
-- `gh` authenticated with the `repo` + `project` scopes — checked ONCE at the
-  start of the run (mirrors inception's Step-0 preflight; same `gh auth status`
-  two-step probe). If not, STOP and instruct the remedy (never auto-run): not
-  authenticated -> `gh auth login`; missing `project` scope ->
-  `gh auth refresh -s project` (OAuth login; for a PAT/`GH_TOKEN`, re-create the
-  token with the scope instead).
-- A GitHub repo is required (the chain creates milestones and issues). Confirm
-  with `gh repo view`; if there is none, stop.
+- Read `${CLAUDE_PLUGIN_ROOT}/skills/shared/preflight.md` first, once per run:
+  scopes `repo` + `project`, clean base required.
+- A GitHub repo is required. Confirm with `gh repo view`; if there is none, stop.
 - The base branch must have at least one commit — the spec PR worktree is
   branched from it (`git worktree add ... <base>`), which fails on an unborn
   branch. Check `git rev-parse --verify "<base>" 2>/dev/null`; if it fails,
   stop and ask the user to make the initial commit first
-  (`/loopkit:inception`'s close-out offers this).
-- Run from the main checkout on the base branch, with a clean tree. Check
-  `git rev-parse --abbrev-ref HEAD` and `git status -sb`; if not on a clean
-  base branch, stop and ask.
+  (`/loopkit:inception`'s close-out offers it).
 
 ## 1. Readiness
 
@@ -55,36 +42,34 @@ blockers, park instead of dying (see If blocked).
   (`/loopkit:plan auth-core auth-ui`). `docs/roadmap.md` is the queue of
   sequenced phases (it carries no current-focus or status marker); orient on it
   first.
-- **Multi-phase run:** when the human names a set, drive each phase as its own
-  full cycle in the given order — re-run this readiness step's already-covered
-  check and track decision for it, then steps 2–8 (its own spec, spec-acceptance
-  gate with open decisions + prerequisites resolved per phase, milestone +
-  roadmap link on the spec branch, one merge, issues, board) — before starting
-  the next. Never reorder the
-  set or add a phase the human did not name. A phase's milestone-level edge may
-  depend on a **sibling phase planned earlier in the same run** — step 7 writes
-  that `Depends on milestone:` edge to the just-created sibling milestone as the
-  batch proceeds. A multi-phase run may exceed the loop's iteration ceiling
-  (`docs/workflow.md`) — split it across runs when it would (each phase's own
-  cycle is independent, so a split loses nothing).
-- **No argument:** list the phases that have no merged spec with a milestone
-  and issues yet, then ASK the human which one(s) to plan (`AskUserQuestion` /
-  in-session question). Never auto-advance to "the next phase without a Spec
-  link" — the human names the unit of work (one phase or the set).
-- **Loop terminal state:** if every roadmap phase already has a merged spec
+- Multi-phase run: when the human names a set, drive each phase as its own
+  full cycle in the given order — this readiness step's already-covered check
+  and track decision, then steps 2–6 and the acceptance mechanics (its own spec
+  and gate, milestone + roadmap link, one merge, issues, board) — before
+  starting the next. Never reorder the set or add a phase the human did not
+  name. A phase's milestone-level edge may depend on a sibling phase planned
+  earlier in the same run (the acceptance mechanics write it). A multi-phase run
+  may exceed the loop's iteration ceiling (`docs/workflow.md`) — split it across
+  runs when it would; each phase's cycle is independent, so a split loses
+  nothing.
+- No argument: list the phases that have no merged spec with a milestone
+  and issues yet, then ask the human which one(s) to plan (`AskUserQuestion` /
+  in-session question). Never auto-advance to the next phase without a Spec
+  link — the human names the unit of work.
+- Loop terminal state: if every roadmap phase already has a merged spec
   with a milestone and issues, report "roadmap fully planned — waiting for new
-  phases" in one line and end the cycle. Loop-mode iterates **roadmap phases
-  only**; a living-spec milestone (step 7a) is never a roadmap phase, so it is
-  excluded from this set and the terminal state is unaffected by it.
-- **Track (the proportional dial, see `docs/workflow.md`):** decide which of
-  the contract's three tracks this scope uses before drafting. Most planning is
-  **full-spec** (a finite phase: spec + milestone that closes). When the human
-  asks to open an **ongoing theme** that accretes work over time rather than a
-  finite phase, plan the **living-spec** track (step 7a): same spec + milestone
-  cycle, but the milestone stays open. A living-spec is **human-initiated** —
+  phases" in one line and end the cycle. Loop-mode iterates roadmap phases
+  only; a living-spec milestone is never one, so it does not affect this state.
+- Track (the proportional dial, see `docs/workflow.md`): decide which of the
+  contract's three tracks this scope uses before drafting. Most planning is
+  full-spec (a finite phase: spec + milestone that closes). When the human asks
+  to open an ongoing theme that accretes work rather than a finite phase, plan
+  the living-spec track (same cycle, milestone stays open): Read
+  `${CLAUDE_SKILL_DIR}/references/living-spec.md` then, and again when closing
+  out or re-running a living-spec scope. A living-spec is human-initiated —
   never inferred from the roadmap, never auto-planned in loop mode. The
   `track:adhoc` fast-lane carries no spec or milestone and is not a plan cycle
-  (the human files it directly; `/loopkit:implement` picks it up).
+  (the human files it; `/loopkit:implement` picks it up).
 - Survey existing specs, open issues and milestones:
   ```
   gh api --paginate repos/:owner/:repo/milestones --jq '.[]|"\(.number) \(.title) [\(.state)] open=\(.open_issues)"'
@@ -93,98 +78,86 @@ blockers, park instead of dying (see If blocked).
 - If a merged spec already covers the scope (with a milestone and issues),
   there is nothing to plan — point at `/loopkit:implement`. A spec still in an
   open PR is in review, not accepted: do not start a second plan against it.
-  Exception: a living-spec milestone (step 7a) is meant to be re-run with the
-  same scope to accrete more issues — there, "already covered" is expected, so
-  skip straight to step 7a's issue-creation, do not short-circuit.
+  Exception: a living-spec milestone is re-run with the same scope to accrete
+  more issues — "already covered" is expected there, so go straight to issue
+  creation in `living-spec.md`.
 
 ## 2. Resolve decisions before writing
 
-Sort every open design question into three buckets — most "open" questions are
-not actually open:
+Sort every open design question into three buckets. Check bucket 2 against the
+codebase and constitution before declaring anything open — most "open" questions
+turn out to be already determined:
 
-1. **Precedent-decided** — backed by reference implementations in
+1. Precedent-decided — backed by reference implementations in
    `docs/prior-art.md`. Consult it for the scope unconditionally; adopt and
    record in the spec. When a `docs/prior-art.md` verdict is too coarse to
    settle the decision and the entry is a clonable public repo (a code `Path:`,
    not an article), you are encouraged to check that source out and read the
    specific implementation — a read-only, ephemeral clone outside the repo
    (e.g. `../loopkit-priorart/<project>`), discarded when done. Record the
-   concrete finding (file/approach) in the spec's Prior decisions + Decision
-   log; never commit the external code into this repo. Proportional: do this
-   only when it hardens a real decision, not for every entry.
-2. **Constraint-determined** — derivable from this codebase, `docs/constitution.md`,
+   finding (file/approach) in the spec's Prior decisions + Decision log; never
+   commit the external code into this repo. Only when it hardens a real
+   decision, not for every entry.
+2. Constraint-determined — derivable from this codebase, `docs/constitution.md`,
    or `CLAUDE.md`. Decide it and record the rationale.
-3. **Genuinely open** — neither precedent nor constraint settles it. These are
+3. Genuinely open — neither precedent nor constraint settles it. These are
    the only ones that block acceptance; they are resolved at the
    spec-acceptance gate (step 6), not guessed now.
 
-> Check bucket 2 against the codebase and constitution before declaring anything
-> "open" — most "open" decisions turn out to be already determined.
-
 ## 3. Draft the spec
 
-- From `templates/spec-template.md` (next to this skill) into
+- From `${CLAUDE_SKILL_DIR}/templates/spec-template.md` into
   `docs/specs/spec-<scope>.md`. Bound the scope tightly. Put settled decisions
-  in **Prior decisions** with rationale; mark each genuinely-open point
+  in Prior decisions with rationale; mark each genuinely-open point
   explicitly (e.g. an `OPEN — resolved at the spec-acceptance gate` row).
-- Fill the **Prior art** section: consult `docs/prior-art.md` for this scope and
+- Fill the Prior art section: consult `docs/prior-art.md` for this scope and
   link the relevant entries by concern-heading so `/loopkit:implement` can reach
-  them — or record `none relevant` explicitly when it has nothing for the scope.
-  This section is a real planning output, checked at the spec-acceptance review
-  (step 6).
-- Fill **Human prerequisites** completely: every secret, external
-  provisioning, dashboard config, or account only a human can provide for this
-  milestone — or `none` explicitly. The implement loop depends on this being
-  exhaustive: anything missed becomes a parked issue mid-loop.
-- **No step list inside the spec** — steps live as issues. The `Outcome` list
-  is done-criteria, not a progress mirror. Everything in `docs/` is written in
-  English.
-- **Design surface (optional, by surface only):** if this scope has UI surface
-  OR a visualisation would materially clarify a decision (flow / state /
+  them — or record `none relevant` explicitly. The spec-acceptance review
+  (step 6) checks this section.
+- Fill Human prerequisites completely: every secret, external provisioning,
+  dashboard config, or account only a human can provide for this milestone — or
+  `none` explicitly. Anything missed becomes a parked issue mid-loop.
+- No step list inside the spec — steps live as issues. The Outcome list is
+  done-criteria, not a progress mirror. Everything in `docs/` is in English.
+- Design surface (optional, by surface only): if this scope has UI surface
+  or a visualisation would materially clarify a decision (flow / state /
   architecture / concept), invoke `/loopkit:design` from within this planning
-  cycle (it reads `docs/design.md` for every tool specific) and **reference its
-  committed design artifact from the spec** by repo path — so the design travels
-  in the spec package and is reviewed AT the spec-acceptance gate (step 6),
-  adding **no new gate**. The referenced artifact's presence in the spec IS the
-  design-surface signal the implementer reads — no separate label needed. A scope
-  with neither surface skips this entirely — no design step, no artifact
-  (proportional ceremony). If `docs/design.md` is missing or records `none`, the
+  cycle (it reads `docs/design.md` for every tool specific) and reference its
+  committed design artifact from the spec by repo path — the design travels in
+  the spec package and is reviewed at the spec-acceptance gate (step 6), adding
+  no new gate. The referenced artifact's presence is the design-surface signal
+  the implementer reads — no separate label. A scope with neither surface skips
+  this entirely (proportional ceremony). If `docs/design.md` is missing or records `none`, the
   project did not enable the design phase: note it and proceed without designing.
 
-## 4. Anticipate implementer questions (pre-mortem — NOT a new gate)
+## 4. Anticipate implementer questions (pre-mortem — not a new gate)
 
 A pre-mortem over the drafted spec — clarification belongs to planning, so the
-spec must leave zero open questions for the implementer (`docs/constitution.md`).
-This is a **sub-step that feeds the existing acceptance gate (step 6)**, never a
-second human stop.
+spec must leave zero open questions for the implementer. This is a sub-step that
+feeds the existing acceptance gate (step 6), never a second human stop.
 
-- Ask **"what would an implementer ask while building this?"** Walk the spec's
+- Ask "what would an implementer ask while building this?" Walk the spec's
   outcomes and verification as if implementing them: name every fork, ambiguous
   contract, or unstated default a subagent would hit mid-build.
-- **Resolve each from `docs/vision.md`, `docs/constitution.md`,
-  `docs/architecture.md`, and `docs/prior-art.md`** (the same precedent/constraint
-  inputs as step 2, named explicitly). When one of these settles the question, bake
-  the answer into the spec — a **Prior decisions** row plus a **Decision log**
-  entry — so the implementer never has to ask.
-- **What neither precedent nor constraint settles becomes a genuinely-open
-  item** carried into the acceptance gate (step 6), where `AskUserQuestion`
-  resolves it — exactly like the genuinely-open bucket from step 2. Mark it in
-  the spec (`OPEN — resolved at the spec-acceptance gate`); do not guess.
-- Scope it to questions answerable from vision/constitution/architecture/
-  prior-art or genuinely open — not unbounded speculation. A fork that still
-  reaches an implementer is a planning defect this step exists to catch.
+- Resolve each from `docs/vision.md`, `docs/constitution.md`,
+  `docs/architecture.md`, and `docs/prior-art.md`. When one settles the
+  question, bake the answer into the spec — a Prior decisions row plus a
+  Decision log entry — so the implementer never has to ask.
+- What none of them settles becomes a genuinely-open item carried into the
+  acceptance gate (step 6), marked in the spec as in step 3; do not guess.
+- Scope it to questions those docs answer or that are genuinely open. A fork that still reaches an implementer is a
+  planning defect this step exists to catch.
 
 ## 5. Worktree and PR
 
-- Create a docs worktree off the base branch (paths/branch from `docs/workflow.md`):
+- Create a docs worktree off the base branch (paths from `docs/workflow.md`):
   ```
   base=<base branch from workflow.md>
   wt=../<repo>-worktrees/docs-<scope>
   git worktree add "$wt" -b docs/<scope> "$base"
   ```
-- Write the spec into the worktree, then operate **only** via `git -C "$wt"`,
-  never `cd` — `git -C` targets the worktree's branch directly, so nothing
-  lands on the main checkout.
+- Write the spec into the worktree, then operate only via `git -C "$wt"`,
+  never `cd`, so nothing lands on the main checkout.
   ```
   git -C "$wt" add docs/specs/spec-<scope>.md
   git -C "$wt" commit -m "docs(spec): ..."
@@ -195,176 +168,54 @@ second human stop.
 
 ## 6. Review + spec-acceptance gate (STOP — the milestone gate)
 
-- Review the spec with a **fresh context via the Agent tool**
+- Review the spec with a fresh context via the Agent tool
   (`general-purpose`, which loads `CLAUDE.md`; a custom reviewer agent works
   only if it does not set `omitClaudeMd`), seeded with the PR diff and the
   decision docs (`docs/architecture.md`, `docs/prior-art.md`, any sibling spec
-  it builds on). `docs/vision.md` and `docs/constitution.md` are deliberately
-  **not** in this seed: CLAUDE.md's `@import` ("Always in context") already
-  puts both in the subagent's context before any tool use, so re-seeding either
-  would duplicate an always-loaded doc and burn tokens. `docs/architecture.md`
-  IS seeded — CLAUDE.md lists it "On demand (NOT auto-loaded)", making it the
-  one foundation doc genuinely absent otherwise.
-  **Ask explicitly whether the spec contradicts `docs/vision.md`,
-  `docs/constitution.md`, or `docs/architecture.md`** — a contradiction is a
-  blocking finding. Availability was never the gap (vision and constitution are
-  already in context); nothing previously asked the check. **Verify every
-  foundation-doc citation the spec makes against the full source** — never
-  accept a quoted line at face value; a spec citing one success criterion while
-  passing over a line that answers the other way must be caught here.
+  it builds on). `docs/vision.md` and `docs/constitution.md` are not re-seeded:
+  the project `CLAUDE.md` imports both, so the reviewer already has them.
+  `docs/architecture.md` is seeded because `CLAUDE.md` does not auto-load it.
+  Ask explicitly whether the spec contradicts `docs/vision.md`,
+  `docs/constitution.md`, or `docs/architecture.md` (blocking if so). Verify every foundation-doc citation against the full
+  source, never at face value: a spec citing one success criterion while passing
+  over a line that answers the other way must be caught here.
   Ask for a verdict whose first line is `VERDICT: APPROVE` or
   `VERDICT: REQUEST_CHANGES`, with blocking vs non-blocking findings. The Agent
-  tool runs in-session — never shell out to a billed CLI. The review subagent's
-  model tier is read from `docs/workflow.md`'s OPTIONAL role->tier field
-  (`reviewer`; default `inherit` when absent) — no literal model name lives here.
-  **Carve-out: the spec-acceptance review ALWAYS stays top-tier — never downgraded
-  to a cheaper reviewer, even though a spec PR is a docs-only diff; it is the
-  planning-rigor checkpoint, so a "no-source-change -> cheaper reviewer" reading
-  never applies to this gate.** Address the findings and
-  re-review; this `REQUEST_CHANGES` -> address -> re-review loop is **bounded by
-  `docs/workflow.md`'s no-progress rule** — a repeated failure stops and parks
-  (see If blocked), never grinds.
-  For a scope with a design surface the design artifact the spec references (step
-  3) is part of the spec package and is reviewed here with the rest of the spec —
-  it is **not** a separate stop.
+  tool runs in-session — never shell out to a billed CLI. The reviewer's model
+  tier comes from `docs/workflow.md`'s optional role->tier field (`reviewer`;
+  default `inherit`) — no literal model name lives here.
+  The spec-acceptance review always stays top-tier, even though a spec PR is a
+  docs-only diff: it is the planning-rigor checkpoint, so the cheaper
+  no-source-change reviewer never applies to this gate.
+  Address the findings and re-review, bounded by `docs/workflow.md`'s
+  no-progress rule — a repeated failure stops and parks (see If blocked).
+  The design artifact the spec references (step 3) is reviewed here with the
+  rest of the spec — not a separate stop.
 - **STOP — the cycle's one human gate:**
   - Resolve each genuinely-open decision via `AskUserQuestion` — do not guess.
     Bake the answer into the spec — a Prior decisions row + Decision log entry,
-    committed onto the spec branch **pre-merge** (never write a decision to a
-    branch the merge has already deleted).
-  - Present the **Human prerequisites** for delivery: the human provides the
-    keys/config or confirms them as in place NOW, so the milestone can later
-    be implemented without interruption. Record delivered items as checked.
+    committed onto the spec branch pre-merge (never to a branch the merge has
+    already deleted).
+  - Present the Human prerequisites: the human provides the keys/config or
+    confirms them in place now, so the milestone can be implemented without
+    interruption. Record delivered items as checked.
   - Ask the human to accept the spec.
-- On acceptance, carry the whole phase in **one PR** — do this only AFTER the
-  human accepts (never before: a rejected spec must leave no dangling milestone):
-  1. **Create the milestone now** so its `#NN` exists (step 7's milestone block —
-     mechanics, body, and `Depends on milestone:` edge). This is the only
-     milestone creation; issues + board still come after the merge (step 7).
-  2. **Commit the roadmap-link edit onto the spec branch** (full-spec only —
-     living-spec skips it, 7a): fill the planned phase's **Spec** and
-     **Milestone** links in `docs/roadmap.md` in the worktree, then commit via
-     `git -C "$wt"` (no current-focus pointer, no status marker — see step 8).
-     ```
-     git -C "$wt" add docs/roadmap.md
-     git -C "$wt" commit -m "docs(roadmap): link <scope> spec + milestone #<n>"
-     git -C "$wt" push
-     ```
-  3. **Squash-merge once** — spec + roadmap link land together; the merge **is**
-     acceptance (the spec carries no lifecycle header to flip). Wait for green
-     checks only if the repo has CI configured, remove the worktree, then merge,
-     and fast-forward the local base branch.
-     ```
-     git worktree remove "$wt"   # BEFORE the merge: --delete-branch cannot delete a
-                                 # branch a worktree still holds — never re-swap these.
-                                 # On a conflict: re-add $wt, fix, remove again, merge.
-     gh pr merge <n> --squash --delete-branch
-     git checkout "$base" && git pull --ff-only
-     ```
-
-## 7. Milestone (at acceptance), issues + board (after the merge)
-
-- **The milestone is created at the acceptance gate (step 6), just before the
-  merge** — so its `#NN` exists for the roadmap-link commit that rides the spec
-  branch. Created only after acceptance, so a rejected spec leaves no dangling
-  milestone.
-- **Issues + board come after the merge:** the spec path each issue references
-  must resolve on the **default branch**, so the merge lands first, then create
-  one issue per implementable step.
-- **Shell-hygiene (`docs/constitution.md` trust boundary):** never interpolate
-  scope/step/spec text — read from GitHub or the scope argument — into a
-  double-quoted `gh` string; backticks / `$()` / embedded quotes in it break or
-  execute the command. Bind titles through a shell variable and pass each body
-  by file reference (`--body-file`, `-F field=@file`) — never inline it:
-  ```
-  # write bodies to temp files (only variable expansion, no untrusted text
-  # ever lands in the command string), then reference them by path
-  # -- milestone: created at acceptance (step 6), just before the merge --
-  ms_body=$(mktemp)
-  printf '%s\n' "Design: docs/specs/spec-$scope.md" \
-    "Human prerequisites: <delivered | summary>" \
-    "Depends on milestone: #<n>[, #<m>] | none" >"$ms_body"
-  gh api repos/:owner/:repo/milestones -f title="$ms_title" -F description=@"$ms_body"
-
-  # -- issues: created after the merge, one per step --
-  issue_body=$(mktemp)
-  printf '%s\n' "Goal: ..." "Acceptance:" "- [ ] ..." "Depends on: #N" "" \
-    "Spec: docs/specs/spec-$scope.md" >"$issue_body"
-  gh issue create --title "$issue_title" --milestone "$ms_title" --body-file "$issue_body"
-  ```
-- One issue per step, each with a `Goal:` line and an `Acceptance:` checklist
-  mirroring the spec's Verification.
-- **Dependencies:** add a `Depends on: #N[, #M]` line wherever a step needs
-  another issue first — including cross-milestone edges (e.g. this phase's
-  first issue depends on the prior phase's last). The implement loop selects
-  only unblocked issues; an issue without correct `Depends on` lines can be
-  picked too early.
-- **Milestone-level depends-on:** record which milestones this one depends on as
-  a parseable `Depends on milestone: #<n>[, #<m>]` line in the milestone
-  description — e.g. a roadmap phase that must follow a prior phase, or a feature
-  that builds on another milestone. In a multi-phase run the depended-on
-  milestone may be a **sibling phase planned earlier in the same run** — write
-  the edge to that just-created milestone number as you go (there is nothing
-  pre-existing to order by on a first-time batch). When the milestone is
-  independent (depends on no other), write `Depends on milestone: none`.
-  `/loopkit:implement` and humans read this token to tell which milestones are
-  independent and can run as parallel orchestrators.
-- Add every issue to the project board (the contract names it) with status
-  `Todo`.
-
-## 7a. Living-spec milestone (only when the human opened an ongoing theme)
-
-A living-spec is the same chain as step 7, with two differences — it is
-**human-initiated** and its milestone **stays open**.
-
-- **Acceptance is the no-lifecycle model** — exactly as step 6: a merged spec on the
-  default branch + an open milestone. The spec carries no lifecycle header to
-  flip; the **open milestone is the signal the theme is active**. Nothing about
-  acceptance differs from full-spec.
-- Create the milestone (step 7) and **leave it open**; do not plan an end state
-  for it. **Mark it living-spec** so `/loopkit:implement` can tell the tracks
-  apart at the QA gate: put a `Track: living-spec` line in the milestone
-  description (a full-spec milestone has no such line). Seed it with the issues
-  known now and **keep accreting** issues into the same open milestone as the
-  theme grows — re-run this skill with the same scope to add more (the merged
-  spec already covers them). Use `Depends on: #N` for ordering as usual.
-- It is **not a roadmap phase:** skip the roadmap-link commit (step 6's step 2 /
-  step 8) — do not add it to the roadmap overview's phase table, and never fill a
-  current-focus/status marker. Loop-mode never sees it (step 1), so the loop
-  terminal state is unaffected.
-- It is **never archived or closed by the QA gate.** Closing one of its issues
-  archives nothing; the milestone and spec stay live. `/loopkit:implement`
-  handles the QA-gate behavior (per-batch summary, no archive) — this skill's
-  job is to open the milestone and keep accreting issues into it.
-
-## 8. Roadmap link — rode the spec branch (nothing separate to merge)
-
-- The roadmap link — the planned phase's **Spec** and **Milestone** links in
-  `docs/roadmap.md`'s overview table — is committed onto the **spec branch at
-  acceptance** (step 6), and lands in the single squash-merge. There is **no
-  separate roadmap worktree or PR**: one acceptance PR carries spec + roadmap
-  link together, and the QA close-out is the only other PR (net: one acceptance
-  PR + one close-out PR). That link is the only roadmap change — no current-focus
-  pointer, no status marker; the linked milestone is where status lives.
-- Living-spec (7a) is **not a roadmap phase** — step 6 skips the roadmap-link
-  commit for it; nothing to do here.
+- On acceptance, Read `${CLAUDE_SKILL_DIR}/references/acceptance.md` and run it.
 
 ## Close out
 
-- When the spec's verification is fully met (the milestone's issues all close),
-  `/loopkit:implement`'s milestone QA gate archives the spec and updates the
-  roadmap. The closed milestone is the "done" signal — never add a status
-  marker to a spec.
-- **Exception — a living-spec milestone (step 7a) never closes out:** its
-  milestone stays open and accretes issues; the QA gate runs per closed-issue
-  batch without archiving the spec or closing the milestone. There is no "done"
-  signal for an ongoing theme.
+- When the milestone's issues all close, `/loopkit:implement`'s milestone QA
+  gate archives the spec and updates the roadmap. The closed milestone is the
+  "done" signal — never add a status marker to a spec.
+- Exception: a living-spec milestone never closes out — see
+  `${CLAUDE_SKILL_DIR}/references/living-spec.md`.
 
 ## If blocked — park, don't die
 
 - A blocker only a human can clear: label the affected issue or milestone
   `blocked:human` and comment exactly what is needed and where to deliver it.
   Then continue with the next plannable phase if one exists; only when nothing
-  is plannable, ask in-session and wait — an attended session waiting for
-  input costs nothing.
+  is plannable, ask in-session and wait.
 - Never guess, never work around, never add status markers to specs.
+
+End of /loopkit:plan.
