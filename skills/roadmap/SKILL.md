@@ -26,7 +26,7 @@ method only to detect a phase's foundation impact (Step 3) — it never writes
 
 Complementary to `/loopkit:inception --here`, not overlapping: inception
 audits an existing project against the contract and repairs gaps (a readiness
-sweep); roadmap is generative — it seeds NEW phases and runs no readiness sweep.
+sweep); roadmap is generative — it seeds new phases and runs no readiness sweep.
 Use inception to make a project loop-ready; use roadmap to grow its backlog.
 
 Interaction model: guided dialog, never one-shot. The sparring and the
