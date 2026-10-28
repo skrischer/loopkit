@@ -22,8 +22,8 @@ milestones, and a project board as the mandatory state machine.
   single issue or a `track:adhoc` fast-lane issue solo.
 - `/loopkit:design` — optional planning-time design step: reads `docs/design.md`,
   accepts or produces a design, hands off one committed file referenced by the
-  spec and reviewed at the spec-acceptance gate. Skipped when a change has no UI surface and needs no
-  clarifying visualisation.
+  spec and reviewed at the spec-acceptance gate. Skipped when a change has no UI
+  surface and needs no clarifying visualisation.
 - `/loopkit:roadmap` — prior-art-driven idea-sparring loop on an already-loop-ready
   project: per idea offers a research mode, spars the idea against prior art, then
   seeds one or more roadmap phases with backing prior-art. Records any

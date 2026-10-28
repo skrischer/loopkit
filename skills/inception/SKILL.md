@@ -15,8 +15,9 @@ into plannable phases, a `docs/workflow.md` operational contract, an optional
 and the project's `.claude/settings.json` permissions — the
 hand-off to the `/loopkit:plan` and `/loopkit:implement` sibling skills, which
 then run as attended loops (one plan session, one orchestrator per milestone)
-over GitHub issues, milestones, and the board. Strictly separate intent (what/why) from implementation (how); the tech
-stack belongs in the constitution, never in feature specs.
+over GitHub issues, milestones, and the board. Strictly separate intent
+(what/why) from implementation (how); the tech stack belongs in the
+constitution, never in feature specs.
 
 **Interaction model:** guided dialog, never one-shot. Human gates: after the
 goal draft, before finalizing each artifact (prior-art, vision, constitution,
@@ -349,8 +350,9 @@ produced the gap report in Step 0):
       inception output.
 
 Show the list of created and changed files for sign-off, then print the
-loop start commands from the contract's Loops section — ready to paste into
-the plan session and one orchestrator session per milestone.
+`/loop` start commands (plan, implement) from the contract's Loops section —
+ready to paste into the plan session and one orchestrator session per
+milestone; `/loopkit:roadmap` is invoked directly, per idea.
 
 ## If blocked
 
