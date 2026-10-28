@@ -27,7 +27,8 @@ produces the gap report in Step 0.
       deny list
 - [ ] `CLAUDE.md` wired (Step 9): the `@docs/vision.md` and `@docs/constitution.md`
       imports, the on-demand list, the Autonomy grant, and a
-      `# Compact Instructions` section
+      `# Compact Instructions` section whose text keeps the human's in-session
+      instruction for the run
 - [ ] Provisioning: `.env.example` complete and every value the project needs
       is provided — collect missing secrets from the user now, not mid-loop
 - [ ] Initial commit exists on the base branch. If the branch is unborn,

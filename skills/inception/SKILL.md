@@ -158,8 +158,8 @@ than asking where you can:
   implementer / reviewer). Absent or unset -> `inherit`. Model names live only
   in the contract.
 - Worktree convention, branch/spec naming, issue conventions, gates,
-  precedence, autonomy and loop prompts are fixed by the template — fill only the placeholders (repo
-  name, iteration ceiling).
+  precedence, autonomy and loop prompts are fixed by the template — fill only
+  the placeholders (repo name, iteration ceiling).
 
 GATE: present the filled contract before writing `docs/workflow.md`.
 

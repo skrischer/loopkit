@@ -182,8 +182,9 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   `VERDICT: REQUEST_CHANGES`, with blocking vs non-blocking findings. The Agent
   tool runs in-session — never shell out to a billed CLI. Pass the `reviewer`
   tier and effort from `docs/workflow.md` as the Agent tool's `model` and
-  `effort`: unset or `inherit` passes none; a tier the tool rejects is passed as
-  none and the progress output says so; pass `effort` only when the tool offers
+  `effort`: an unset or `inherit` tier passes no `model`, an unset or `inherit`
+  effort passes no `effort`; a tier the tool rejects is passed as none and the
+  progress output says so; pass `effort` only when the tool offers
   it (Claude Code ≥ v2.1.292). A conflict goes by the contract's Precedence
   section. No literal model name lives here.
   The spec-acceptance review always keeps the full `reviewer` tier and effort
