@@ -127,13 +127,20 @@ Each one is checkable in review.
 
 ## Conventions
 
-- Skills in `skills/<name>/SKILL.md`; templates in `skills/<name>/templates/`.
+- Skills in `skills/<name>/SKILL.md`; on-demand detail a skill links from its
+  core in `skills/<name>/references/`; templates in `skills/<name>/templates/`.
+- A plugin path is any path whose first segment is `skills`, `templates`,
+  `references` or `shared`. In a `SKILL.md` body it is written under
+  `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}`; inside a referenced file it
+  is relative to that file; a `SKILL.md` `description` carries none (it gets
+  no substitution). Never a repo-relative plugin path — it resolves only inside
+  loopkit's own repo. (grep-verifiable.)
 - Foundation docs in `docs/`; specs in `docs/specs/`, archived to
   `docs/specs/archive/`.
 - All artifacts, code, comments, and commits in English. Conventional Commits
   (`feat`/`fix`/`chore`/`docs`/`refactor`).
 - Skill prose is terse, imperative, and gate-marked. No duplication across the
-  five skills — project specifics live in `docs/workflow.md` (or `docs/design.md`
+  skills — project specifics live in `docs/workflow.md` (or `docs/design.md`
   for the design skill); shared toolkit method lives in `skills/shared/`.
 - One character per foundation artifact (vision normative, constitution binding,
   prior-art descriptive, architecture structural) — no content duplicated across
