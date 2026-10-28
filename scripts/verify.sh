@@ -285,13 +285,12 @@ for f in "${skill_files[@]}"; do
   done < <(grep -nE -e "$bare_pat" -- "$f" || true)
   while IFS=: read -r ln tok; do
     [ -n "$tok" ] || continue
-    case "$tok" in *'<'*) continue ;; esac
     if printf '%s\n' "$tok" | tr '/' '\n' | grep -qxE "skills|templates|references|shared|$skill_dirs"; then
       echo "  $f:$ln: $tok"
       echo "      ../ or ./ plugin path in a SKILL.md — relative plugin paths are allowed only in reference and shared files."
       path_fail=1
     fi
-  done < <(grep -noE '\.\.?/[A-Za-z0-9_./<>{}$-]*' -- "$f" | sed 's/^\([0-9]*\):/\1:/' || true)
+  done < <(grep -noE '\.\.?/[A-Za-z0-9_./<>{}$-]*' -- "$f" || true)
 done
 for f in "${ref_files[@]}"; do
   while IFS= read -r hit; do
@@ -407,8 +406,16 @@ for f in "${ref_files[@]}"; do
   fi
   while IFS= read -r tok; do
     [ -n "$tok" ] || continue
-    case "$tok" in *'<'*|*'>'*) continue ;; esac
     tok="$(printf '%s' "$tok" | sed -E 's/[.,:;)]+$//')"
+    case "$tok" in
+      *'<'*|*'>'*)
+        # Placeholder path: a target-project path (../<repo>-worktrees/...) is
+        # skipped; one with a plugin segment (../inception/templates/<file>)
+        # must resolve up to its first placeholder segment.
+        printf '%s\n' "$tok" | tr '/' '\n' | grep -qxE "skills|templates|references|shared|$skill_dirs" || continue
+        tok="${tok%%<*}"
+        ;;
+    esac
     if [ ! -e "$d/$tok" ]; then
       echo "  $f: relative path $tok does not resolve from $d"
       link_fail=1
@@ -427,8 +434,8 @@ fi
 #     whole skill into frontmatter. PyYAML is not an allowed dependency, so the
 #     mechanical floor is: block closed by a second `---` within 30 lines, any
 #     `argument-hint:` a double-quoted string without `"` or `\`, and a
-#     description of at most 700 characters (trigger text, not mechanics; a
-#     plugin path in it is caught by guard 7).
+#     description of at most 700 characters (trigger text, not mechanics), and
+#     no ${CLAUDE_ path anywhere in the frontmatter (no substitution there).
 echo "-- frontmatter guard (block closed, argument-hint form, description length) --"
 
 fm_fail=0
@@ -448,10 +455,14 @@ for f in "${skill_files[@]}"; do
   done < <(sed -n "2,$((c - 1))p" "$f" | grep -E '^argument-hint:' || true)
   desc="$(sed -n "2,$((c - 1))p" "$f" | awk '
     /^description:/ { sub(/^description:[[:space:]]*/, ""); d = $0; on = 1; next }
-    on && /^[[:space:]]/ { sub(/^[[:space:]]+/, ""); d = d " " $0; next }
+    on && (/^[[:space:]]/ || /^$/) { sub(/^[[:space:]]+/, ""); d = d " " $0; next }
     { on = 0 }
     END { print d }')"
   desc="${desc#\"}"; desc="${desc%\"}"
+  if sed -n "2,$((c - 1))p" "$f" | grep -qF -e '${CLAUDE_'; then
+    echo "  $f: \${CLAUDE_...} in the frontmatter — a description (or hint) gets no substitution, and a plugin path there is forbidden."
+    fm_fail=1
+  fi
   dlen="$(printf '%s' "$desc" | LC_ALL=C.UTF-8 wc -m | tr -d ' ')"
   if [ "$dlen" -gt 700 ]; then
     echo "  $f: description is $dlen characters (limit 700). Keep trigger text: what, when, argument forms."
