@@ -1,6 +1,7 @@
 ---
 name: ship
 description: "Human-invoked release phase — cut a published release from merged work: determine the next version, update the changelog, bump the version-bearing files, tag, and publish via native `gh` + `git`. Optional and proportional — a one-liner needs no release; a milestone close is a natural ship moment; a release covers everything merged since the last tag, not one milestone. Reads `docs/release.md` for every specific (versioning scheme, tag format, changelog source + format, files to bump, publish targets) and hardcodes no release tool. The `/ship` invocation authorizes the publish — a summary is printed, no separate confirmation stop — with a distinct `--dry-run` mode that previews without publishing. GitHub-only durable state (releases / tags / CHANGELOG); shell-hygiene on changelog interpolation. Reads docs/workflow.md for project specifics."
+disable-model-invocation: true
 ---
 
 # /loopkit:ship — cut a published release from merged work
