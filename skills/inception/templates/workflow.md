@@ -252,12 +252,13 @@ per idea:
 - Plan loop:
 
   ```
-  /loop /loopkit:plan [phase...] — plan the roadmap's next unplanned phase, or a
-  human-named set of one-or-many phases in that order, to a merged spec with
-  milestone, issues, and board entries; stop at the spec-acceptance gate; when no
-  unplanned phase remains, report and end. A multi-phase run writes each new
-  milestone's `Depends on milestone:` edge as it goes and never auto-picks the
-  set. Ceiling: <N> iterations; stop when the same blocker repeats twice.
+  /loop /loopkit:plan [phase...] — plan the human-named phase, or a human-named
+  set of phases in that order, to a merged spec with milestone, issues, and
+  board entries; stop at the spec-acceptance gate. With no argument, list the
+  unplanned phases and ask which to plan (never auto-pick); when none remains,
+  report and end. A multi-phase run writes each new milestone's
+  `Depends on milestone:` edge as it goes. Ceiling: <N> iterations; stop when
+  the same blocker repeats twice.
   ```
 
 - Implement loop:

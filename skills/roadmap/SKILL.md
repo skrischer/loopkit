@@ -8,8 +8,8 @@ disable-model-invocation: true
 
 The iteration entry point that runs AFTER a project is loop-ready: from a raw
 idea it spars against prior art and seeds one or many roadmap phases (each with
-its backing prior art) — the content hand-off `/loopkit:plan` picks the next
-phase from. It is the lighter sibling of `/loopkit:inception`: no foundation
+its backing prior art) — the content hand-off the human points `/loopkit:plan`
+at. It is the lighter sibling of `/loopkit:inception`: no foundation
 bootstrap, no readiness sweep, just prior-art-driven idea sparring that grows the
 roadmap.
 

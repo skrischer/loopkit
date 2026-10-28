@@ -24,7 +24,7 @@
 Release cut over everything merged into the base branch since the last tag; a
 published package version; a deployed build. Name what it bundles (one or more
 milestones and any track:adhoc work) and when it is cut (a closed milestone is a
-natural moment, but /ship is not tied 1:1 to a milestone).>`
+natural moment, but /loopkit:ship is not tied 1:1 to a milestone).>`
 
 Publishing is **human-invoked**: the human's `/loopkit:ship` invocation
 authorizes the publish, which then runs through to the publish command
@@ -32,7 +32,7 @@ autonomously — a summary is printed before publishing, but there is **no
 separate confirmation stop** and it is **not** a third gate (G1 = A: the
 invocation is the authorization). A dry-run mode previews without publishing and
 is what the milestone-QA check exercises. There is **no CI or scheduled release
-bot** — nothing publishes except a human at a terminal running `/ship`.
+bot** — nothing publishes except a human at a terminal running `/loopkit:ship`.
 
 ## Versioning scheme
 
@@ -132,7 +132,7 @@ bot** — nothing publishes except a human at a terminal running `/ship`.
 - Curate the changelog before invoking (review with `--dry-run`) and pass its
   section by file, not inline.
 - Run this project's Verify green before tagging; publish only on the human's
-  `/ship` invocation.
+  `/loopkit:ship` invocation.
 
 **Don't**
 

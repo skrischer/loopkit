@@ -1,9 +1,10 @@
 # Roadmap
 
-> Living document: the catalogue of phases. The hand-off to `/plan`, which the
-> human points at a phase; `/plan` then drafts its spec + issues and links them
-> back here. No status markers and no current-focus pointer — the human chooses
-> what to plan next; progress lives in the GitHub milestone each phase links to.
+> Living document: the catalogue of phases. The hand-off to `/loopkit:plan`;
+> the human points it at a phase, and it then drafts its spec + issues and
+> links them back here. No status markers and no current-focus pointer — the
+> human chooses what to plan next; progress lives in the GitHub milestone each
+> phase links to.
 
 ## Phase overview
 
@@ -109,8 +110,8 @@ fixes the live `/plan` shell-injection defect; `permission-template-hardening`
 follows it. `implement-frontier-exits` (a live correctness bug) runs in parallel,
 then `implement-resume-safety`, `ceremony-overhead`, `gate-evidence`,
 `implement-conflict-recovery` serialize on `skills/implement/SKILL.md` (that is
-the shared-file order, NOT a priority — the human points `/plan` at what to build,
-per the no-status-marker rule; the maintainer's weighting lives in the audit note). `prior-art-backfill` runs early on the disjoint
+the shared-file order, NOT a priority — the human points `/loopkit:plan` at
+what to build, per the no-status-marker rule; the maintainer's weighting lives in the audit note). `prior-art-backfill` runs early on the disjoint
 `docs/prior-art.md` and MUST precede `repositioning` + `launch-playbook`, which
 consume its USP verdicts. `prior-art-threading` and `model-tier-slots` slot after
 the implement spine. A durable **autonomy dial is deferred** behind

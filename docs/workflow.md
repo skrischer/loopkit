@@ -99,7 +99,7 @@ Model aliases live only here, never in skill prose.
   a milestone and issues. A completed spec moves to `docs/specs/archive/`; its
   closed milestone is the "done" signal.
 - The roadmap carries no current-focus or status marker — the human points
-  `/plan` at a phase.
+  `/loopkit:plan` at a phase.
 - Live work state is the board: `Todo` (ready), `In Progress` (being worked),
   `Done` (merged).
 - **No claiming.** The milestone orchestrator is the sole dispatcher of its own
