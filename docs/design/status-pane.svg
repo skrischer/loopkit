@@ -85,8 +85,8 @@
     <text x="1068" y="250">   shown without the "Needs you: " prefix;</text>
     <text x="1068" y="267">   from main-loop turn.complete answers,</text>
     <text x="1068" y="284">   cleared by the human's next message</text>
-    <text x="1068" y="301">   (composer or bridge, never a task</text>
-    <text x="1068" y="318">   notification); "· seen N×" when repeated</text>
+    <text x="1068" y="301">   (composer or bridge; never a task notif-</text>
+    <text x="1068" y="318">   ication or /loopkit-status); "· seen N×"</text>
     <text x="1068" y="338">3. GitHub gates: milestone QA, spec PR,</text>
     <text x="1068" y="355">   needs:planning, blocked:human</text>
 
@@ -113,8 +113,8 @@
     <text x="1068" y="753">or dismiss; /loopkit-status opens + refreshes</text>
 
     <text x="1068" y="790" font-weight="700" fill="#cdd6f4">Refresh</text>
-    <text x="1068" y="810">session start · main-loop turn end (≥15 s</text>
-    <text x="1068" y="827">apart) · after gh pr merge · every 2 min ·</text>
+    <text x="1068" y="810">session start · /clear · main-loop turn end</text>
+    <text x="1068" y="827">(≥15 s apart) · any gh pr merge · every 2 min ·</text>
     <text x="1068" y="844">Refresh / command; ages tick every minute</text>
 
     <text x="1068" y="898" font-weight="700" fill="#cdd6f4">Status line</text>

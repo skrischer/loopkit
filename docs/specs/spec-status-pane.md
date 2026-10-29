@@ -160,8 +160,12 @@ spec-acceptance gate.
   - **The timer** is `$.clock.every(60_000, …)`. Each tick writes `now`, and
     every second tick calls `void refresh($)`. It never does anything else.
   - **`classic.SessionStart`** with `source` `clear`, `resume` or `fork`:
-    `$.state` was reset to defaults, so it calls `void refresh($)` and
-    `publishStatus($)`. `asks`, `asking` and `tasks` start empty.
+    - `$.state` was reset to defaults, so it calls `void refresh($)` and
+      `publishStatus($)`;
+    - `asks`, `asking` and `tasks` start empty;
+    - on a `claude --resume` start it may fire before `session.start` has
+      decided `active`, and then it passes through. That is harmless:
+      `session.start` refreshes anyway.
   - **`command.run` for `/loopkit-status`:** open the pane, then
     `await refresh($)`. The reply is "loopkit status pane opened and
     refreshed.".
@@ -183,8 +187,9 @@ spec-acceptance gate.
     stderr line; stdout is parsed as JSON.
   - **`refresh($)`** takes no options:
     - It returns at once while `isRefreshing` is true.
-    - Otherwise it sets the module variable `lastRefresh = $.clock.now()`,
-      sets `isRefreshing`, and runs four `gh` reads in parallel:
+    - Otherwise it sets the module variable
+      `lastRefresh = await $.clock.now()`, sets `isRefreshing`, and runs four
+      `gh` reads in parallel:
       - `['repo', 'view', '--json', 'nameWithOwner']`
       - `['issue', 'list', '--state', 'open', '--limit', '200', '--json', 'number,title,body,labels,milestone,projectItems']`
       - `['pr', 'list', '--state', 'open', '--limit', '50', '--json', 'number,title,headRefName,isDraft']`
@@ -300,7 +305,7 @@ call `next(e)` and pass its result on. Each atom write is followed by
   - On `prompt.submit`, `asks` becomes empty when all of these hold:
     - `e.origin.kind` is `composer` or `bridge`;
     - `e.isMeta` is not set;
-    - `e.command` is not `loopkit-status`.
+    - `e.command?.name` is not `loopkit-status`.
 
     Every other prompt leaves `asks` as it is (`task-notification`,
     `scheduled-trigger`, `plugin`, `peer`, …).
@@ -364,9 +369,9 @@ call `next(e)` and pass its result on. Each atom write is followed by
   - Needs you shows every row.
   - Running caps at 8 rows, and Up next at 6 frontier issues and 3 phases.
     A capped section ends with a dim `+<n> more` line.
-- **Ages:** `<1m`, `<n>m` or `<h>h <m>m`. They are computed from
-  `$.clock.now()` at render time and clamped at 0. The `now` atom only
-  triggers the redraw.
+- **Ages:** `<1m`, `<n>m` or `<h>h <m>m`. The render hook reads the `now`
+  atom, which subscribes it to the minute tick. It computes ages from
+  `$.clock.now()` at render time, clamped at 0.
 - **Before the first snapshot:** `Reading GitHub…` while refreshing, else
   `No status yet: run /loopkit-status.`. The question and the held asks are
   drawn even then.
@@ -393,15 +398,19 @@ call `next(e)` and pass its result on. Each atom write is followed by
     This is the native gap it fills. Validate reports the calls but enforces
     no policy, so the guard is the policy. It also catches a destructured
     `$`, which a source grep would miss.
-  - **One process call site.** Over the non-test files in `hooks/`,
-    `$.process.run(` occurs exactly once, and its argument begins `['gh',`.
+  - **One process call site.** Over the non-test files in `hooks/` (listed
+    the same way as the config-surface guard below), `$.process.run(` occurs
+    exactly once, and its argument begins `['gh',`.
   - **No write argv.** None of these argv tokens occurs, in single or double
     quotes: `create`, `merge`, `edit`, `close`, `comment`, `delete`, `-X`,
     `--method`, `-f`, `-F`, `--field`, `--raw-field`, `--input`.
-- **Config-surface guard:** it lists its surface with `git ls-files` (tracked
-  files only) instead of `find`, and adds `types/`. So the engine-written
-  `.claude-plugin/types/` folder, which is git-ignored and contains "cron",
-  never fails Verify.
+- **Config-surface guard:** it lists its surface with
+  `git ls-files --cached --others --exclude-standard` instead of `find`, and
+  adds `types/`:
+  - tracked files and new files that are not ignored are both scanned, so a
+    PR's new files are checked before its first commit;
+  - the engine-written `.claude-plugin/types/` folder, which ignores itself
+    and contains "cron", never fails Verify.
 - **`docs/workflow.md` Commands:**
   - Verify names the plugin test and the read-only guard;
   - Test reads `claude plugin test .` (the status mod's tests).
@@ -681,6 +690,11 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   - the activation needs the contract heading;
   - control characters are stripped;
   - the SVG sample is consistent;
+  - round 2: the config surface also lists new, non-ignored files
+    (`--others --exclude-standard`), so a PR is scanned before its first
+    commit. `await $.clock.now()`, `e.command?.name`, the render
+    subscription to `now`, the `--resume` ordering and the SVG annotations
+    are fixed;
   - `docs/design.md` names a UI mock;
   - the architecture edits are trimmed to structural facts;
   - more QA steps.
