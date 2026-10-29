@@ -4,8 +4,8 @@
 
 Extend the status pane (`archive/spec-status-pane.md`) with session health:
 
-- context fill and compactions;
-- usage-limit windows, and a limit stop with its resume time;
+- compactions;
+- a usage-limit stop with its resume time;
 - an orchestrator heartbeat;
 - an event feed that names the issue or PR each event is about.
 
@@ -16,25 +16,23 @@ the default branch with a milestone and issues, and all progress lives in the
 GitHub issues and milestone. A completed spec is moved to
 `docs/specs/archive/`.
 
-The design is `docs/design/session-meters.svg`: the pane header's two meter
-lines and the Events section, drawn with sample data. It is reviewed with
+The design is `docs/design/session-meters.svg`: the pane header's line and
+the Events section, drawn with sample data. It is reviewed with
 this spec at the spec-acceptance gate.
 
 ## Outcome
 
-- [ ] The pane header gains two dim lines under the repo line:
-      - **meters:** `ctx <p>% · <c> compacted · 5h <p>% · 7d <p>%`.
-        - A part is left out when it has no reading.
-        - `<c> compacted` is left out at 0.
-        - The whole line is left out when no part has a value.
-        - The first reading comes after the session's first answer, or the
-          first answer after `/clear`.
-      - **heartbeat:** `working <age>` while a main-loop turn runs, else
+- [ ] The pane header gains one dim line under the repo line:
+      - the **heartbeat**: `working <age>` while a main-loop turn runs, else
         `idle <age>`. Once the main loop has given a non-empty answer,
-        ` · last text <age> ago` follows.
-- [ ] A **limit stop** turns the meters line into
-      `limited until <when> · ctx <p>%` in the `warning` colour, or
-      `limited · ctx <p>%` when no reset time is known.
+        ` · last text <age> ago` follows;
+      - then ` · <c> compacted`, left out at 0.
+
+      For example `idle 3m · last text 1m ago · 1 compacted`. Context fill
+      and the usage windows are not drawn: Claude Code's own status line
+      shows them.
+- [ ] A **limit stop** opens that line with `limited until <when> · `, or
+      `limited · ` when no reset time is known, in the `warning` colour.
       - The status line gains the same `limited until <when> · ` or
         `limited · ` at its start, which Claude Code draws right after its
         own `loopkit: `.
@@ -42,7 +40,6 @@ this spec at the spec-acceptance gate.
         example `Fri 19:00`).
       - The stop clears when a later reading puts every window under 100 %,
         or when its reset time has passed.
-- [ ] Context at 85 % or more draws the `ctx` part in the `warning` colour.
 - [ ] A new **Events** section sits between Running and Up next.
       - It shows the newest 8 events, newest first, as `HH:MM <text>`.
       - Collapsed repeats show ` ×<n>`.
@@ -92,8 +89,9 @@ this spec at the spec-acceptance gate.
 - **Denials in the other modes.** `classic.PermissionDenied` fires only for
   auto-mode classifier denials. A manual denial, a `deny` rule and a
   `PreToolUse` block reach no hook.
-- **Context or usage in the status line.** Claude Code's own status line can
-  already show them (prior art: AVOID duplicating a native meter). Only the
+- **Context or usage in the status line or the pane.** Claude Code's own
+  status line can already show them (prior art: AVOID duplicating a native
+  meter). Only the
   limit stop enters the line, because it changes what the human must do.
 - **A feed of every event.** Only the kinds above are shown (prior art
   AVOID: a feed that mirrors every event).
@@ -113,7 +111,7 @@ at the moment of the write.
 
 | Input | Hook | Writes |
 |---|---|---|
-| context fill, usage windows | `session.measure`, which fires after each main-thread turn and when a window moves a point | `meters.context = context.percent` when present; `meters.limits = rateLimits` (`kind`, `percentUsed`, `resetsAt`); and, when `meters.limit` is held, `rateLimits` is not empty and every window is under 100 %, `meters.limit` is cleared |
+| usage windows | `session.measure`, which fires after each main-thread turn and when a window moves a point | `meters.limits = rateLimits` (`kind`, `percentUsed`, `resetsAt`); and, when `meters.limit` is held, `rateLimits` is not empty and every window is under 100 %, `meters.limit` is cleared |
 | compactions | `classic.PostCompact` with no `agent_id` (main loop only), one hook in `hooks/meters.ts` | `meters.compactions` + 1; event `compacted` (`compacted (<trigger>)`) |
 | limit stop | `classic.StopFailure` with `error` `rate_limit`, one hook in `hooks/meters.ts` | `meters.limit = { until }`, where `until` is the latest `resetsAt` among windows with `percentUsed >= 100` and is unset when there is none; event `limit` |
 | heartbeat | `turn.start` on the main loop (no `agentId`), in `hooks/meters.ts`; and the main-loop branch of the existing `turn.complete` hook in `hooks/session.ts`, which calls `beatAfterTurn($, e)` from `hooks/meters.ts` | at start, `beat = { working: true, since: now }`; at complete, `beat = { working: false, since: now }`, plus `lastText = now` when `answer` is not empty |
@@ -209,7 +207,10 @@ at the moment of the write.
   Issue A wires it in `hooks/register.tsx`.
 - `beatAfterTurn($, e)` writes `beat` and `lastText` for a main-loop
   `turn.complete`. `hooks/session.ts`'s `turn.complete` hook calls it.
-- `meterLine(meters, now)` and `beatLine(beat, lastText, now)` are pure.
+- `beatLine(beat, lastText, now)` and `headerLine(meters, beat, lastText,
+  now)` are pure. `headerLine` joins the limit part (flagged for the
+  `warning` colour), `beatLine` and the `<c> compacted` part, and replaces
+  the `meterLine` of #307.
 - `when(iso, now)` gives `HH:MM` for a reset today, else `<Ddd> HH:MM`.
 
 ### State contract — `types/index.d.ts` additions
@@ -218,7 +219,7 @@ Issue A adds:
 
 ```ts
 export type Meters = {
-  context?: number; compactions: number;
+  compactions: number;
   limits: { kind: string; percentUsed: number; resetsAt?: string }[];
   limit?: { until?: string }
 }
@@ -245,11 +246,9 @@ re-derives it.
 
 ### Pane and status line
 
-- **The meters line:**
-  - `5h` and `7d` stand for the `five_hour` and `seven_day` windows; any
-    other window shows its `kind`;
-  - each part is `<label> <percentUsed rounded>%`.
-- **The heartbeat line:** as in Outcome, with ages in the status-pane format.
+- **The header line:** as in Outcome, drawn from `headerLine`, with ages in
+  the status-pane format. The limit part is in the `warning` colour, the
+  rest is dim.
 - **The Events section:**
   - it sits between Running and Up next, titled `Events (<n>)` with the held
     count;
@@ -310,9 +309,9 @@ its hooks.
     the `agentId` fallback, no event for `answer`); the `compacted` and
     `limit` events from `hooks/meters.ts`'s hooks.
 - **`meters.test.ts`:**
-  - pure: `meterLine` (parts left out without a reading, `compacted` left
-    out at 0, the window labels, the limited forms with and without
-    `until`, the 85 % warning flag); `beatLine` (working, idle, last text);
+  - pure: `headerLine` (`compacted` left out at 0, no last text before the
+    first answer, the limited forms with and without `until`, the warning
+    flag on the limit part only); `beatLine` (working, idle, last text);
     `when` (today and another day); limit clearing (on a reading under
     100 %, not on an empty `rateLimits`, on `until` in the past);
   - hooks: `session.measure` writes; the compaction count, with an
@@ -320,7 +319,7 @@ its hooks.
     turn start and through `hooks/session.ts`'s `turn.complete`.
 - **`pane.test.tsx` additions:**
   - the Events rows, their cap, empty state and title-cut rule;
-  - the two header lines;
+  - the header line, with and without a limit stop;
   - `statusLine` with a limit stop, in all three forms;
   - `paneRows` matching the drawn line count, and both opens passing it as
     `rows`.
@@ -392,6 +391,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 | Decision | Rationale | Date |
 |---|---|---|
 | Usage comes from `session.measure`; there is no `$.session.usage()` call. | The seed found no hook source, but the 2.1.312 API has one: `rateLimits` with `percentUsed` and `resetsAt`. The Read-only status mod principle allows reading the session only through hooks, so the meters wait for the first reading, which comes after the first answer. | 2026-10-29 |
+| The pane header shows one line: the heartbeat and `<c> compacted`, opened by a limit stop's part; no context or usage figures. | The human's choice before #309: Claude Code's own status line already shows `ctx`, `5h` and `7d`, so a pane copy duplicates a native meter (prior art AVOID); claude-hud's two-numbers line stays with that native line. The compaction count and the limit stop are what it lacks. `meters.context` is dropped, since nothing draws it. | 2026-10-29 |
 | Context and usage stay out of the status line; only a limit stop enters it. | Claude Code's status line can already show context and usage (prior art: AVOID duplicating a native meter). A limit stop changes what the human must do, and the evidence has 9 stops lasting 10 min to 15 h. | 2026-10-29 |
 | The limit stop's `until` comes only from windows at 100 % or more; otherwise it is unknown. | A fallback to any window could show a reset days away, and a transient 429 would claim a time. `limited` without a time is honest, and it clears on a reading under 100 %. | 2026-10-29 |
 | No failed-shell events. | A shell's exit status reaches the session only inside the task-notification text, which is internal and unversioned. | 2026-10-29 |
@@ -434,8 +434,11 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 
     Depends on: A, #300, #301, #302.
   - **C — Pane and docs:**
-    - the header lines and the Events section in `hooks/pane.tsx`, with its
+    - the header line and the Events section in `hooks/pane.tsx`, with its
       tests;
+    - `headerLine` in `hooks/meters.ts` in place of `meterLine`, and
+      `context` dropped from `Meters` (`types/index.d.ts` and the
+      `session.measure` writer), with their tests;
     - `paneRows` in `hooks/pane.tsx`, and the `rows` request on both
       `$.ui.open` calls in `hooks/register.tsx`;
     - the README update.
@@ -449,11 +452,11 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 - [ ] Smoke (human, at the QA gate). Use the same setup as status-pane's
       smoke: `claude --plugin-dir /home/developer/projects/loopkit` in the
       main checkout.
-      1. After the first answer, the header shows `ctx <p>%` (plus the usage
-         windows on a subscription) and `idle <age> · last text <age> ago`.
-         While a turn runs, it shows `working <age>`.
-      2. Run `/compact`. The meters line shows `1 compacted`, and Events
-         shows `compacted (manual)`.
+      1. After the first answer, the header shows
+         `idle <age> · last text <age> ago`. While a turn runs, it shows
+         `working <age>`.
+      2. Run `/compact`. The header line ends with `· 1 compacted`, and
+         Events shows `compacted (manual)`.
       3. Ask the session to close a scratch issue (`gh issue close <n>`), or
          merge a PR that closes an issue. After the next refresh, Events shows
          `#<n> <title> closed`.
@@ -465,7 +468,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
       7. Ask the session to start a background shell (`sleep 300`), then
          stop it with `TaskStop`. Events shows `stopped: <description>`.
 - [ ] Read-through (human):
-      - the header lines and the Events section match
+      - the header line and the Events section match
         `docs/design/session-meters.svg`;
       - the README section describes them;
       - the limit stop and the auto-mode denial are drawn in the design and
@@ -475,11 +478,11 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 
 | Risk | Mitigation |
 |---|---|
-| `rateLimits` is empty (not a subscription, or before the first response). | The usage parts are left out, so nothing shows a false 0 %. |
-| A limit stop arrives without `resetsAt`. | The meters line and the status line read `limited` with no time, and the stop clears on a reading under 100 %. |
+| `rateLimits` is empty (not a subscription, or before the first response). | No stop time can be found and no stop clears on an empty reading; the pane draws no usage figures at all. |
+| A limit stop arrives without `resetsAt`. | The header line and the status line read `limited` with no time, and the stop clears on a reading under 100 %. |
 | A denial or error text carries untrusted content. | It is stripped of control characters, cut to 200 characters, and displayed only. |
 | Events pile up in a long run. | At most 50 are held and 8 shown, and repeats collapse. |
-| The meters are blank right after start or `/clear`. | By design: the first `session.measure` fills them after the first answer. The heartbeat and the other sections show at once. |
+| The heartbeat is blank right after start or `/clear`. | By design: the first main-loop turn fills it. The other sections show at once. |
 
 ## Decision log
 
@@ -546,3 +549,8 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   the shape (a one-line change; the engine matches the shape per spelling).
   `session.ts` now guards `beatAfterTurn` and `subagentEnded` separately from
   the ask parsing.
+- 2026-10-29: Before #309 the human narrowed the pane header to one line:
+  the heartbeat, then `<c> compacted`, opened by the limit part on a stop.
+  The `ctx`, `5h` and `7d` parts are gone, because Claude Code's own status
+  line shows them; `meters.context` is dropped and `headerLine` replaces
+  `meterLine` in issue C. The design shows the one-line header.
