@@ -2,6 +2,7 @@ import { read, update } from 'claude-code'
 import type { EngineInterface, On } from 'claude-code'
 
 import type { Ask, Task } from '../types'
+import { getLastRefresh, refresh } from './github'
 import { publishStatus } from './status'
 
 const ASK_LINE = /^Needs you: .+$/
@@ -106,6 +107,15 @@ async function stamp($: EngineInterface): Promise<number> {
   return await $.clock.now()
 }
 
+// The main loop's turn end re-reads GitHub unless a read ran in the last 15 s.
+// It lives here because the engine refuses a second unmatched turn.complete
+// hook in one module graph. Fire and forget: no turn waits on gh.
+const THROTTLE_MS = 15_000
+async function refreshAfterTurn($: EngineInterface): Promise<void> {
+  if ((await $.clock.now()) - getLastRefresh() < THROTTLE_MS) return
+  void refresh($).catch(() => undefined)
+}
+
 // The mod's own bookkeeping never changes a turn: a write that fails is dropped.
 async function safely(work: () => Promise<unknown>): Promise<void> {
   try {
@@ -134,6 +144,7 @@ export function registerSession(on: On, isActive: () => boolean): void {
       }
       await publishStatus($)
     })
+    if (e.agentId === undefined) await safely(() => refreshAfterTurn($))
 
     return done
   }).catch(($, e, next) => next(e))

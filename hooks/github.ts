@@ -1,8 +1,14 @@
-import { read, update } from 'claude-code'
+import { atom, read, update } from 'claude-code'
 import type { EngineInterface } from 'claude-code'
 
 import type { Item, MilestoneRow, Snapshot } from '../types'
-import { isRefreshing, publishStatus, snapshot } from './status'
+import { publishStatus } from './status'
+
+// The engine's scan follows only references written in this file, so the
+// state refs are spelled here; their defaults live in types/index.d.ts.
+// Same shape tag as hooks/status.ts: a write without it reads back as the default.
+const snapshot = atom({ plugin: 'loopkit', key: 'snapshot' } as const, null as Snapshot | null, { shape: 'snapshot-1' })
+const isRefreshing = { plugin: 'loopkit', key: 'isRefreshing' } as const
 
 // The GitHub shapes the view reads. Titles, bodies and branch names are
 // untrusted text: they are displayed or matched, never executed or passed on.

@@ -721,3 +721,15 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   `register.tsx` imports `hooks/github.ts` only in issue D, which adds the
   `refresh` tests with the wiring. On a read error the snapshot keeps its
   `repo`, `fetchedAt` and data and sets `error`.
+- 2026-10-29: Issue D (#302) built. The engine refuses a second unmatched
+  `turn.complete` hook in one module graph, so the 15 s throttled refresh
+  rides the existing hook in `hooks/session.ts` (`registerSession` keeps its
+  `(on, isActive)` signature) instead of a hook in `register.tsx`. The engine
+  scan also refuses a `read`/`update` of an imported atom, so `github.ts` and
+  `pane.tsx` spell their own refs; the `snapshot` ref there is an `atom` with
+  the same `shape: 'snapshot-1'` tag as `status.ts`, because an untagged
+  write reads back as the default. A ref without `atom` reads `undefined`
+  when unset, so `pane.tsx` applies the defaults. In tests the file paths
+  reach `fs.read` absolute, and the `refresh`, hook and pane tests all live
+  in `hooks/pane.test.tsx`, which boots the mod through `$.session.start`
+  with a `mock.clock`.
