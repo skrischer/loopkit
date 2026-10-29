@@ -71,7 +71,7 @@
     <line x1="52" y1="874" x2="1028" y2="874" stroke="#313244" stroke-width="1.5"/>
     <text x="60" y="898" fill="#cdd6f4">❯ <tspan fill="#6c7086">_</tspan></text>
     <line x1="52" y1="910" x2="1028" y2="910" stroke="#313244" stroke-width="1.5"/>
-    <text x="60" y="930" fill="#a6adc8">loopkit · 4 need you · #27 4/8 · 3 running</text>
+    <text x="60" y="930" fill="#a6adc8">loopkit: 4 need you · #27 4/8 · 3 running</text>
   </g>
 
   <!-- ANNOTATIONS (right column) -->
@@ -118,7 +118,7 @@
     <text x="1068" y="844">Refresh / command; ages tick every minute</text>
 
     <text x="1068" y="898" font-weight="700" fill="#cdd6f4">Status line</text>
-    <text x="1068" y="918">loopkit · n need you · #m closed/all ·</text>
+    <text x="1068" y="918">loopkit: n need you · #m closed/all ·</text>
     <text x="1068" y="935">k running — milestone part: first row with</text>
     <text x="1068" y="952">work in flight, else the first, else none</text>
   </g>

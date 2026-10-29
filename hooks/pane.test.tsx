@@ -62,29 +62,29 @@ describe('helpers', () => {
 
 describe('statusLine', () => {
   test('before the first snapshot', () => {
-    expect(statusLine(null, null, [], [])).toBe('loopkit · reading GitHub…')
+    expect(statusLine(null, null, [], [])).toBe('reading GitHub…')
   })
 
   test('the error case', () => {
-    expect(statusLine(snap({ error: 'gh failed' }), null, [], [])).toBe('loopkit: gh failed')
+    expect(statusLine(snap({ error: 'gh failed' }), null, [], [])).toBe('gh failed')
   })
 
   test('the empty case', () => {
-    expect(statusLine(snap(), null, [], [])).toBe('loopkit · 0 need you · 0 running')
+    expect(statusLine(snap(), null, [], [])).toBe('0 need you · 0 running')
   })
 
   test('the milestone with work in flight wins, else the first', () => {
     const flight = snap({ milestones: [row(3), row(4, { inFlight: 2, closed: 4, total: 8 })] })
-    expect(statusLine(flight, null, [], [])).toBe('loopkit · 0 need you · #4 4/8 · 0 running')
+    expect(statusLine(flight, null, [], [])).toBe('0 need you · #4 4/8 · 0 running')
     const calm = snap({ milestones: [row(3), row(4)] })
-    expect(statusLine(calm, null, [], [])).toBe('loopkit · 0 need you · #3 1/2 · 0 running')
+    expect(statusLine(calm, null, [], [])).toBe('0 need you · #3 1/2 · 0 running')
   })
 
   test('counts question, asks, gates and tasks', () => {
     const s = snap({ gates: [{ kind: 'qa', ref: '#1', title: 't' }] })
     const ask = { text: 'Needs you: x', firstSeen: 0, lastSeen: 0, count: 1, callsAt: 0 }
     const task = { id: 'a', kind: 'shell', description: 'd', firstSeen: 0 }
-    expect(statusLine(s, { headers: 'h', since: 0 }, [ask], [task])).toBe('loopkit · 3 need you · 1 running')
+    expect(statusLine(s, { headers: 'h', since: 0 }, [ask], [task])).toBe('3 need you · 1 running')
   })
 })
 
@@ -185,7 +185,7 @@ describe('the pane', () => {
     await $.session.start(start)
     await clock.settle()
     await $.command.run({ command: 'loopkit-status', args: '', origin: { kind: 'composer' } })
-    expect(status.at(-1)).toMatch(/^loopkit: /)
+    expect(status.at(-1)).toBe('no stub for repo view')
     const ui = await $.ui.mount(PANE)
     expect((await texts(ui)).join('\n')).toContain('no stub for repo')
     await ui.unmount()
