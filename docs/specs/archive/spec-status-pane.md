@@ -471,7 +471,7 @@ They follow the test kit's rules (stub `session.start` and
 
 ## Prior art
 
-- [In-session status pane — loopkit state and session signals in one view (feature: status-pane)](../prior-art.md#in-session-status-pane--loopkit-state-and-session-signals-in-one-view-feature-status-pane)
+- [In-session status pane — loopkit state and session signals in one view (feature: status-pane)](../../prior-art.md#in-session-status-pane--loopkit-state-and-session-signals-in-one-view-feature-status-pane)
   — the concern:
   - Claude Code mods (reuse; the ADOPT and AVOID list above);
   - claude-hud (compact line with opt-in detail);
@@ -479,7 +479,7 @@ They follow the test kit's rules (stub `session.start` and
   - agents-statusline (one row per task);
   - CCPM epic-status (percent from issue state);
   - the second-screen dashboard (AVOID a daemon).
-- [Non-blocking asks to the human — one deterministic marker (feature: ask-marker)](../prior-art.md#non-blocking-asks-to-the-human--one-deterministic-marker-feature-ask-marker)
+- [Non-blocking asks to the human — one deterministic marker (feature: ask-marker)](../../prior-art.md#non-blocking-asks-to-the-human--one-deterministic-marker-feature-ask-marker)
   — the marker the pane holds, and agent view's `Needs input` gap.
 - The archived `spec-ask-marker.md` (`docs/specs/archive/`) defines the line
   and the end-of-run carry the capture relies on.
@@ -755,3 +755,16 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   hook now reads `isRefreshing` and `now` while `active` is `false`, then
   re-checks; the first refresh's write redraws it. Outside a project the
   render still falls through to `next(e)`.
+- 2026-10-29: Milestone QA accepted. The human ran the smoke steps 1–10
+  and a hot-reload check; the guard probe ran too:
+  - a reachable `$.prompt.submit` and a `'merge'` argv token turn Verify
+    red; a call no hook reaches is not in validate's `calls:` report, so
+    the guard does not flag it;
+  - the main checkout stayed clean after the `--plugin-dir` loads (only the
+    ignored `.claude-plugin/types/`).
+
+  The QA findings became #314, #315, #316, #317 and #321, all merged.
+  Claude Code draws a plugin's status line as `loopkit: <text>`, so #314
+  supersedes this spec's `loopkit · …` forms. The inline pane is cut off at
+  a third of the terminal height; its height request (`rows`) moved to
+  session-meters issue C (#309), the human's choice at this gate.

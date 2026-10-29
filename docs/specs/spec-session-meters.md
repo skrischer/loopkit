@@ -2,7 +2,7 @@
 
 > Created: 2026-10-29
 
-Extend the status pane (`spec-status-pane.md`) with session health:
+Extend the status pane (`archive/spec-status-pane.md`) with session health:
 
 - context fill and compactions;
 - usage-limit windows, and a limit stop with its resume time;
@@ -369,9 +369,8 @@ its hooks.
     - claude-hud's context-and-limit line: ADOPT two numbers in one line.
 - [In-session status pane — loopkit state and session signals in one view (feature: status-pane)](../prior-art.md#in-session-status-pane--loopkit-state-and-session-signals-in-one-view-feature-status-pane)
   — the mods entry: AVOID transcript parsing and state in a file.
-- The status-pane spec (`docs/specs/spec-status-pane.md`, or
-  `docs/specs/archive/` once archived): the modules, atoms, guards and design
-  this phase extends.
+- The status-pane spec (`docs/specs/archive/spec-status-pane.md`): the
+  modules, atoms, guards and design this phase extends.
 
 ## Human prerequisites
 
