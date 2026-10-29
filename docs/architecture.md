@@ -35,9 +35,9 @@
 - Orchestrator <-> subagents is in-session and ephemeral; orchestrator <->
   orchestrator is only through GitHub (independent milestones, no shared state).
 - Worktrees are isolated — no skill reaches into another's.
-- A request to the human the run does not wait for is a `Needs you:` line in
-  the main session's text — the one in-session interface for it a reader can
-  rely on. An ask that outlives the session stays a GitHub label.
+- The `Needs you:` line in the main session's text is the interface between
+  the skills and any in-session reader; a reader reads main-session text only,
+  never subagent output.
 
 ## Key flows
 
