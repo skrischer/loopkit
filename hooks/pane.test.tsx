@@ -92,7 +92,7 @@ type Host = Parameters<Parameters<typeof test>[1]>[1]
 
 // Boots the mod in a loopkit project with stubbed gh answers; returns the
 // recorded argv and the mock clock.
-function boot(on: Host, gh: Record<string, unknown>, workflow = '# Workflow contract\n') {
+function boot(on: Host, gh: Record<string, unknown>, workflow = '# Workflow contract\n', roadmap: string | null = null, hang = false) {
   const ran: string[][] = []
   const status: (string | undefined)[] = []
   on('ui.status', (_$, e) => {
@@ -106,10 +106,12 @@ function boot(on: Host, gh: Record<string, unknown>, workflow = '# Workflow cont
   on('ui.open', () => ({ value: { isPlaced: true } }))
   on('fs.read', (_$, e) => {
     if (e.path.endsWith('docs/workflow.md')) return { value: workflow }
+    if (e.path.endsWith('docs/roadmap.md') && roadmap !== null) return { value: roadmap }
     throw new Error('ENOENT')
   })
-  on('process.run', (_$, e) => {
+  on('process.run', async (_$, e) => {
     ran.push([...e.argv])
+    if (hang) await new Promise(() => undefined)
     const key = e.argv[1] === 'api' ? 'api' : `${e.argv[1]} ${e.argv[2]}`.trim()
     const out = gh[e.argv[1] === 'api' ? 'api' : (e.argv[1] ?? '')]
     if (out === undefined) return { value: { exitCode: 1, stderr: `no stub for ${key}\n`, stdout: '' } }
@@ -139,12 +141,23 @@ const texts = async (ui: Awaited<ReturnType<Host['ui']['mount']>>) => {
 }
 
 describe('the pane', () => {
-  test('before the first snapshot, nothing refreshing', async ($, on) => {
-    boot(on, {}, '# Workflow contract\n')
+  test('before the first snapshot, while the first read is out', async ($, on) => {
+    const { clock } = boot(on, {}, '# Workflow contract\n', null, true)
     await $.session.start(start)
+    await clock.settle()
     const ui = await $.ui.mount(PANE)
-    const all = await texts(ui)
-    expect(all.some(t => t.includes('loopkit'))).toBe(true)
+    expect((await texts(ui)).join('\n')).toContain('Reading GitHub…')
+    expect(await ui.find({ type: 'Button', text: /Refresh/ })).toBeTruthy()
+    await ui.unmount()
+  })
+
+  test('empty states', async ($, on) => {
+    const { clock } = boot(on, { repo: { nameWithOwner: 'o/r' }, issue: [], pr: [], api: [] })
+    await $.session.start(start)
+    await clock.settle()
+    const ui = await $.ui.mount(PANE)
+    const all = (await texts(ui)).join('\n')
+    for (const line of ['Nothing needs you.', 'No open milestone.', 'Nothing running.', 'Nothing unblocked.']) expect(all).toContain(line)
     await ui.unmount()
   })
 
@@ -173,6 +186,9 @@ describe('the pane', () => {
     await clock.settle()
     await $.command.run({ command: 'loopkit-status', args: '', origin: { kind: 'composer' } })
     expect(status.at(-1)).toMatch(/^loopkit: /)
+    const ui = await $.ui.mount(PANE)
+    expect((await texts(ui)).join('\n')).toContain('no stub for repo')
+    await ui.unmount()
   })
 })
 
@@ -254,7 +270,8 @@ describe('the wiring', () => {
       milestone: { number: 7, title: 'alpha' },
       projectItems: [{ status: { name: 'Todo' } }],
     }))
-    const { clock } = boot(on, { ...ghOk, issue: many })
+    const roadmap = ['A', 'B', 'C', 'D', 'E'].map(n => `| **Phase ${n}** | x | — | — |`).join('\n')
+    const { clock } = boot(on, { ...ghOk, issue: many }, '# Workflow contract\n', roadmap)
     on('classic.Stop', () => ({}))
     await $.session.start(start)
     await clock.settle()
@@ -268,8 +285,11 @@ describe('the wiring', () => {
     expect(all).toContain('job 7')
     expect(all).not.toContain('job 8')
     expect(all).toContain('+2 more')
-    expect(all).toContain('Up next (9)')
-    expect(all).toContain('+3 more')
+    expect(all).toContain('Up next (14)')
+    expect(all).toContain('Phase C')
+    expect(all).not.toContain('Phase D')
+    expect(all).toContain('+5 more')
+    expect(all).toContain('+2 more')
     await ui.unmount()
   })
 })

@@ -97,7 +97,7 @@ export async function renderPane($: EngineInterface, e: RenderInput): Promise<Re
   const note = (text: string) => <Text dimColor>{'  ' + cut(text, width - 2)}</Text>
   const title = (mark: string, markColor: 'warning' | 'suggestion' | undefined, text: string) => (
     <Text>
-      <Text bold color={markColor}>
+      <Text bold={mark !== '●'} color={markColor}>
         {mark}
       </Text>
       {' ' + cut(text, width - mark.length - 1)}

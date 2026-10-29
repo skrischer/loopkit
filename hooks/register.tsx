@@ -43,7 +43,12 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     active = await isLoopkitProject($)
     const started = await next(e)
-    if (!active) return started
+    if (!active) {
+      timer?.cancel()
+      timer = undefined
+
+      return started
+    }
     await update($, isRefreshing, () => false)
     await $.command.register({
       name: PANE_COMMAND,
@@ -55,8 +60,12 @@ export const register: Register = on => {
     timer = $.clock.every(TICK_MS, () => {
       void (async () => {
         ticks += 1
-        const at = await $.clock.now()
-        await update($, now, () => at).catch(() => undefined)
+        try {
+          const at = await $.clock.now()
+          await update($, now, () => at)
+        } catch {
+          // a mod fault stays out of the session
+        }
         if (ticks % 2 === 0) refreshInBackground($)
       })()
     })
