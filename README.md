@@ -56,7 +56,8 @@ does not wait for appears as one `Needs you:` line.
 
 In a loopkit project, the plugin ships a read-only status view, a Claude Code
 mod, that answers "what needs me?" without looking it up. It opens beside the
-chat at session start and shows four sections:
+chat at session start. Under the repo line a dim header line shows the session's
+heartbeat, and the pane has five sections:
 
 - **Needs you** — what waits for the human: a milestone ready for QA, an open
   spec-acceptance PR, issues labelled `needs:planning` or `blocked:human`, an
@@ -66,8 +67,21 @@ chat at session start and shows four sections:
   percentage, plus how many issues are in flight and blocked (a living-spec
   milestone shows its closed count).
 - **Running** — the session's subagents and background tasks, with their age.
+- **Events** — the newest eight session events, one line each with its time:
+  an issue closed, a failed `gh pr merge`, a subagent that failed or was
+  stopped, a stopped task, an auto-mode denial, a compaction and a usage limit.
+  The issue or PR an event is about carries its title; a repeat collapses into
+  one row with `×n`.
 - **Up next** — the unblocked issue frontier, then the roadmap phases not yet
   planned.
+
+The header line reads `working <age>` while a turn runs, else `idle <age>`, then
+`last text <age> ago` and `<n> compacted`, for example `idle 3m · last text 1m
+ago · 1 compacted`. After a usage-limit stop it opens with `limited until
+<time> ·` (or `limited ·` when no reset time is known) in the warning colour,
+and the status line opens with the same stop. The stop clears when a reading puts
+every usage window under 100 % or its reset time has passed. Context fill and
+the usage windows are not drawn: Claude Code's own status line shows them.
 
 The status line carries a one-line summary: `loopkit: <n> need you · #<m>
 <closed>/<total> · <n> running` (Claude Code adds the `loopkit: ` lead).
