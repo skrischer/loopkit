@@ -36,7 +36,8 @@ this spec at the spec-acceptance gate.
       `limited until <when> · ctx <p>%` in the `warning` colour, or
       `limited · ctx <p>%` when no reset time is known.
       - The status line gains the same `limited until <when> · ` or
-        `limited · `, right after `loopkit · `.
+        `limited · ` at its start, which Claude Code draws right after its
+        own `loopkit: `.
       - `<when>` is `HH:MM` when the reset is today, else `<Ddd> HH:MM` (for
         example `Fri 19:00`).
       - The stop clears when a later reading puts every window under 100 %,
@@ -257,12 +258,13 @@ re-derives it.
 - **`statusLine`:** it becomes
   `statusLine(snapshot, asking, asks, tasks, limit?, now?)`. The two new
   parameters are optional, so status-pane's four-argument calls and tests
-  keep working, and `publishStatus` passes `await $.clock.now()`. While a stop holds, its part goes
-  right after `loopkit · ` in every form:
-  - `loopkit · limited until 19:00 · 1 need you · …`
-  - `loopkit · limited · reading GitHub…`
-  - `loopkit · limited until 19:00 · <error>`, which replaces
-    `loopkit: <error>` while the stop holds.
+  keep working, and `publishStatus` passes `await $.clock.now()`. The text
+  carries no `loopkit` lead of its own, because Claude Code draws a
+  plugin's status line as `loopkit: <text>` (#314). While a stop holds, its
+  part opens the text in every form, shown here as drawn:
+  - `loopkit: limited until 19:00 · 1 need you · …`
+  - `loopkit: limited · reading GitHub…`
+  - `loopkit: limited until 19:00 · <error>`.
 - **Layout and colours** follow `docs/design/session-meters.svg`. The status
   line is plain text: `$.ui.status` takes a string, so it has no colour. The
   rest of the pane stays as `docs/design/status-pane.svg` draws it.
@@ -513,3 +515,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   - A and B also depend on #301 and #302, whose files they edit;
   - the import cycle among `status.ts`, `meters.ts` and `events.ts` is
     noted as safe.
+- 2026-10-29: The status-pane QA gate found that Claude Code draws a
+  plugin's status line as `loopkit: <text>`, so status-pane's own
+  `loopkit · ` lead showed twice; #314 drops it. The limit part now opens the
+  text, and the forms and the design show the line as drawn.

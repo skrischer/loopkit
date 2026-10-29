@@ -41,7 +41,7 @@
     <!-- STATUS LINE: normal -->
     <text x="56" y="700" font-size="12" fill="#6c7086">status line, normal (unchanged by this phase)</text>
     <rect x="40" y="710" width="460" height="30" rx="6" fill="#11111b" stroke="#313244" stroke-width="1.5"/>
-    <text x="56" y="730" fill="#a6adc8">loopkit · 1 need you · #27 6/8 · 2 running</text>
+    <text x="56" y="730" fill="#a6adc8">loopkit: 1 need you · #27 6/8 · 2 running</text>
 
     <!-- PANE: limit stop (header only) -->
     <rect x="540" y="110" width="460" height="150" rx="10" fill="#11111b" stroke="#313244" stroke-width="2"/>
@@ -60,7 +60,7 @@
     <!-- STATUS LINE: limit stop -->
     <text x="556" y="360" font-size="12" fill="#6c7086">status line, limit stop</text>
     <rect x="540" y="370" width="460" height="30" rx="6" fill="#11111b" stroke="#313244" stroke-width="1.5"/>
-    <text x="556" y="390" fill="#a6adc8">loopkit · limited until 19:00 · 1 need you · …</text>
+    <text x="556" y="390" fill="#a6adc8">loopkit: limited until 19:00 · 1 need you · …</text>
 
     <!-- working heartbeat variant -->
     <text x="556" y="430" font-size="12" fill="#6c7086">heartbeat while a main-loop turn runs</text>
