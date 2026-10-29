@@ -108,7 +108,7 @@ at the moment of the write.
 
 | Input | Hook | Writes |
 |---|---|---|
-| context fill, usage windows | `session.measure`, which fires after each main-thread turn and when a window moves a point | `meters.context = context.percent` when present; `meters.limits = rateLimits` (`kind`, `percentUsed`, `resetsAt`); and, when `meters.limit` is held and every window is under 100 %, `meters.limit` is cleared |
+| context fill, usage windows | `session.measure`, which fires after each main-thread turn and when a window moves a point | `meters.context = context.percent` when present; `meters.limits = rateLimits` (`kind`, `percentUsed`, `resetsAt`); and, when `meters.limit` is held, `rateLimits` is not empty and every window is under 100 %, `meters.limit` is cleared |
 | compactions | `classic.PostCompact` with no `agent_id` (main loop only) | `meters.compactions` + 1; event `compacted` (`compacted (<trigger>)`) |
 | limit stop | `classic.StopFailure` with `error` `rate_limit` | `meters.limit = { until }`, where `until` is the latest `resetsAt` among windows with `percentUsed >= 100` and is unset when there is none; event `limit` |
 | heartbeat | `turn.start` and `turn.complete` on the main loop (no `agentId`) | at start, `beat = { working: true, since: now }`; at complete, `beat = { working: false, since: now }`, plus `lastText = now` when `answer` is not empty |
@@ -119,7 +119,8 @@ at the moment of the write.
 | closed issue | `refresh` in `hooks/github.ts`, on a successful read | every issue number in the previous snapshot's `open` that is missing from the new one becomes event `issue-closed`, titled from the previous `titles` |
 
 - **When a limit stop clears.**
-  - A `session.measure` reading with every window under 100 % clears it.
+  - A `session.measure` reading that has windows, all under 100 %, clears
+    it. An empty `rateLimits` clears nothing.
   - Once `until` is in the past, the pane and `statusLine` treat the stop as
     cleared. They only read it and never write.
   - A stop with no `until` clears only on such a reading.
@@ -217,8 +218,9 @@ re-derives it.
     `merge-failed` row cuts its title and keeps what follows it; any other
     row is cut at the end.
 - **`statusLine`:** it becomes
-  `statusLine(snapshot, asking, asks, tasks, limit, now)`, and
-  `publishStatus` passes `$.clock.now()`. While a stop holds, its part goes
+  `statusLine(snapshot, asking, asks, tasks, limit?, now?)`. The two new
+  parameters are optional, so status-pane's four-argument calls and tests
+  keep working, and `publishStatus` passes `await $.clock.now()`. While a stop holds, its part goes
   right after `loopkit · ` in every form:
   - `loopkit · limited until 19:00 · 1 need you · …`
   - `loopkit · limited · reading GitHub…`
@@ -256,7 +258,8 @@ re-derives it.
     85 % warning flag;
   - `beatLine`: working, idle, and last text;
   - `when`: today and another day;
-  - limit clearing: on a reading under 100 %, and on `until` in the past.
+  - limit clearing: on a reading under 100 %, not on an empty `rateLimits`,
+    and on `until` in the past.
 - **`pane.test.tsx` additions:**
   - the Events rows, their cap, empty state and title-cut rule;
   - the two header lines;
@@ -379,7 +382,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
       2. Run `/compact`. The meters line shows `1 compacted`, and Events
          shows `compacted (manual)`.
       3. Ask the session to close a scratch issue (`gh issue close <n>`), or
-         merge any PR. After the next refresh, Events shows
+         merge a PR that closes an issue. After the next refresh, Events shows
          `#<n> <title> closed`.
       4. Ask the session to run `gh pr merge 999999` (no such PR). Events
          shows `PR #999999 merge failed: <gh's error line>`.
@@ -431,3 +434,8 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   - the design is corrected (plain status line, the cut rule, an auto-mode
     reason);
   - the smoke steps are producible, and the tests are extended.
+- 2026-10-29: Review round 2 returned APPROVE. Its three non-blocking notes
+  were applied before the gate:
+  - an empty `rateLimits` clears no stop;
+  - `limit` and `now` are optional in `statusLine`;
+  - smoke step 3 merges a PR that closes an issue.
