@@ -30,11 +30,27 @@ fi
 
 # 2. Plugin manifest + every skill. Non-strict.
 echo "-- claude plugin validate .claude-plugin/plugin.json (plugin + skills) --"
-if claude plugin validate .claude-plugin/plugin.json; then
+# The report is kept: validate's "Validating hooks" lines (hooks:, calls:) feed
+# the read-only guard in step 3b.
+plugin_rc=0
+plugin_report="$(claude plugin validate .claude-plugin/plugin.json 2>&1)" || plugin_rc=$?
+printf '%s\n' "$plugin_report"
+if [ "$plugin_rc" -eq 0 ]; then
   echo "  plugin+skills: OK"
 else
   echo "  plugin+skills: FAILED"
   fail=1
+fi
+
+# 2b. Mod tests — the status mod's tests (`claude plugin test`), when hooks/ exists.
+if [ -d hooks ]; then
+  echo "-- claude plugin test . (status mod tests) --"
+  if claude plugin test .; then
+    echo "  mod tests: OK"
+  else
+    echo "  mod tests: FAILED"
+    fail=1
+  fi
 fi
 
 # 3. Config-surface auth/state guard — scan ONLY the non-prose config surfaces
@@ -48,17 +64,18 @@ fi
 echo "-- config-surface auth/state guard --"
 
 self="scripts/verify.sh"
+# The surface is every tracked file plus every new, non-ignored one, so a PR's
+# new files are scanned before their first commit. The engine-written
+# .claude-plugin/types/ folder ignores itself and is therefore never listed.
 surface_files=()
 while IFS= read -r f; do
   [ "$f" = "$self" ] && continue
+  [ -f "$f" ] || continue
   surface_files+=("$f")
 done < <(
-  {
-    find .claude-plugin -type f 2>/dev/null || true
-    find skills -path '*/templates/*.json' -type f 2>/dev/null || true
-    find scripts -type f -name '*.sh' 2>/dev/null || true
-    { [ -d hooks ] && find hooks -type f 2>/dev/null; } || true
-  } | sort -u
+  git ls-files --cached --others --exclude-standard -- \
+    '.claude-plugin' 'types' 'hooks' 'skills/*/templates/*.json' 'scripts/*.sh' |
+    sort -u
 )
 
 forbidden=(
@@ -81,6 +98,81 @@ fi
 if [ "$guard_hit" -eq 0 ]; then
   echo "  config-surface guard: OK (no forbidden auth/scheduler usage)"
 else
+  fail=1
+fi
+
+# 3b. Read-only guard for the status mod (hooks/). The mod must never act: it
+#     reads GitHub through `gh` read commands passed as argv, and the session
+#     through its hooks. Validate reports the calls a module makes but enforces
+#     no policy, so this guard is the policy: an allowlist over validate's own
+#     `calls:` lines (it also catches a destructured `$`, which a source grep
+#     would miss), plus two source greps over the non-test hooks files.
+echo "-- read-only guard (status mod) --"
+
+ro_fail=0
+if [ -d hooks ]; then
+  allowed_calls=(
+    '$.process.run' '$.fs.read'
+    '$.ui.open' '$.ui.status' '$.ui.resolve'
+    '$.clock.now' '$.clock.every'
+    '$.command.register'
+    '$.state.get' '$.state.set'
+  )
+  calls_seen=0
+  while IFS= read -r line; do
+    calls_seen=1
+    list="$(printf '%s\n' "${line#*calls: }" | sed -E 's/ \(via [^)]*\)//g')"
+    while IFS= read -r call; do
+      call="$(printf '%s' "$call" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
+      [ -z "$call" ] && continue
+      [ "$call" = "nothing" ] && continue
+      ok=0
+      for a in "${allowed_calls[@]}"; do
+        [ "$call" = "$a" ] && ok=1 && break
+      done
+      if [ "$ok" -eq 0 ]; then
+        echo "  FORBIDDEN call '$call' (not on the read-only allowlist): $line"
+        ro_fail=1
+      fi
+    done < <(printf '%s\n' "$list" | tr ',' '\n')
+  done < <(printf '%s\n' "$plugin_report" | grep -E ' calls: ' || true)
+  if [ "$calls_seen" -eq 0 ]; then
+    echo "  validate printed no 'calls:' line for the hooks module"
+    ro_fail=1
+  fi
+
+  hook_src=()
+  while IFS= read -r f; do
+    [ -f "$f" ] || continue
+    case "$f" in *.test.ts|*.test.tsx) continue ;; esac
+    hook_src+=("$f")
+  done < <(git ls-files --cached --others --exclude-standard -- 'hooks' | sort -u)
+
+  if [ "${#hook_src[@]}" -gt 0 ]; then
+    # One process call site, and it is a gh argv. Before hooks/github.ts exists
+    # (the gh module lands in a later step) zero call sites is fine.
+    run_total="$(cat -- "${hook_src[@]}" | { grep -o -F '$.process.run(' || true; } | wc -l | tr -d ' ')"
+    run_gh="$(cat -- "${hook_src[@]}" | { grep -o -F "\$.process.run(['gh'," || true; } | wc -l | tr -d ' ')"
+    if [ "$run_total" -gt 1 ] || [ "$run_total" -ne "$run_gh" ]; then
+      echo "  process.run occurs $run_total time(s), $run_gh with a ['gh', argv: want at most one call site, and it must be a gh argv"
+      ro_fail=1
+    elif [ "$run_total" -eq 0 ] && [ -f hooks/github.ts ]; then
+      echo "  hooks/github.ts exists but the one process.run(['gh', ...]) call site is missing"
+      ro_fail=1
+    fi
+
+    # No write argv token, in single or double quotes.
+    if grep -n -E -e "'(create|merge|edit|close|comment|delete|-X|--method|-f|-F|--field|--raw-field|--input)'" \
+        -e '"(create|merge|edit|close|comment|delete|-X|--method|-f|-F|--field|--raw-field|--input)"' -- "${hook_src[@]}"; then
+      echo "  FORBIDDEN write argv token in hooks/ (above)"
+      ro_fail=1
+    fi
+  fi
+fi
+if [ "$ro_fail" -eq 0 ]; then
+  echo "  read-only guard: OK"
+else
+  echo "  read-only guard: FAILED"
   fail=1
 fi
 

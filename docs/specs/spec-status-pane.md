@@ -699,3 +699,10 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   - `docs/design.md` names a UI mock;
   - the architecture edits are trimmed to structural facts;
   - more QA steps.
+- 2026-10-29: Issue A (#299) built. `types/index.d.ts` is the contract
+  verbatim, and the atoms live in `hooks/status.ts`, exported for the later
+  modules. The engine's scan requires `atom` references with literal
+  `plugin`/`key` strings written inline. The one-call-site guard allows zero
+  `$.process.run(` sites until `hooks/github.ts` exists, because issue A ships
+  no `gh` call. From then on exactly one is required, and it must be a
+  `['gh', …]` argv.

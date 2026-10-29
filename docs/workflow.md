@@ -46,13 +46,19 @@ truth, milestones and issues are created on GitHub from them.
 - Verify: `bash scripts/verify.sh` — the per-PR machine gate. Runs the native
   `claude plugin validate` twice, non-strict: `claude plugin validate .`
   (marketplace manifest) and `claude plugin validate .claude-plugin/plugin.json`
-  (plugin manifest + every skill), plus a config-surface auth/state guard (greps
-  the non-prose surfaces — `.claude-plugin/`, template JSON, `scripts/`, hooks —
-  for forbidden auth/scheduler usage and asserts no committed local-state second
-  source). Exits non-zero on any failure. No new dependency — only `claude`,
-  `git`, and shell. Behavioural acceptance a structural check cannot cover is
-  still verified at the milestone-QA gate.
-- Test: `none yet`.
+  (plugin manifest + every skill + the status mod's hooks module), then the
+  status mod's tests (`claude plugin test .`, when `hooks/` exists), a
+  config-surface auth/state guard (greps the non-prose surfaces —
+  `.claude-plugin/`, `types/`, template JSON, `scripts/`, `hooks/`, listed with
+  `git ls-files --cached --others --exclude-standard` so a PR's new files count
+  and the engine-written `.claude-plugin/types/` does not — for forbidden
+  auth/scheduler usage), the read-only guard (validate's `calls:` report checked
+  against an allowlist, one `gh` argv call site, no write argv token in
+  `hooks/`) and a check that no local-state second source is committed. Exits
+  non-zero on any failure. No new dependency — only `claude`, `git`, and shell.
+  Behavioural acceptance a structural check cannot cover is still verified at
+  the milestone-QA gate.
+- Test: `claude plugin test .` (the status mod's tests; also run inside Verify).
 - Build: `none`.
 
 ## Model tiers
