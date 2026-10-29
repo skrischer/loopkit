@@ -16,7 +16,7 @@
 | `skills/*/references/` | Subagent-only or some-runs-only detail a core `SKILL.md` links with when to read it — not skills |
 | `skills/shared/` | Plugin-shipped shared references, not skills: `iteration-steps.md` (prior-art challenge / architecture seed / roadmap seeding — inception, roadmap), `preflight.md` (the `gh`/`git` preflight — inception, plan, implement, roadmap, ship), `trust-boundary.md` (read-discipline, shell-hygiene, capability separation — plan, implement, roadmap, ship), `needs-you.md` (the `Needs you:` line, the one form of a request to the human the run does not wait for — inception, plan, implement, roadmap, ship) |
 | `skills/*/templates/` | Pure artifact blueprints, filled into target projects by inception |
-| `hooks/` + `types/` | The status mod: a TypeScript module Claude Code runs (`hooks/hooks.json`) with its state contract (`types/`); inputs GitHub (`gh`) and session events, outputs a pane and a status-line entry |
+| `hooks/` + `types/` | The status mod: a TypeScript module Claude Code runs (`hooks/hooks.json`) with its state contract (`types/`); inputs GitHub (`gh`) and session events (turn, tool and agent events, plus the meter events: `session.measure`, compaction, stop failure, permission denial), outputs a pane and a status-line entry |
 | `.claude-plugin/` | `plugin.json` (naming the status mod's types) + `marketplace.json` |
 | `docs/` (target project) | vision/constitution/prior-art/architecture + `roadmap.md` + `workflow.md` + `design.md` + `release.md` |
 | GitHub (issues/milestones/board/PRs) | the single durable state machine |

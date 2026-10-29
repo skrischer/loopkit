@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 820" width="1440" height="820" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+  <!-- loopkit session meters: one UI concept, the status pane's meter lines and Events section. Sample data. -->
+  <rect x="0" y="0" width="1440" height="820" fill="#181825"/>
+
+  <!-- HEADER -->
+  <text x="48" y="54" font-size="28" font-weight="700" fill="#cdd6f4">loopkit status pane — session meters</text>
+  <text x="48" y="84" font-size="15" fill="#a6adc8">What session-meters adds to the pane of status-pane.svg: two header lines and an Events section. Unchanged sections are folded.</text>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">
+    <!-- PANE: normal state -->
+    <rect x="40" y="110" width="460" height="560" rx="10" fill="#11111b" stroke="#313244" stroke-width="2"/>
+    <text x="56" y="136" font-size="12" fill="#6c7086">normal</text>
+    <rect x="52" y="146" width="436" height="26" rx="4" fill="#1e1e2e"/>
+    <text x="62" y="164" font-weight="700" fill="#cdd6f4">loopkit</text>
+    <text x="62" y="194" fill="#6c7086">skrischer/loopkit · updated 14:32</text>
+    <text x="62" y="213" fill="#6c7086">ctx <tspan fill="#f9e2af">87%</tspan> · 3 compacted · 5h 41% · 7d 12%</text>
+    <text x="62" y="232" fill="#6c7086">idle 4m · last text 4m ago</text>
+
+    <text x="62" y="266" font-weight="700" fill="#f9e2af">Needs you (1)</text>
+    <text x="78" y="285" fill="#45475a">…  (as in status-pane.svg)</text>
+    <text x="62" y="314" font-weight="700" fill="#cdd6f4">Milestones (1)</text>
+    <text x="78" y="333" fill="#45475a">…</text>
+    <text x="62" y="362" font-weight="700" fill="#89b4fa">Running (2)</text>
+    <text x="78" y="381" fill="#45475a">…</text>
+
+    <!-- Events -->
+    <text x="62" y="410" font-weight="700" fill="#cdd6f4">Events (6)</text>
+    <text x="62" y="429" fill="#cdd6f4"><tspan fill="#6c7086">14:31</tspan> #302 pane, refresh triggers and… closed</text>
+    <text x="62" y="448" fill="#cdd6f4"><tspan fill="#6c7086">14:29</tspan> PR #307 READ… merge failed: not mergeable <tspan fill="#f9e2af">×2</tspan></text>
+    <text x="62" y="467" fill="#cdd6f4"><tspan fill="#6c7086">14:22</tspan> subagent stopped: Implement #301</text>
+    <text x="62" y="486" fill="#cdd6f4"><tspan fill="#6c7086">14:20</tspan> denied Bash: [Data Exfiltration] posts…</text>
+    <text x="62" y="505" fill="#cdd6f4"><tspan fill="#6c7086">14:05</tspan> compacted (auto)</text>
+    <text x="62" y="524" fill="#cdd6f4"><tspan fill="#6c7086">13:58</tspan> stopped: Watch CI on PR #306</text>
+
+    <text x="62" y="558" font-weight="700" fill="#a6e3a1">Up next (2)</text>
+    <text x="78" y="577" fill="#45475a">…</text>
+
+    <rect x="62" y="600" width="92" height="26" rx="4" fill="none" stroke="#6c7086" stroke-width="1.5"/>
+    <text x="78" y="618" fill="#cdd6f4">Refresh</text>
+
+    <!-- STATUS LINE: normal -->
+    <text x="56" y="700" font-size="12" fill="#6c7086">status line, normal (unchanged by this phase)</text>
+    <rect x="40" y="710" width="460" height="30" rx="6" fill="#11111b" stroke="#313244" stroke-width="1.5"/>
+    <text x="56" y="730" fill="#a6adc8">loopkit · 1 need you · #27 6/8 · 2 running</text>
+
+    <!-- PANE: limit stop (header only) -->
+    <rect x="540" y="110" width="460" height="150" rx="10" fill="#11111b" stroke="#313244" stroke-width="2"/>
+    <text x="556" y="136" font-size="12" fill="#6c7086">limit stop</text>
+    <rect x="552" y="146" width="436" height="26" rx="4" fill="#1e1e2e"/>
+    <text x="562" y="164" font-weight="700" fill="#cdd6f4">loopkit</text>
+    <text x="562" y="194" fill="#6c7086">skrischer/loopkit · updated 14:32</text>
+    <text x="562" y="213" fill="#f9e2af">limited until 19:00 · ctx 62%</text>
+    <text x="562" y="232" fill="#6c7086">idle 21m · last text 21m ago</text>
+
+    <!-- Events row on a limit stop -->
+    <text x="556" y="290" font-size="12" fill="#6c7086">the stop's event row</text>
+    <rect x="540" y="300" width="460" height="30" rx="6" fill="#11111b" stroke="#313244" stroke-width="1.5"/>
+    <text x="556" y="320" fill="#cdd6f4"><tspan fill="#6c7086">14:11</tspan> usage limit — resumes 19:00</text>
+
+    <!-- STATUS LINE: limit stop -->
+    <text x="556" y="360" font-size="12" fill="#6c7086">status line, limit stop</text>
+    <rect x="540" y="370" width="460" height="30" rx="6" fill="#11111b" stroke="#313244" stroke-width="1.5"/>
+    <text x="556" y="390" fill="#a6adc8">loopkit · limited until 19:00 · 1 need you · …</text>
+
+    <!-- working heartbeat variant -->
+    <text x="556" y="430" font-size="12" fill="#6c7086">heartbeat while a main-loop turn runs</text>
+    <rect x="540" y="440" width="460" height="30" rx="6" fill="#11111b" stroke="#313244" stroke-width="1.5"/>
+    <text x="556" y="460" fill="#6c7086">working 2m · last text 6m ago</text>
+
+    <!-- empty Events -->
+    <text x="556" y="500" font-size="12" fill="#6c7086">Events before the first one</text>
+    <rect x="540" y="510" width="460" height="50" rx="6" fill="#11111b" stroke="#313244" stroke-width="1.5"/>
+    <text x="556" y="530" font-weight="700" fill="#cdd6f4">Events (0)</text>
+    <text x="556" y="549" fill="#6c7086">No events yet.</text>
+  </g>
+
+  <!-- ANNOTATIONS -->
+  <g font-size="13" fill="#a6adc8">
+    <text x="1040" y="140" font-size="15" font-weight="700" fill="#cdd6f4">How each part is fed</text>
+
+    <text x="1040" y="176" font-weight="700" fill="#cdd6f4">Meters line</text>
+    <text x="1040" y="196">session.measure, after each main-loop turn</text>
+    <text x="1040" y="213">(blank until the first answer; hooks only);</text>
+    <text x="1040" y="230">ctx = context.percent, warning at ≥ 85%;</text>
+    <text x="1040" y="247">compacted = main-loop PostCompact, ≥ 1;</text>
+    <text x="1040" y="264">5h / 7d = five_hour / seven_day windows;</text>
+    <text x="1040" y="281">a part with no reading is left out</text>
+
+    <text x="1040" y="318" font-weight="700" fill="#f9e2af">Limit stop</text>
+    <text x="1040" y="338">classic.StopFailure, error rate_limit;</text>
+    <text x="1040" y="355">until = latest resetsAt of a window at ≥</text>
+    <text x="1040" y="372">100%, else "limited" alone; clears below</text>
+    <text x="1040" y="389">100% or once the time passed; the only</text>
+    <text x="1040" y="406">meter that enters the status line</text>
+
+    <text x="1040" y="443" font-weight="700" fill="#cdd6f4">Heartbeat</text>
+    <text x="1040" y="463">main-loop turn.start → working since;</text>
+    <text x="1040" y="480">turn.complete → idle since; last text =</text>
+    <text x="1040" y="497">the last non-empty main-loop answer</text>
+
+    <text x="1040" y="534" font-weight="700" fill="#cdd6f4">Events (newest 8 of max 50)</text>
+    <text x="1040" y="554">closed: snapshot diff, title from GitHub;</text>
+    <text x="1040" y="571">merge failed: gh pr merge with isError;</text>
+    <text x="1040" y="588">subagent failed/stopped: turn.complete</text>
+    <text x="1040" y="605">reason error/aborted; stopped: TaskStop;</text>
+    <text x="1040" y="622">denied: PermissionDenied (auto mode);</text>
+    <text x="1040" y="639">compacted; usage limit. Same kind + text</text>
+    <text x="1040" y="656">collapse into one row with ×n, moved up.</text>
+    <text x="1040" y="673">The subject #n carries its title.</text>
+
+    <text x="1040" y="710" font-weight="700" fill="#cdd6f4">Not shown</text>
+    <text x="1040" y="730">failed background shells (status only in</text>
+    <text x="1040" y="747">unversioned notification text); context</text>
+    <text x="1040" y="764">and usage in the status line (native meter)</text>
+  </g>
+
+  <text x="48" y="800" font-size="12" fill="#6c7086">Event rows are one line each: dim HH:MM, the text cut with … to the pane width, then ×n. Colours are theme names: warning for the limit stop, the ≥ 85% ctx part and ×n; dim for times and meter lines. The status line is plain text.</text>
+</svg>
