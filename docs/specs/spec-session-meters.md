@@ -66,6 +66,9 @@ this spec at the spec-acceptance gate.
       line, is shown as it is.
 - [ ] The read-only guard's allowlist does not change. The status-pane
       principle and its Verify guard hold as they are.
+- [ ] Seated inline above the prompt (a terminal too narrow for the side
+      placement), the pane asks for as many rows as its content needs, so
+      the Events section, Up next and the Refresh button are not cut off.
 - [ ] The README's "Status pane" section describes the meter lines, the
       limit stop and the Events section.
 - [ ] `docs/architecture.md` lists the meter inputs (see Foundation edits).
@@ -77,6 +80,7 @@ this spec at the spec-acceptance gate.
 - The meter and heartbeat lines, the limit stop and the Events section, as
   specified under Design, with their tests.
 - The state-contract extension and the snapshot's title map.
+- The inline pane's height request (`rows`).
 - The README update and the architecture edit.
 
 ### Out of scope
@@ -265,6 +269,15 @@ re-derives it.
   - `loopkit: limited until 19:00 · 1 need you · …`
   - `loopkit: limited · reading GitHub…`
   - `loopkit: limited until 19:00 · <error>`.
+- **The inline height.** Claude Code seats a pane inline above the prompt
+  when the terminal is too narrow for the side placement, and gives it a
+  third of the height unless `$.ui.open` asks for `rows`. The status-pane
+  QA gate saw the pane cut off after `Up next (2)` there. `paneRows(...)`
+  in `hooks/pane.tsx` is pure and counts the lines `renderPane` draws for
+  the current atoms, and both `$.ui.open` calls in `hooks/register.tsx`
+  (session start and `/loopkit-status`) pass it as `rows`. The request is
+  made at each open; the engine caps it at what the layout spares, and a
+  size the person dragged wins.
 - **Layout and colours** follow `docs/design/session-meters.svg`. The status
   line is plain text: `$.ui.status` takes a string, so it has no colour. The
   rest of the pane stays as `docs/design/status-pane.svg` draws it.
@@ -308,7 +321,9 @@ its hooks.
 - **`pane.test.tsx` additions:**
   - the Events rows, their cap, empty state and title-cut rule;
   - the two header lines;
-  - `statusLine` with a limit stop, in all three forms.
+  - `statusLine` with a limit stop, in all three forms;
+  - `paneRows` matching the drawn line count, and both opens passing it as
+    `rows`.
 
 ## Constraints
 
@@ -390,6 +405,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 | A compaction counts from `classic.PostCompact` with no `agent_id`. | It observes a finished main-loop compaction. `session.compact` transforms the compaction and also fires for `precompute`. | 2026-10-29 |
 | The snapshot moves to `snapshot-2`, in issue B. | New fields on a shaped atom need a new shape, so a reload never reads an old-shape value as the new one. The issue that adds the fields owns the shape. | 2026-10-29 |
 | The heartbeat counts from the main loop's last turn start or end, plus the last non-empty answer. | That is what the 474 silence reminders measured: the time since the orchestrator last said something. | 2026-10-29 |
+| The inline pane asks for its content's height (`rows`), counted by a pure `paneRows`, at each open. | The status-pane QA gate saw the inline pane cut off at a third of the height. This phase makes the pane taller still, and `rows` is the engine's own request for it; the human chose to build it here, in C. | 2026-10-29 |
 | The new parts get their own design file, `session-meters.svg`. | `status-pane.svg` is the committed design that status-pane's issues build to. A separate mock covers one concept, and the pane keeps its layout. | 2026-10-29 |
 
 ## Tracking
@@ -421,6 +437,8 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   - **C — Pane and docs:**
     - the header lines and the Events section in `hooks/pane.tsx`, with its
       tests;
+    - `paneRows` in `hooks/pane.tsx`, and the `rows` request on both
+      `$.ui.open` calls in `hooks/register.tsx`;
     - the README update.
 
     Depends on: A, B, #302, #303.
@@ -519,3 +537,6 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   plugin's status line as `loopkit: <text>`, so status-pane's own
   `loopkit · ` lead showed twice; #314 drops it. The limit part now opens the
   text, and the forms and the design show the line as drawn.
+- 2026-10-29: Spec gate for the amendment: accepted. At the status-pane QA
+  gate the human chose to build the inline pane's height request (`rows`)
+  in this phase, in issue C.
