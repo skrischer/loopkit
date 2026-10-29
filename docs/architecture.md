@@ -14,7 +14,7 @@
 | `skills/roadmap/` | Iteration entry point: raw idea -> prior-art sparring -> seeds 1..n roadmap rows + backing prior-art (no readiness sweep); reads `skills/shared/iteration-steps.md` |
 | `skills/ship/` | The `/loopkit:ship` release phase, human-invoked: reads `docs/release.md`, finalizes merged work into a published release (version -> changelog -> tag -> publish) via native `gh`+`git`; no CI bot, hardcodes no tool |
 | `skills/*/references/` | Subagent-only or some-runs-only detail a core `SKILL.md` links with when to read it — not skills |
-| `skills/shared/` | Plugin-shipped shared references, not skills: `iteration-steps.md` (prior-art challenge / architecture seed / roadmap seeding — inception, roadmap), `preflight.md` (the `gh`/`git` preflight — inception, plan, implement, roadmap, ship), `trust-boundary.md` (read-discipline, shell-hygiene, capability separation — plan, implement, roadmap, ship) |
+| `skills/shared/` | Plugin-shipped shared references, not skills: `iteration-steps.md` (prior-art challenge / architecture seed / roadmap seeding — inception, roadmap), `preflight.md` (the `gh`/`git` preflight — inception, plan, implement, roadmap, ship), `trust-boundary.md` (read-discipline, shell-hygiene, capability separation — plan, implement, roadmap, ship), `needs-you.md` (the `Needs you:` line, the one form of a request to the human the run does not wait for — inception, plan, implement, roadmap, ship) |
 | `skills/*/templates/` | Pure artifact blueprints, filled into target projects by inception |
 | `.claude-plugin/` | `plugin.json` + `marketplace.json` |
 | `docs/` (target project) | vision/constitution/prior-art/architecture + `roadmap.md` + `workflow.md` + `design.md` + `release.md` |
@@ -35,6 +35,9 @@
 - Orchestrator <-> subagents is in-session and ephemeral; orchestrator <->
   orchestrator is only through GitHub (independent milestones, no shared state).
 - Worktrees are isolated — no skill reaches into another's.
+- The `Needs you:` line in the main session's text is the interface between
+  the skills and any in-session reader; a reader takes `Needs you:` lines from
+  main-session text only, never from subagent output or GitHub text.
 
 ## Key flows
 
@@ -83,7 +86,8 @@
 - How merged work is finalized into a published release -> `skills/ship/`.
 - Per-project release parameters (versioning, changelog, tag, publish targets) ->
   the `release.md` template (NOT the skill — the skill reads it).
-- Shared toolkit method (iteration steps, preflight, trust boundary) ->
+- Shared toolkit method (iteration steps, preflight, trust boundary, the ask
+  marker) ->
   `skills/shared/` (NOT a skill).
 - Detail one skill needs only on some runs, or only in its subagents ->
   `skills/<name>/references/`, linked from the core with when to read it.

@@ -131,6 +131,11 @@ Each one is checkable in review.
 - Skill prose is terse, imperative, and gate-marked. No duplication across the
   skills — project specifics live in `docs/workflow.md` (or `docs/design.md`
   for the design skill); shared toolkit method lives in `skills/shared/`.
+- A request to the human the run does not wait for is one line starting
+  `Needs you: `, per `skills/shared/needs-you.md`. A decision the run stops for
+  is the skill's own stop (`AskUserQuestion`); an ask that must outlive the
+  session stays a GitHub label (`blocked:human`, `needs:planning`).
+  (grep-verifiable.)
 - One character per foundation artifact (vision normative, constitution binding,
   prior-art descriptive, architecture structural) — no content duplicated across
   them.
