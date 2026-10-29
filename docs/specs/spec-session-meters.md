@@ -36,7 +36,8 @@ this spec at the spec-acceptance gate.
       `limited until <when> · ctx <p>%` in the `warning` colour, or
       `limited · ctx <p>%` when no reset time is known.
       - The status line gains the same `limited until <when> · ` or
-        `limited · `, right after `loopkit · `.
+        `limited · ` at its start, which Claude Code draws right after its
+        own `loopkit: `.
       - `<when>` is `HH:MM` when the reset is today, else `<Ddd> HH:MM` (for
         example `Fri 19:00`).
       - The stop clears when a later reading puts every window under 100 %,
@@ -65,6 +66,9 @@ this spec at the spec-acceptance gate.
       line, is shown as it is.
 - [ ] The read-only guard's allowlist does not change. The status-pane
       principle and its Verify guard hold as they are.
+- [ ] Seated inline above the prompt (a terminal too narrow for the side
+      placement), the pane asks for as many rows as its content needs, so
+      the Events section, Up next and the Refresh button are not cut off.
 - [ ] The README's "Status pane" section describes the meter lines, the
       limit stop and the Events section.
 - [ ] `docs/architecture.md` lists the meter inputs (see Foundation edits).
@@ -76,6 +80,7 @@ this spec at the spec-acceptance gate.
 - The meter and heartbeat lines, the limit stop and the Events section, as
   specified under Design, with their tests.
 - The state-contract extension and the snapshot's title map.
+- The inline pane's height request (`rows`).
 - The README update and the architecture edit.
 
 ### Out of scope
@@ -109,15 +114,37 @@ at the moment of the write.
 | Input | Hook | Writes |
 |---|---|---|
 | context fill, usage windows | `session.measure`, which fires after each main-thread turn and when a window moves a point | `meters.context = context.percent` when present; `meters.limits = rateLimits` (`kind`, `percentUsed`, `resetsAt`); and, when `meters.limit` is held, `rateLimits` is not empty and every window is under 100 %, `meters.limit` is cleared |
-| compactions | `classic.PostCompact` with no `agent_id` (main loop only) | `meters.compactions` + 1; event `compacted` (`compacted (<trigger>)`) |
-| limit stop | `classic.StopFailure` with `error` `rate_limit` | `meters.limit = { until }`, where `until` is the latest `resetsAt` among windows with `percentUsed >= 100` and is unset when there is none; event `limit` |
-| heartbeat | `turn.start` and `turn.complete` on the main loop (no `agentId`) | at start, `beat = { working: true, since: now }`; at complete, `beat = { working: false, since: now }`, plus `lastText = now` when `answer` is not empty |
-| subagent end | `turn.complete` with an `agentId` and `reason` `error` or `aborted` | event `subagent-ended`. The hook reads the held task's description **before** calling `next(e)`, because `session.ts` removes the task on the same event. With no held task, it writes the `agentId` instead |
+| compactions | `classic.PostCompact` with no `agent_id` (main loop only), one hook in `hooks/meters.ts` | `meters.compactions` + 1; event `compacted` (`compacted (<trigger>)`) |
+| limit stop | `classic.StopFailure` with `error` `rate_limit`, one hook in `hooks/meters.ts` | `meters.limit = { until }`, where `until` is the latest `resetsAt` among windows with `percentUsed >= 100` and is unset when there is none; event `limit` |
+| heartbeat | `turn.start` on the main loop (no `agentId`), in `hooks/meters.ts`; and the main-loop branch of the existing `turn.complete` hook in `hooks/session.ts`, which calls `beatAfterTurn($, e)` from `hooks/meters.ts` | at start, `beat = { working: true, since: now }`; at complete, `beat = { working: false, since: now }`, plus `lastText = now` when `answer` is not empty |
+| subagent end | the agent branch (an `agentId`) of the existing `turn.complete` hook in `hooks/session.ts`, when `reason` is `error` or `aborted` | event `subagent-ended`. `session.ts` reads the held task's description and reports it through `subagentEnded($, reason, description)` from `hooks/events.ts`, **before** it drops the task in the same hook. `session.ts` makes the call only for those two reasons. With no held task, it passes the `agentId` instead |
 | stopped task | `tool.call` for `TaskStop` on the main loop | after `next(e)`, when the result is not `isError`: event `task-stopped`, keyed on the result's `task_id`. The description comes from the held task with that id, else the result's `command`, else `task <id>` |
 | denial | `classic.PermissionDenied` (auto-mode classifier denials only) | event `denied` (`denied <tool_name>: <first line of reason>`) |
 | merge failure | `tool.call` for `Bash`, in any loop, when the command matches `/\bgh\s+pr\s+merge\s+(\d+)/` and the result has `isError` | event `merge-failed`. The detail is the first non-empty line of the result's `text` that is not an `Exit code <n>` line; without one there is no detail |
 | closed issue | `refresh` in `hooks/github.ts`, on a successful read | every issue number in the previous snapshot's `open` that is missing from the new one becomes event `issue-closed`, titled from the previous `titles` |
 
+- **One unmatched hook per event.** The engine refuses a second hook on
+  the same event without a matcher anywhere in the module graph
+  (`claude plugin validate`: "registered twice without a matcher"), so
+  Verify goes red on one. Matched hooks, identical matchers included, are
+  allowed. Where two modules need the same event and no matcher separates
+  them, one hook owns the event and calls the other module's exported
+  handler:
+  - `turn.complete` stays the one hook in `hooks/session.ts` (status-pane
+    owns it, with the asks, the task drop and the 15 s refresh). Its
+    main-loop branch calls `beatAfterTurn`; its agent branch calls
+    `subagentEnded`.
+  - `classic.PostCompact` and `classic.StopFailure` each have one hook, in
+    `hooks/meters.ts`. It writes `meters` and records the `compacted` or
+    `limit` event through `recordEvent`.
+  - The new `tool.call` hooks are matched (`{ tool: 'Bash' }`,
+    `{ tool: 'TaskStop' }`), so they sit beside the unmatched one in
+    `hooks/session.ts` and the matched `Bash` one in `hooks/register.tsx`.
+  - `session.measure`, `turn.start` and `classic.PermissionDenied` have one
+    hook each.
+- **Imports between modules.** `status.ts`, `meters.ts` and `events.ts`
+  import from each other. Only functions cross these imports, and none is
+  called while a module loads, so an import cycle among them is safe.
 - **When a limit stop clears.**
   - A `session.measure` reading that has windows, all under 100 %, clears
     it. An empty `rateLimits` clears nothing.
@@ -157,16 +184,31 @@ at the moment of the write.
   - the list keeps at most 50 events, and the pane shows 8.
 - `closedEvents(prev, next)` is pure. It returns the `issue-closed` events
   for two snapshots.
-- `registerEvents(on, isActive)` registers the event hooks in the table
-  above, all except the closed-issue diff, which `refresh` calls.
+- Each kind's text is built by a pure, exported function in
+  `hooks/events.ts`, one per kind. Every recording site uses it, wherever
+  its hook lives.
+- `recordEvent($, { kind, text })` cleans the text, applies `pushEvent` to
+  the `events` atom with `now`, and calls `publishStatus($)`. Every event
+  goes through it, whichever module saw it.
+- `subagentEnded($, reason, description)` records the `subagent-ended`
+  event. `hooks/session.ts`'s `turn.complete` hook calls it.
+- `registerEvents(on, isActive)` registers the `TaskStop` and `Bash`
+  `tool.call` hooks and the `classic.PermissionDenied` hook. Issue B wires
+  it in `hooks/register.tsx`. The other
+  events are recorded where their one hook lives: compaction and limit in
+  `hooks/meters.ts`, the subagent end in `hooks/session.ts`, and the closed
+  issues in `refresh`.
 - The kind strings are exactly `issue-closed`, `merge-failed`,
   `subagent-ended`, `task-stopped`, `denied`, `compacted` and `limit`. None of
   them is a quoted write-argv token the read-only guard bans.
 
 ### Meters — `hooks/meters.ts`
 
-- `registerMeters(on, isActive)` registers the meter and heartbeat hooks in
-  the table above.
+- `registerMeters(on, isActive)` registers the `session.measure`,
+  `turn.start`, `classic.PostCompact` and `classic.StopFailure` hooks.
+  Issue A wires it in `hooks/register.tsx`.
+- `beatAfterTurn($, e)` writes `beat` and `lastText` for a main-loop
+  `turn.complete`. `hooks/session.ts`'s `turn.complete` hook calls it.
 - `meterLine(meters, now)` and `beatLine(beat, lastText, now)` are pure.
 - `when(iso, now)` gives `HH:MM` for a reset today, else `<Ddd> HH:MM`.
 
@@ -220,12 +262,22 @@ re-derives it.
 - **`statusLine`:** it becomes
   `statusLine(snapshot, asking, asks, tasks, limit?, now?)`. The two new
   parameters are optional, so status-pane's four-argument calls and tests
-  keep working, and `publishStatus` passes `await $.clock.now()`. While a stop holds, its part goes
-  right after `loopkit · ` in every form:
-  - `loopkit · limited until 19:00 · 1 need you · …`
-  - `loopkit · limited · reading GitHub…`
-  - `loopkit · limited until 19:00 · <error>`, which replaces
-    `loopkit: <error>` while the stop holds.
+  keep working, and `publishStatus` passes `await $.clock.now()`. The text
+  carries no `loopkit` lead of its own, because Claude Code draws a
+  plugin's status line as `loopkit: <text>` (#314). While a stop holds, its
+  part opens the text in every form, shown here as drawn:
+  - `loopkit: limited until 19:00 · 1 need you · …`
+  - `loopkit: limited · reading GitHub…`
+  - `loopkit: limited until 19:00 · <error>`.
+- **The inline height.** Claude Code seats a pane inline above the prompt
+  when the terminal is too narrow for the side placement, and gives it a
+  third of the height unless `$.ui.open` asks for `rows`. The status-pane
+  QA gate saw the pane cut off after `Up next (2)` there. `paneRows(...)`
+  in `hooks/pane.tsx` is pure and counts the lines `renderPane` draws for
+  the current atoms, and both `$.ui.open` calls in `hooks/register.tsx`
+  (session start and `/loopkit-status`) pass it as `rows`. The request is
+  made at each open; the engine caps it at what the layout spares, and a
+  size the person dragged wins.
 - **Layout and colours** follow `docs/design/session-meters.svg`. The status
   line is plain text: `$.ui.status` takes a string, so it has no colour. The
   rest of the pane stays as `docs/design/status-pane.svg` draws it.
@@ -239,31 +291,39 @@ re-derives it.
 
 ### Tests — `claude plugin test`
 
+Hook tests boot the mod through `session.start`, as `pane.test.tsx`'s
+`boot` does. The test host allows a `$.state` call only from a hook the
+module graph reaches, so each issue wires its register call before it tests
+its hooks.
+
 - **`events.test.ts`:**
-  - `pushEvent`: collapse, move to front, and the 50 cap;
-  - `closedEvents`: titles from the previous snapshot, and no events on the
-    first read;
-  - the merge-failure match, with and without `isError`, and the detail
-    rule: skip `Exit code <n>`, no detail when nothing is left;
-  - `subagent-ended`: the `error` and `aborted` texts, the description read
-    before `next(e)`, and the `agentId` fallback;
-  - `TaskStop`: the result's `task_id`, the `command` fallback, and no event
-    on `isError`;
-  - the denial text;
-  - the compaction text, counting only a main-loop event;
-  - control-character stripping and the 200-character cut.
+  - pure: `pushEvent` (collapse, move to front, the 50 cap); `closedEvents`
+    (titles from the previous snapshot, no events on the first read); every
+    kind's text builder, `limit` with and without `until` and `compacted`
+    for both triggers included; the merge-failure match and detail rule
+    (skip `Exit code <n>`, no detail when nothing is left); control-character
+    stripping and the 200-character cut;
+  - hooks: the merge failure in any loop, with and without `isError`;
+    `TaskStop` (the result's `task_id`, the `command` fallback, no event on
+    `isError`); the denial; the `subagent-ended` call from `hooks/session.ts`
+    (the `error` and `aborted` texts, the description taken before the drop,
+    the `agentId` fallback, no event for `answer`); the `compacted` and
+    `limit` events from `hooks/meters.ts`'s hooks.
 - **`meters.test.ts`:**
-  - `meterLine`: parts left out without a reading, `compacted` left out at 0,
-    the window labels, the limited forms with and without `until`, and the
-    85 % warning flag;
-  - `beatLine`: working, idle, and last text;
-  - `when`: today and another day;
-  - limit clearing: on a reading under 100 %, not on an empty `rateLimits`,
-    and on `until` in the past.
+  - pure: `meterLine` (parts left out without a reading, `compacted` left
+    out at 0, the window labels, the limited forms with and without
+    `until`, the 85 % warning flag); `beatLine` (working, idle, last text);
+    `when` (today and another day); limit clearing (on a reading under
+    100 %, not on an empty `rateLimits`, on `until` in the past);
+  - hooks: `session.measure` writes; the compaction count, with an
+    `agent_id` event not counted; the limit stop's `until`; the heartbeat at
+    turn start and through `hooks/session.ts`'s `turn.complete`.
 - **`pane.test.tsx` additions:**
   - the Events rows, their cap, empty state and title-cut rule;
   - the two header lines;
-  - `statusLine` with a limit stop, in all three forms.
+  - `statusLine` with a limit stop, in all three forms;
+  - `paneRows` matching the drawn line count, and both opens passing it as
+    `rows`.
 
 ## Constraints
 
@@ -290,7 +350,10 @@ re-derives it.
   - `turn.start` and `turn.complete` carry `agentId`, and `turn.complete`
     carries `reason`;
   - an error tool result carries `isError` and `text`, never the typed
-    record.
+    record;
+  - a second hook on the same event without a matcher is refused by
+    `claude plugin validate`; matched hooks, identical matchers included,
+    are not.
 
 ## Prior art
 
@@ -334,13 +397,15 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 | The limit stop's `until` comes only from windows at 100 % or more; otherwise it is unknown. | A fallback to any window could show a reset days away, and a transient 429 would claim a time. `limited` without a time is honest, and it clears on a reading under 100 %. | 2026-10-29 |
 | No failed-shell events. | A shell's exit status reaches the session only inside the task-notification text, which is internal and unversioned. | 2026-10-29 |
 | Denials are auto-mode classifier denials only. | `classic.PermissionDenied` fires only there. A manual denial, a `deny` rule and a `PreToolUse` block reach no hook. | 2026-10-29 |
-| A subagent failure comes from `turn.complete`'s `reason` (`error` / `aborted`) on its loop, read before `next(e)`. | It is a structured field. Hooks nest first-outermost, and `session.ts` removes the task on the same event, so reading first keeps the description. | 2026-10-29 |
+| A subagent failure comes from `turn.complete`'s `reason` (`error` / `aborted`) on its loop, reported by `hooks/session.ts`'s one `turn.complete` hook before it drops the task. | It is a structured field. The engine allows one unmatched `turn.complete` hook, and `session.ts` owns it; reading the held task there, before the drop, keeps the description without relying on hook order. | 2026-10-29 |
+| One unmatched hook per event; a shared event has one owning hook that calls the other module's handler. | Verified on 2.1.312: `claude plugin validate` refuses a second unmatched hook on an event ("registered twice without a matcher") and allows matched ones. `turn.complete` already has its one unmatched hook in `session.ts`, and both meters and events need compaction and the limit stop. | 2026-10-29 |
 | A closed issue is a snapshot diff, not a PR event. | A merge closes its issue (`Closes #<n>`). The diff needs no new `gh` call and gives the title. A PR closed without merging has no issue event, which is acceptable. | 2026-10-29 |
 | Only an event's subject is titled. | The snapshot holds the subject's title. Free text such as descriptions and reasons is the source's own words, shown as they are. | 2026-10-29 |
 | Events collapse by kind and text; 50 are kept and 8 shown. | It covers the "repeats collapsed" adopt and bounds the session state. The 209 re-notified tasks are already one row each under Running. | 2026-10-29 |
 | A compaction counts from `classic.PostCompact` with no `agent_id`. | It observes a finished main-loop compaction. `session.compact` transforms the compaction and also fires for `precompute`. | 2026-10-29 |
 | The snapshot moves to `snapshot-2`, in issue B. | New fields on a shaped atom need a new shape, so a reload never reads an old-shape value as the new one. The issue that adds the fields owns the shape. | 2026-10-29 |
 | The heartbeat counts from the main loop's last turn start or end, plus the last non-empty answer. | That is what the 474 silence reminders measured: the time since the orchestrator last said something. | 2026-10-29 |
+| The inline pane asks for its content's height (`rows`), counted by a pure `paneRows`, at each open. | The status-pane QA gate saw the inline pane cut off at a third of the height. This phase makes the pane taller still, and `rows` is the engine's own request for it; the human chose to build it here, in C. | 2026-10-29 |
 | The new parts get their own design file, `session-meters.svg`. | `status-pane.svg` is the committed design that status-pane's issues build to. A separate mock covers one concept, and the pane keeps its layout. | 2026-10-29 |
 
 ## Tracking
@@ -352,19 +417,28 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
     - the `types/index.d.ts` additions (`Meters`, `Beat`, `FeedEvent`, and
       the four atoms);
     - `hooks/meters.ts` and `hooks/meters.test.ts`;
+    - the `beatAfterTurn` call in the main-loop branch of
+      `hooks/session.ts`'s `turn.complete` hook;
+    - `registerMeters` wired in `hooks/register.tsx`;
     - the `statusLine` signature and the limit part in `hooks/status.ts`.
 
-    Depends on: #299.
+    Depends on: #299, #301, #302.
   - **B — Events:**
     - `hooks/events.ts` and `hooks/events.test.ts`;
+    - `registerEvents` wired in `hooks/register.tsx`;
+    - the `compacted` and `limit` events in `hooks/meters.ts`'s
+      `classic.PostCompact` and `classic.StopFailure` hooks;
+    - the `subagentEnded` call in the agent branch of `hooks/session.ts`'s
+      `turn.complete` hook;
     - in `hooks/github.ts`: the snapshot's `titles` and `open` fields,
       `snapshot-2`, and the closed-issue diff.
 
-    Depends on: A, #300.
-  - **C — Pane, wiring and docs:**
+    Depends on: A, #300, #301, #302.
+  - **C — Pane and docs:**
     - the header lines and the Events section in `hooks/pane.tsx`, with its
       tests;
-    - `registerMeters` and `registerEvents` wired in `hooks/register.tsx`;
+    - `paneRows` in `hooks/pane.tsx`, and the `rows` request on both
+      `$.ui.open` calls in `hooks/register.tsx`;
     - the README update.
 
     Depends on: A, B, #302, #303.
@@ -439,3 +513,30 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   - an empty `rateLimits` clears no stop;
   - `limit` and `now` are optional in `statusLine`;
   - smoke step 3 merges a PR that closes an issue.
+- 2026-10-29: Amended before implementation. Issue #302 found, and a probe
+  with `claude plugin validate` on 2.1.312 confirmed, that the engine
+  refuses a second unmatched hook on one event. The spec had `meters.ts`
+  and `events.ts` each hooking `turn.complete`, `classic.PostCompact` and
+  `classic.StopFailure` unmatched, beside `session.ts`'s `turn.complete`.
+  Now each shared event has one owning hook that calls the other module's
+  exported handler (`beatAfterTurn`, `subagentEnded`, `recordEvent`), and
+  the subagent description is read in `session.ts` before its task drop
+  instead of relying on hook order.
+- 2026-10-29: Amendment review returned APPROVE. Its non-blocking notes
+  were applied before the gate:
+  - each issue wires its own register call (A `registerMeters`, B
+    `registerEvents`), so its hooks are tested by booting the mod; C keeps
+    the pane and the README;
+  - each kind's text has a pure builder in `hooks/events.ts`, and the tests
+    name the pure and the hook cases per file, the `limit` text included;
+  - `session.ts` calls `subagentEnded` only for `error` and `aborted`;
+  - A and B also depend on #301 and #302, whose files they edit;
+  - the import cycle among `status.ts`, `meters.ts` and `events.ts` is
+    noted as safe.
+- 2026-10-29: The status-pane QA gate found that Claude Code draws a
+  plugin's status line as `loopkit: <text>`, so status-pane's own
+  `loopkit · ` lead showed twice; #314 drops it. The limit part now opens the
+  text, and the forms and the design show the line as drawn.
+- 2026-10-29: Spec gate for the amendment: accepted. At the status-pane QA
+  gate the human chose to build the inline pane's height request (`rows`)
+  in this phase, in issue C.
