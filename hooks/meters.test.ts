@@ -95,7 +95,7 @@ describe('limit clearing', () => {
 })
 
 describe('statusLine with a limit stop', () => {
-  const snap = { repo: 'o/r', fetchedAt: 0, error: null, gates: [], milestones: [], upNext: [] }
+  const snap = { repo: 'o/r', fetchedAt: 0, error: null, gates: [], milestones: [], upNext: [], titles: {}, open: [] }
 
   test('the part opens the text in all three forms', () => {
     expect(statusLine(snap, null, [], [], { until: today }, NOW)).toBe('limited until 19:00 · 0 need you · 0 running')

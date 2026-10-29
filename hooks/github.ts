@@ -2,12 +2,13 @@ import { atom, read, update } from 'claude-code'
 import type { EngineInterface } from 'claude-code'
 
 import type { Item, MilestoneRow, Snapshot } from '../types'
+import { closedEvents, recordEvent } from './events'
 import { publishStatus } from './status'
 
 // The engine's scan follows only references written in this file, so the
 // state refs are spelled here; their defaults live in types/index.d.ts.
 // Same shape tag as hooks/status.ts: a write without it reads back as the default.
-const snapshot = atom({ plugin: 'loopkit', key: 'snapshot' } as const, null as Snapshot | null, { shape: 'snapshot-1' })
+const snapshot = atom({ plugin: 'loopkit', key: 'snapshot' } as const, null as Snapshot | null, { shape: 'snapshot-2' })
 const isRefreshing = { plugin: 'loopkit', key: 'isRefreshing' } as const
 
 // The GitHub shapes the view reads. Titles, bodies and branch names are
@@ -34,6 +35,15 @@ export type DeriveInput = {
   milestones: RawMilestone[]
   roadmap: string | null
 }
+// Titles of the open issues and PRs (cleaned), and the open issue numbers.
+export function titlesOf(issues: RawIssue[], prs: RawPr[]): Pick<Snapshot, 'titles' | 'open'> {
+  const titles: Record<number, string> = {}
+  for (const pr of prs) titles[pr.number] = clean(pr.title)
+  for (const issue of issues) titles[issue.number] = clean(issue.title)
+
+  return { titles, open: issues.map(issue => issue.number) }
+}
+
 export type Derived = Pick<Snapshot, 'gates' | 'milestones' | 'upNext'>
 
 // Control characters: C0 and C1 (with DEL). Bodies keep their newlines.
@@ -216,6 +226,7 @@ export async function refresh($: EngineInterface): Promise<void> {
         fetchedAt: lastRefreshAt,
         error: null,
         ...derive({ issues, prs, milestones, roadmap }),
+        ...titlesOf(issues, prs),
       }
     } catch (err) {
       const prev = await read($, snapshot)
@@ -226,9 +237,20 @@ export async function refresh($: EngineInterface): Promise<void> {
         gates: prev?.gates ?? [],
         milestones: prev?.milestones ?? [],
         upNext: prev?.upNext ?? [],
+        titles: prev?.titles ?? {},
+        open: prev?.open ?? [],
       }
     }
+    const before = await read($, snapshot)
     await update($, snapshot, () => next)
+    // A successful read only: a failed one keeps the previous lists.
+    if (next.error === null) {
+      try {
+        for (const event of closedEvents(before, next)) await recordEvent($, event)
+      } catch {
+        // a mod fault stays out of the session
+      }
+    }
   } finally {
     await update($, isRefreshing, () => false)
     await publishStatus($)

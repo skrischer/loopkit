@@ -6,7 +6,7 @@ import { limitActive, when } from './meters'
 
 // Every value here is ephemeral session state, re-derived from GitHub and the
 // session's events. The pane is a view, never a second source of truth.
-export const snapshot = atom({ plugin: 'loopkit', key: 'snapshot' } as const, null as Snapshot | null, { shape: 'snapshot-1' })
+export const snapshot = atom({ plugin: 'loopkit', key: 'snapshot' } as const, null as Snapshot | null, { shape: 'snapshot-2' })
 export const isRefreshing = atom({ plugin: 'loopkit', key: 'isRefreshing' } as const, false)
 export const asks = atom({ plugin: 'loopkit', key: 'asks' } as const, [] as Ask[])
 export const calls = atom({ plugin: 'loopkit', key: 'calls' } as const, 0)

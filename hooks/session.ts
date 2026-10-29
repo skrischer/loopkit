@@ -3,6 +3,7 @@ import type { EngineInterface, On } from 'claude-code'
 
 import type { Ask, Task } from '../types'
 import { getLastRefresh, refresh } from './github'
+import { subagentEnded } from './events'
 import { beatAfterTurn } from './meters'
 import { publishStatus } from './status'
 
@@ -150,9 +151,17 @@ export function registerSession(on: On, isActive: () => boolean): void {
     await safely(async () => {
       const agentId = e.agentId
       if (agentId !== undefined) {
+        // Read the held task before the drop: the event names its description.
+        if (e.reason === 'error' || e.reason === 'aborted') {
+          const reason = e.reason
+          await safely(async () => {
+            const task = ((await read($, tasks)) ?? []).find(row => row.id === agentId || row.agentId === agentId)
+            await subagentEnded($, reason, task?.description || agentId)
+          })
+        }
         await update($, tasks, held => dropTask(held ?? [], agentId))
       } else {
-        await beatAfterTurn($, e)
+        await safely(() => beatAfterTurn($, e))
         const lines = parseAsks(e.answer)
         if (lines.length > 0) {
           const at = await stamp($)
