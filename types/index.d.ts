@@ -30,6 +30,15 @@ export type Task = {
   agentId?: string // the spawn's agent id once a Stop re-keys the row to its task id
 }
 
+export type Meters = {
+  context?: number
+  compactions: number
+  limits: { kind: string; percentUsed: number; resetsAt?: string }[]
+  limit?: { until?: string }
+}
+export type Beat = { working: boolean; since: number }
+export type FeedEvent = { kind: string; text: string; at: number; count: number }
+
 declare module 'claude-code' {
   interface PluginState {
     loopkit: {
@@ -40,6 +49,10 @@ declare module 'claude-code' {
       asking: Asking | null // default null
       tasks: Task[] // default []
       now: number // default 0
+      meters: Meters // default { compactions: 0, limits: [] }
+      beat: Beat | null // default null
+      lastText: number | null // default null
+      events: FeedEvent[] // default []
     }
   }
 }

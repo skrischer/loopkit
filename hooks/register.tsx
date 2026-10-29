@@ -2,6 +2,7 @@ import { read, update } from 'claude-code'
 import type { EngineInterface, Register, Timer } from 'claude-code'
 
 import { refresh } from './github'
+import { registerMeters } from './meters'
 import { renderPane } from './pane'
 import { registerSession } from './session'
 import { publishStatus } from './status'
@@ -116,4 +117,5 @@ export const register: Register = on => {
   }).catch(($, e, next) => { return next(e) })
 
   registerSession(on, () => active)
+  registerMeters(on, () => active)
 }

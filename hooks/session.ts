@@ -3,6 +3,7 @@ import type { EngineInterface, On } from 'claude-code'
 
 import type { Ask, Task } from '../types'
 import { getLastRefresh, refresh } from './github'
+import { beatAfterTurn } from './meters'
 import { publishStatus } from './status'
 
 const ASK_LINE = /^Needs you: .+$/
@@ -151,6 +152,7 @@ export function registerSession(on: On, isActive: () => boolean): void {
       if (agentId !== undefined) {
         await update($, tasks, held => dropTask(held ?? [], agentId))
       } else {
+        await beatAfterTurn($, e)
         const lines = parseAsks(e.answer)
         if (lines.length > 0) {
           const at = await stamp($)

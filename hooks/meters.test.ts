@@ -1,0 +1,221 @@
+import { describe, expect, mock, test } from 'claude-code/testing'
+
+import { beatLine, clearsLimit, limitActive, limitUntil, meterLine, when, withCompaction, withReading, withStop } from './meters'
+import { statusLine } from './status'
+
+
+const MIN = 60_000
+// Local-time dates, so the cases hold in any timezone.
+const NOW = new Date(2026, 9, 29, 12, 0).getTime()
+const today = new Date(2026, 9, 29, 19, 0).toISOString()
+const friday = new Date(2026, 9, 30, 19, 0).toISOString()
+
+describe('when', () => {
+  test('HH:MM today, <Ddd> HH:MM another day', () => {
+    expect(when(today, NOW)).toBe('19:00')
+    expect(when(friday, NOW)).toBe('Fri 19:00')
+  })
+})
+
+describe('meterLine', () => {
+  test('parts without a reading are left out; compacted is left out at 0', () => {
+    expect(meterLine({ compactions: 0, limits: [] }, NOW)).toBeNull()
+    expect(meterLine({ compactions: 0, limits: [], context: 41.6 }, NOW)?.text).toBe('ctx 42%')
+    expect(meterLine({ compactions: 3, limits: [] }, NOW)?.text).toBe('3 compacted')
+  })
+
+  test('the full line and the window labels', () => {
+    const m = {
+      context: 87,
+      compactions: 3,
+      limits: [
+        { kind: 'five_hour', percentUsed: 41 },
+        { kind: 'seven_day', percentUsed: 12.4 },
+        { kind: 'spend_limit', percentUsed: 5 },
+      ],
+    }
+    expect(meterLine(m, NOW)?.text).toBe('ctx 87% · 3 compacted · 5h 41% · 7d 12% · spend_limit 5%')
+  })
+
+  test('context at 85 % or more is flagged', () => {
+    const flag = (context: number) => meterLine({ compactions: 0, limits: [], context }, NOW)?.parts[0]?.warn
+    expect(flag(84)).toBe(false)
+    expect(flag(85)).toBe(true)
+  })
+
+  test('the limited forms, with and without until', () => {
+    const base = { compactions: 2, limits: [{ kind: 'five_hour', percentUsed: 100 }], context: 62 }
+    const withUntil = meterLine({ ...base, limit: { until: today } }, NOW)
+    expect(withUntil?.text).toBe('limited until 19:00 · ctx 62%')
+    expect(withUntil?.limited).toBe(true)
+    expect(meterLine({ ...base, limit: {} }, NOW)?.text).toBe('limited · ctx 62%')
+    expect(meterLine({ compactions: 0, limits: [], limit: {} }, NOW)?.text).toBe('limited')
+  })
+
+  test('a stop whose until is past reads as cleared', () => {
+    expect(meterLine({ compactions: 0, limits: [], context: 10, limit: { until: today } }, NOW + 8 * 60 * MIN)?.text).toBe('ctx 10%')
+  })
+})
+
+describe('beatLine', () => {
+  test('working, idle and last text', () => {
+    expect(beatLine(null, null, NOW)).toBeNull()
+    expect(beatLine({ working: true, since: NOW - 30_000 }, null, NOW)).toBe('working <1m')
+    expect(beatLine({ working: false, since: NOW - 4 * MIN }, null, NOW)).toBe('idle 4m')
+    expect(beatLine({ working: false, since: NOW - 4 * MIN }, NOW - 4 * MIN, NOW)).toBe('idle 4m · last text 4m ago')
+  })
+})
+
+describe('limit clearing', () => {
+  test('a reading under 100 % clears; an empty reading does not', () => {
+    expect(clearsLimit([{ kind: 'five_hour', percentUsed: 99.9 }, { kind: 'seven_day', percentUsed: 3 }])).toBe(true)
+    expect(clearsLimit([{ kind: 'five_hour', percentUsed: 100 }, { kind: 'seven_day', percentUsed: 3 }])).toBe(false)
+    expect(clearsLimit([])).toBe(false)
+  })
+
+  test('until in the past reads as cleared; a stop without until stays', () => {
+    expect(limitActive({ until: today }, NOW)).toEqual({ until: today })
+    expect(limitActive({ until: today }, Date.parse(today))).toBeUndefined()
+    expect(limitActive({}, NOW)).toEqual({})
+    expect(limitActive(undefined, NOW)).toBeUndefined()
+  })
+
+  test('until is the latest reset among windows at 100 %', () => {
+    const soon = new Date(2026, 9, 29, 15, 0).toISOString()
+    expect(
+      limitUntil([
+        { kind: 'five_hour', percentUsed: 100, resetsAt: soon },
+        { kind: 'seven_day', percentUsed: 100, resetsAt: friday },
+        { kind: 'x', percentUsed: 50, resetsAt: new Date(2026, 10, 5).toISOString() },
+      ]),
+    ).toBe(friday)
+    expect(limitUntil([{ kind: 'five_hour', percentUsed: 99, resetsAt: soon }])).toBeUndefined()
+    expect(limitUntil([{ kind: 'five_hour', percentUsed: 100 }])).toBeUndefined()
+  })
+})
+
+describe('statusLine with a limit stop', () => {
+  const snap = { repo: 'o/r', fetchedAt: 0, error: null, gates: [], milestones: [], upNext: [] }
+
+  test('the part opens the text in all three forms', () => {
+    expect(statusLine(snap, null, [], [], { until: today }, NOW)).toBe('limited until 19:00 · 0 need you · 0 running')
+    expect(statusLine(null, null, [], [], {}, NOW)).toBe('limited · reading GitHub…')
+    expect(statusLine({ ...snap, error: 'boom' }, null, [], [], { until: friday }, NOW)).toBe('limited until Fri 19:00 · boom')
+  })
+
+  test('no stop, or a past one, leaves the text as it was', () => {
+    expect(statusLine(snap, null, [], [])).toBe('0 need you · 0 running')
+    expect(statusLine(snap, null, [], [], { until: today }, Date.parse(today) + 1)).toBe('0 need you · 0 running')
+  })
+})
+
+describe('the writes', () => {
+  const read = (rateLimits: { kind: string; percentUsed: number; resetsAt?: string }[], percent?: number) => ({
+    context: percent === undefined ? { window: 1 } : { window: 1, percent },
+    rateLimits,
+  })
+
+  test('a reading sets context and windows; a missing context keeps the held one', () => {
+    const first = withReading(undefined, read([{ kind: 'five_hour', percentUsed: 41, resetsAt: today }], 40))
+    expect(first).toEqual({ compactions: 0, context: 40, limits: [{ kind: 'five_hour', percentUsed: 41, resetsAt: today }] })
+    expect(withReading(first, read([]))).toEqual({ compactions: 0, context: 40, limits: [] })
+  })
+
+  test('a stop clears on a reading under 100 %, not on an empty one', () => {
+    const stopped = { compactions: 0, limits: [], limit: { until: today } }
+    expect(withReading(stopped, read([], 10)).limit).toEqual({ until: today })
+    expect(withReading(stopped, read([{ kind: 'five_hour', percentUsed: 100 }])).limit).toEqual({ until: today })
+    expect(withReading(stopped, read([{ kind: 'five_hour', percentUsed: 30 }])).limit).toBeUndefined()
+  })
+
+  test('compactions count up; a stop takes until from the windows at 100 %', () => {
+    expect(withCompaction(withCompaction(undefined)).compactions).toBe(2)
+    const m = { compactions: 0, limits: [{ kind: 'five_hour', percentUsed: 100, resetsAt: today }, { kind: 'seven_day', percentUsed: 100, resetsAt: friday }] }
+    expect(withStop(m).limit).toEqual({ until: friday })
+    expect(withStop(undefined).limit).toEqual({})
+  })
+})
+
+function boot(on: Parameters<Parameters<typeof test>[1]>[1], workflow = '# Workflow contract\n') {
+  const status: (string | undefined)[] = []
+  on('ui.status', (_$, e) => {
+    status.push(e.text)
+
+    return { value: undefined }
+  })
+  const clock = mock.clock(on, { now: NOW })
+  on('session.start', (_$, e) => ({ cwd: e.cwd }))
+  on('command.register', () => ({ value: { command: 'loopkit-status' } }))
+  on('ui.open', () => ({ value: { isPlaced: true } }))
+  on('fs.read', (_$, e) => {
+    if (e.path.endsWith('docs/workflow.md')) return { value: workflow }
+    throw new Error('ENOENT')
+  })
+  // No gh in these cases: every read fails and the snapshot keeps its error.
+  on('process.run', () => ({ value: { exitCode: 1, stderr: 'no gh\n', stdout: '' } }))
+  on('session.measure', (_$, e) => ({ changed: e.changed }))
+  on('classic.StopFailure', () => ({}))
+  on('classic.PostCompact', () => ({}))
+  on('turn.start', () => ({ turnId: 't' }) as never)
+  on('turn.complete', () => ({ text: '' }))
+
+  return { status, clock }
+}
+
+const start = { cwd: '/work', surface: 'terminal', isInteractive: true } as const
+const measure = (rateLimits: object[] = [], percent = 40) =>
+  ({ context: { window: 200_000, percent }, rateLimits, changed: ['context'] }) as never
+
+describe('the hooks', () => {
+  test('measure and the limit stop: the status line carries the stop until a reading clears it', async ($, on) => {
+    const { clock, status } = boot(on)
+    await $.session.start(start)
+    await clock.settle()
+    const done = await $.session.measure(measure([{ kind: 'five_hour', percentUsed: 100, resetsAt: today }, { kind: 'seven_day', percentUsed: 100, resetsAt: friday }]))
+    expect(done).toEqual({ changed: ['context'] })
+    expect(status.at(-1)?.startsWith('limited')).toBe(false)
+    await $.classic.StopFailure({ error: 'overloaded' } as never)
+    expect(status.at(-1)?.startsWith('limited')).toBe(false)
+    await $.classic.StopFailure({ error: 'rate_limit' } as never)
+    expect(status.at(-1)?.startsWith('limited until Fri 19:00 · ')).toBe(true)
+    await $.session.measure(measure([]))
+    expect(status.at(-1)?.startsWith('limited until Fri 19:00 · ')).toBe(true)
+    await $.session.measure(measure([{ kind: 'five_hour', percentUsed: 20 }]))
+    expect(status.at(-1)?.startsWith('limited')).toBe(false)
+  })
+
+  test('a stop without a time reads as limited, and a past until clears it', async ($, on) => {
+    const { clock, status } = boot(on)
+    await $.session.start(start)
+    await clock.settle()
+    await $.classic.StopFailure({ error: 'rate_limit' } as never)
+    expect(status.at(-1)?.startsWith('limited · ')).toBe(true)
+    await $.session.measure(measure([{ kind: 'five_hour', percentUsed: 100, resetsAt: new Date(NOW + 10 * MIN).toISOString() }]))
+    await $.classic.StopFailure({ error: 'rate_limit' } as never)
+    expect(status.at(-1)?.startsWith('limited until ')).toBe(true)
+    await clock.advance(11 * MIN)
+    await $.session.measure(measure([{ kind: 'five_hour', percentUsed: 100, resetsAt: new Date(NOW + 10 * MIN).toISOString() }]))
+    expect(status.at(-1)?.startsWith('limited')).toBe(false)
+  })
+
+  test('every hook observes: it passes the result on, a subagent turn and compaction included', async ($, on) => {
+    const { clock } = boot(on)
+    await $.session.start(start)
+    await clock.settle()
+    expect(await $.turn.start({ text: 'go', turnId: 't1' } as never)).toEqual({ turnId: 't' })
+    expect(await $.turn.start({ text: 'sub', turnId: 't2', agentId: 'a1' } as never)).toEqual({ turnId: 't' })
+    expect(await $.turn.complete({ turnId: 't1', answer: 'done', reason: 'complete' } as never)).toEqual({ text: '' })
+    expect(await $.turn.complete({ turnId: 't2', agentId: 'a1', answer: 'x', reason: 'complete' } as never)).toEqual({ text: '' })
+    expect(await $.classic.PostCompact({ trigger: 'auto', compact_summary: 's' } as never)).toEqual({})
+    expect(await $.classic.PostCompact({ trigger: 'auto', compact_summary: 's', agent_id: 'a1' } as never)).toEqual({})
+  })
+
+  test('outside a loopkit project every hook passes through and writes nothing', async ($, on) => {
+    const { clock, status } = boot(on, '# Other\n')
+    await $.session.start(start)
+    await clock.settle()
+    await $.classic.StopFailure({ error: 'rate_limit' } as never)
+    expect(await $.session.measure(measure())).toEqual({ changed: ['context'] })
+    expect(status).toEqual([])
+  })
+})
