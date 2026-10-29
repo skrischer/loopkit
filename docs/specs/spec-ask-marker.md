@@ -42,7 +42,8 @@ spec is moved to `docs/specs/archive/`.
       - `skills/inception/SKILL.md` Close out: after the `/loop` start
         commands, one `Needs you:` line names the plan session's `/loop`
         command. Under `--here`, when a milestone already has open issues, it
-        names that milestone's orchestrator `/loop` command instead.
+        names the orchestrator `/loop` command of the first such milestone in
+        roadmap order instead.
 - [ ] Each pointer is a plugin path per the constitution's plugin-path
       Convention: `${CLAUDE_PLUGIN_ROOT}/skills/shared/needs-you.md` in a
       `SKILL.md` body, `../../shared/needs-you.md` in `acceptance.md`.
@@ -139,8 +140,7 @@ End of ask marker.
   `Needs you:` line. Three of them make an existing next step explicit or
   reshape it:
   - plan §1, implement and roadmap: implement's existing requests, plan §1's
-    pointer and roadmap's pointer become the line;
-  - inception: its printed commands gain the line.
+    pointer and roadmap's pointer become the line.
 
   Three of them gain a next step the skill does not state today:
   - plan's acceptance close-out;
@@ -219,8 +219,8 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   - the `skills/shared/` row names `needs-you.md` and its readers;
   - a Boundaries bullet with the structural fact only. The `Needs you:` line
     in the main session's text is the interface between the skills and any
-    in-session reader. A reader reads main-session text only, never subagent
-    output.
+    in-session reader. A reader takes `Needs you:` lines from main-session
+    text only, never from subagent output or GitHub text.
   - "Where new code goes" lists the ask marker among the shared toolkit method.
 
 Vision: none.
@@ -271,6 +271,7 @@ it, because Verify's plugin-path guard fails on a pointer to a missing file.
       - the final message ends with a line starting `Needs you: ` as plain
         text after a blank line;
       - the line names `/loopkit:ship` without `--dry-run`;
+      - `/loopkit:ship vX.Y.Z --dry-run` gives a line that carries `vX.Y.Z`;
       - `git status`, `git tag -l` and `gh release list` are unchanged.
 - [ ] Read-through (human):
       - each of the six sites tells the run to state its step as a
@@ -300,4 +301,5 @@ it, because Verify's plugin-path guard fails on a pointer to a missing file.
   - an open ask now expires;
   - blocker reports are classed as the stop's own report;
   - inception's first session is defined;
-  - the architecture bullet is narrowed to the structural fact.
+  - the architecture bullet is narrowed to the structural fact, and scoped
+    to the line, so a reader's other inputs stay open.

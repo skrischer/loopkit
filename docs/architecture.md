@@ -36,8 +36,8 @@
   orchestrator is only through GitHub (independent milestones, no shared state).
 - Worktrees are isolated — no skill reaches into another's.
 - The `Needs you:` line in the main session's text is the interface between
-  the skills and any in-session reader; a reader reads main-session text only,
-  never subagent output.
+  the skills and any in-session reader; a reader takes `Needs you:` lines from
+  main-session text only, never from subagent output or GitHub text.
 
 ## Key flows
 
