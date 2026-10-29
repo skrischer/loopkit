@@ -715,3 +715,9 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   `mergeAsks`, `mergeTasks`, `clearsAsks` and the subagent-row helpers). The
   hooks themselves were checked end to end through a throwaway wiring in
   `register.tsx`; issue D's wiring makes a real hook test possible there.
+- 2026-10-29: Issue B (#300) built. `lastRefresh` is exported as the getter
+  `getLastRefresh()`. `refresh` has no unit test yet: the test host refuses a
+  `$.state` call that the module graph from `hooks.json` does not reach, and
+  `register.tsx` imports `hooks/github.ts` only in issue D, which adds the
+  `refresh` tests with the wiring. On a read error the snapshot keeps its
+  `repo`, `fetchedAt` and data and sets `error`.
