@@ -112,7 +112,8 @@ spec-acceptance gate.
 - Verify:
   - the tests;
   - the read-only guard;
-  - the config-surface guard switched to tracked files, with `types/` added;
+  - the config-surface guard switched to `git ls-files` (tracked and new,
+    non-ignored files), with `types/` added;
   - the matching `docs/workflow.md` Commands text.
 - The README section.
 - The foundation and design-contract edits, authored in this spec PR.
