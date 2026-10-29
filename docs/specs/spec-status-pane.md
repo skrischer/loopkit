@@ -674,8 +674,8 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   - `$.state` survives a compaction, while `$.store` writes a file;
   - `claude plugin test` exits non-zero on failure.
 - 2026-10-29: Review round 1 (REQUEST_CHANGES) addressed:
-  - Verify scans tracked files only, and the root `tsconfig.json` is
-    committed;
+  - Verify scans tracked files only (superseded in round 2), and the root
+    `tsconfig.json` is committed;
   - `active` is a module variable, and `classic.SessionStart` covers
     `/clear`, `/resume` and fork;
   - issue A ships `register.test.ts`;
