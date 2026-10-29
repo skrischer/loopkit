@@ -93,7 +93,10 @@ no mutation); an explicit version (`vX.Y.Z`) to override the computed one.
   invocation already authorized the publish.
 - `--dry-run` stops here: show the composed `gh release create` invocation
   (target, tag, notes file) it *would* run and end — no commit, no tag, no push,
-  no publish. Nothing is mutated.
+  no publish. Nothing is mutated. End with one `Needs you:` line per
+  `${CLAUDE_PLUGIN_ROOT}/skills/shared/needs-you.md` naming the `/loopkit:ship`
+  invocation that publishes what it previewed: never `--dry-run`, with the
+  version argument when one was given.
 
 ## 5. Bump, commit, tag (no gate)
 

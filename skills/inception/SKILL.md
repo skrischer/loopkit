@@ -209,7 +209,11 @@ artifact):
 Read `${CLAUDE_SKILL_DIR}/references/readiness-checklist.md`, walk it and show
 the result. Show the created and changed files for sign-off, then print the `/loop` start
 commands (plan, implement) from the contract's Loops section, ready to paste
-into the plan session and one orchestrator session per milestone.
+into the plan session and one orchestrator session per milestone. Then state
+one `Needs you:` line per `${CLAUDE_PLUGIN_ROOT}/skills/shared/needs-you.md`
+naming the plan session's `/loop` command; under `--here`, when a milestone
+already has open issues, name instead the orchestrator `/loop` command of the
+first such milestone in roadmap order.
 `/loopkit:roadmap` is invoked directly, per idea.
 
 ## If blocked
