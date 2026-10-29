@@ -11,7 +11,8 @@
 | Skill format | Markdown `SKILL.md` + YAML frontmatter | Claude Code's native skill format; no build step |
 | Templates | Markdown + one `settings.json` | copied verbatim into target projects by inception |
 | Plugin manifest | `.claude-plugin/plugin.json` + `marketplace.json` | Claude Code plugin/marketplace spec |
-| Runtime | Claude Code + `gh` + `git` | the only execution substrate; no language runtime, no package manager |
+| Runtime | Claude Code + `gh` + `git` | the only execution substrate; no separate language runtime or package manager (the status mod runs in Claude Code's mod engine) |
+| Status mod | a Claude Code mod: `hooks/hooks.json` names a TypeScript module Claude Code compiles and runs itself | the in-session status view; no build step, no package manager, no dependency |
 | State | GitHub issues / milestones / Project board | the single durable state machine — no DB, no local state files |
 | Design contract | `docs/design.md` (the `docs/workflow.md` sibling) | per-project design medium + rules; skills read it, hardcode no tool |
 | Release contract | `docs/release.md` (the `docs/workflow.md` sibling) | per-project release medium (versioning, changelog, tag, publish targets); skills read it, hardcode no tool |
@@ -113,11 +114,20 @@ Each one is checkable in review.
   two gates stay spec-acceptance and milestone-QA). This principle is the hard
   predecessor of any pre-authorised-autonomy change. (grep-verifiable.)
   (Evidence: `docs/prior-art.md` — Willison lethal-trifecta / Rule of Two.)
+- **Read-only status mod.** The mod reads GitHub only through `gh` read
+  commands passed as argv, and the session only through its hooks. It writes
+  nothing to GitHub or disk, starts no turn, tool call, subagent or skill, and
+  offers no action but open and refresh. Its state is session atoms, never
+  `$.store` or a file; its timer only re-reads, so it is no scheduler. GitHub
+  text is displayed as inert data. Outside a loopkit project it stays silent.
+  (grep-verifiable.)
 
 ## Conventions
 
 - Skills in `skills/<name>/SKILL.md`; on-demand detail a skill links from its
-  core in `skills/<name>/references/`; templates in `skills/<name>/templates/`.
+  core in `skills/<name>/references/`; templates in `skills/<name>/templates/`;
+  the status mod in `hooks/` (its `hooks.json`, modules and tests) with its
+  state contract in `types/`.
 - A plugin path is any path whose first segment is `skills`, `templates`,
   `references` or `shared`. In a `SKILL.md` body it is written under
   `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}`; inside a referenced file it

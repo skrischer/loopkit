@@ -16,7 +16,8 @@
 | `skills/*/references/` | Subagent-only or some-runs-only detail a core `SKILL.md` links with when to read it — not skills |
 | `skills/shared/` | Plugin-shipped shared references, not skills: `iteration-steps.md` (prior-art challenge / architecture seed / roadmap seeding — inception, roadmap), `preflight.md` (the `gh`/`git` preflight — inception, plan, implement, roadmap, ship), `trust-boundary.md` (read-discipline, shell-hygiene, capability separation — plan, implement, roadmap, ship), `needs-you.md` (the `Needs you:` line, the one form of a request to the human the run does not wait for — inception, plan, implement, roadmap, ship) |
 | `skills/*/templates/` | Pure artifact blueprints, filled into target projects by inception |
-| `.claude-plugin/` | `plugin.json` + `marketplace.json` |
+| `hooks/` + `types/` | The status mod: a TypeScript module Claude Code runs (`hooks/hooks.json`) with its state contract (`types/`); inputs GitHub (`gh`) and session events, outputs a pane and a status-line entry |
+| `.claude-plugin/` | `plugin.json` (naming the status mod's types) + `marketplace.json` |
 | `docs/` (target project) | vision/constitution/prior-art/architecture + `roadmap.md` + `workflow.md` + `design.md` + `release.md` |
 | GitHub (issues/milestones/board/PRs) | the single durable state machine |
 
@@ -35,6 +36,8 @@
 - Orchestrator <-> subagents is in-session and ephemeral; orchestrator <->
   orchestrator is only through GitHub (independent milestones, no shared state).
 - Worktrees are isolated — no skill reaches into another's.
+- No skill depends on the status mod: a session without it loses only the
+  view.
 - The `Needs you:` line in the main session's text is the interface between
   the skills and any in-session reader; a reader takes `Needs you:` lines from
   main-session text only, never from subagent output or GitHub text.
@@ -74,6 +77,10 @@
    the human's invocation; a summary is printed, no separate stop) -> record.
    Human-invoked and in-session; no CI bot, no scheduler; the contract names every
    tool.
+8. **Status view:** a session starts in a loopkit project -> the status mod
+   reads GitHub (`gh`) and session events -> derives needs-you, milestones,
+   running and up next -> pane + status line; re-read after a turn, after a
+   merge and every 2 minutes.
 
 ## Where new code goes
 
@@ -98,3 +105,5 @@
 - Per-project cross-skill behavior -> the `workflow.md` contract, or the
   constitution if binding; never a single skill.
 - Permission/autonomy -> the `settings.json` template.
+- What the in-session status view shows -> `hooks/` (+ its state contract in
+  `types/`).

@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1000" width="1440" height="1000" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+  <!-- loopkit status pane: one UI concept, the pane beside the chat plus the status line. Sample data. -->
+  <rect x="0" y="0" width="1440" height="1000" fill="#181825"/>
+
+  <!-- HEADER -->
+  <text x="48" y="54" font-size="28" font-weight="700" fill="#cdd6f4">loopkit status pane — design</text>
+  <text x="48" y="84" font-size="15" fill="#a6adc8">The read-only Claude Code mod in hooks/: a pane beside the chat and a status-line entry, drawn with sample data at terminal scale.</text>
+
+  <!-- TERMINAL FRAME -->
+  <rect x="40" y="110" width="1000" height="830" rx="10" fill="#11111b" stroke="#313244" stroke-width="2"/>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">
+    <!-- CHAT (left, dimmed: the transcript the pane sits beside) -->
+    <text x="60" y="146" fill="#6c7086">● Wave 2 dispatched: #302 github view, #303 session signals.</text>
+    <text x="76" y="165" fill="#6c7086">⎿ Agent(Implement #302) running in background</text>
+    <text x="76" y="184" fill="#6c7086">⎿ Agent(Implement #303) running in background</text>
+    <text x="60" y="222" fill="#6c7086">● Milestone #26 ask-marker is closed. A release is due:</text>
+    <text x="60" y="260" fill="#a6adc8">Needs you: `/loopkit:ship` publishes v2.4.0 — nothing</text>
+    <text x="60" y="279" fill="#a6adc8">waits on it.</text>
+    <text x="60" y="317" fill="#6c7086">● Task notification: #302 merged via PR #306.</text>
+    <text x="76" y="336" fill="#6c7086">⎿ Bash(gh pr merge 306 --squash --delete-branch)</text>
+    <text x="60" y="374" fill="#6c7086">● Re-reading the frontier … (25 tool calls later the ask</text>
+    <text x="76" y="393" fill="#6c7086">above has scrolled away; the pane still holds it)</text>
+    <text x="60" y="431" fill="#6c7086">● Asking the gate question for #305 …</text>
+
+    <!-- DIVIDER between chat and pane -->
+    <line x1="584" y1="122" x2="584" y2="862" stroke="#313244" stroke-width="2"/>
+
+    <!-- PANE (right) -->
+    <rect x="596" y="122" width="432" height="26" rx="4" fill="#1e1e2e"/>
+    <text x="606" y="140" font-weight="700" fill="#cdd6f4">loopkit</text>
+    <text x="606" y="170" fill="#6c7086">skrischer/loopkit · updated 14:32</text>
+
+    <!-- Needs you -->
+    <text x="606" y="204" font-weight="700" fill="#f9e2af">Needs you (4)</text>
+    <text x="606" y="223" fill="#cdd6f4"><tspan font-weight="700" fill="#f9e2af">?</tspan> Spec-Gate</text>
+    <text x="622" y="242" fill="#6c7086">question open · waiting 4m</text>
+    <text x="606" y="261" fill="#cdd6f4"><tspan font-weight="700" fill="#f9e2af">›</tspan> `/loopkit:ship` publishes v2.4.0 — nothin…</text>
+    <text x="622" y="280" fill="#6c7086">12m ago · 25 calls since</text>
+    <text x="606" y="299" fill="#cdd6f4"><tspan font-weight="700">PR #310</tspan> docs(spec): session-meters</text>
+    <text x="622" y="318" fill="#6c7086">spec acceptance · docs/session-meters</text>
+    <text x="606" y="337" fill="#cdd6f4"><tspan font-weight="700">#305</tspan> Provision the staging token</text>
+    <text x="622" y="356" fill="#6c7086">blocked:human · status-pane</text>
+
+    <!-- Milestones -->
+    <text x="606" y="390" font-weight="700" fill="#cdd6f4">Milestones (1)</text>
+    <text x="606" y="409" fill="#cdd6f4"><tspan font-weight="700">#27</tspan> status-pane  <tspan fill="#a6e3a1">█████</tspan><tspan fill="#45475a">░░░░░</tspan>  4/8  50%</text>
+    <text x="622" y="428" fill="#6c7086">2 in flight · 1 blocked</text>
+
+    <!-- Running -->
+    <text x="606" y="462" font-weight="700" fill="#89b4fa">Running (3)</text>
+    <text x="606" y="481" fill="#cdd6f4"><tspan fill="#89b4fa">●</tspan> Implement #303 session signals</text>
+    <text x="622" y="500" fill="#6c7086">subagent · sonnet · 6m · active &lt;1m</text>
+    <text x="606" y="519" fill="#cdd6f4"><tspan fill="#89b4fa">●</tspan> Watch CI on PR #307</text>
+    <text x="622" y="538" fill="#6c7086">monitor · 3m</text>
+    <text x="606" y="557" fill="#cdd6f4"><tspan fill="#89b4fa">●</tspan> Run the plugin tests</text>
+    <text x="622" y="576" fill="#6c7086">shell · claude plugin test . · 1m</text>
+
+    <!-- Up next -->
+    <text x="606" y="610" font-weight="700" fill="#a6e3a1">Up next (2)</text>
+    <text x="606" y="629" fill="#cdd6f4"><tspan font-weight="700">#304</tspan> README "Status pane" section</text>
+    <text x="622" y="648" fill="#6c7086">status-pane</text>
+    <text x="606" y="667" fill="#cdd6f4"><tspan font-weight="700">session-meters</tspan></text>
+    <text x="622" y="686" fill="#6c7086">roadmap · /loopkit:plan</text>
+
+    <!-- Refresh button (the pane's only control) -->
+    <rect x="606" y="712" width="92" height="26" rx="4" fill="none" stroke="#6c7086" stroke-width="1.5"/>
+    <text x="622" y="730" fill="#cdd6f4">Refresh</text>
+
+    <!-- PROMPT + STATUS LINE (full width, bottom) -->
+    <line x1="52" y1="874" x2="1028" y2="874" stroke="#313244" stroke-width="1.5"/>
+    <text x="60" y="898" fill="#cdd6f4">❯ <tspan fill="#6c7086">_</tspan></text>
+    <line x1="52" y1="910" x2="1028" y2="910" stroke="#313244" stroke-width="1.5"/>
+    <text x="60" y="930" fill="#a6adc8">loopkit · 4 need you · #27 4/8 · 3 running</text>
+  </g>
+
+  <!-- ANNOTATIONS (right column) -->
+  <g font-size="13" fill="#a6adc8">
+    <text x="1068" y="140" font-size="15" font-weight="700" fill="#cdd6f4">How each part is fed</text>
+
+    <text x="1068" y="176" font-weight="700" fill="#f9e2af">Needs you — order</text>
+    <text x="1068" y="196">1. ? open AskUserQuestion (main loop),</text>
+    <text x="1068" y="213">   its headers, waiting since the call</text>
+    <text x="1068" y="233">2. › held Needs you: asks, newest first,</text>
+    <text x="1068" y="250">   shown without the "Needs you: " prefix;</text>
+    <text x="1068" y="267">   from main-loop turn.complete answers,</text>
+    <text x="1068" y="284">   cleared by the human's next message</text>
+    <text x="1068" y="301">   (composer or bridge; never a task notif-</text>
+    <text x="1068" y="318">   ication or /loopkit-status); "· seen N×"</text>
+    <text x="1068" y="338">3. GitHub gates: milestone QA, spec PR,</text>
+    <text x="1068" y="355">   needs:planning, blocked:human</text>
+
+    <text x="1068" y="392" font-weight="700" fill="#cdd6f4">Milestones</text>
+    <text x="1068" y="412">open milestones with issues, by number;</text>
+    <text x="1068" y="429">bar of 10 cells, closed / all, percent;</text>
+    <text x="1068" y="446">in flight = board In Progress,</text>
+    <text x="1068" y="463">blocked = open dependency or label</text>
+
+    <text x="1068" y="500" font-weight="700" fill="#89b4fa">Running</text>
+    <text x="1068" y="520">one row per task id: classic.Stop</text>
+    <text x="1068" y="537">background_tasks, plus agent.spawn</text>
+    <text x="1068" y="554">between stops; kind · detail · elapsed</text>
+    <text x="1068" y="571">from first sight; a subagent adds</text>
+    <text x="1068" y="588">"active" = time since its last tool call</text>
+
+    <text x="1068" y="625" font-weight="700" fill="#a6e3a1">Up next</text>
+    <text x="1068" y="645">unblocked frontier issues (max 6), then</text>
+    <text x="1068" y="662">unplanned roadmap phases (max 3);</text>
+    <text x="1068" y="679">"+N more" when cut</text>
+
+    <text x="1068" y="716" font-weight="700" fill="#cdd6f4">Controls</text>
+    <text x="1068" y="736">Refresh only — no approve, merge, answer</text>
+    <text x="1068" y="753">or dismiss; /loopkit-status opens + refreshes</text>
+
+    <text x="1068" y="790" font-weight="700" fill="#cdd6f4">Refresh</text>
+    <text x="1068" y="810">session start · /clear · main-loop turn end</text>
+    <text x="1068" y="827">(≥15 s apart) · any gh pr merge · every 2 min ·</text>
+    <text x="1068" y="844">Refresh / command; ages tick every minute</text>
+
+    <text x="1068" y="898" font-weight="700" fill="#cdd6f4">Status line</text>
+    <text x="1068" y="918">loopkit · n need you · #m closed/all ·</text>
+    <text x="1068" y="935">k running — milestone part: first row with</text>
+    <text x="1068" y="952">work in flight, else the first, else none</text>
+  </g>
+
+  <!-- FOOTNOTE -->
+  <text x="48" y="976" font-size="12" fill="#6c7086">Rows: a title line plus a dim note line, cut with … to the pane width (min 30 columns). Colours are theme names: warning (Needs you), suggestion (Running), success (Up next), dim for notes, error for a read error in the header.</text>
+</svg>
