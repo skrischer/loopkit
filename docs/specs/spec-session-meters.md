@@ -316,7 +316,8 @@ its hooks.
 - **`meters.test.ts`:**
   - pure: `headerLine` (`compacted` left out at 0, no last text before the
     first answer, the limited forms with and without `until`, the warning
-    flag on the limit part only); `beatLine` (working, idle, last text);
+    flag on the limit part only, a lone limit part with no beat, and `null`
+    when no part has a value); `beatLine` (working, idle, last text);
     `when` (today and another day); limit clearing (on a reading under
     100 %, not on an empty `rateLimits`, on `until` in the past);
   - hooks: `session.measure` writes; the compaction count, with an
@@ -560,3 +561,9 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   The `ctx`, `5h` and `7d` parts are gone, because Claude Code's own status
   line shows them; `meters.context` is dropped and `headerLine` replaces
   `meterLine` in issue C. The design shows the one-line header.
+- 2026-10-29: Header-line review round 1 (REQUEST_CHANGES) addressed: the
+  README and In-scope wording; `headerLine` joins the parts with ` · ` and
+  returns `null` when none has a value; the removed `meterLine` helpers and
+  `Reading.context` are named; the State-contract block, the claude-hud
+  verdict and the unshaped `meters` atom are noted; #309's body was
+  rewritten. Round 2 returned APPROVE; its test cases were added.
