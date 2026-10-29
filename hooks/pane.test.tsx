@@ -168,6 +168,18 @@ describe('the pane', () => {
     await ui.unmount()
   })
 
+  test('a render before session.start finishes redraws once the session is active', async ($, on) => {
+    const { clock } = boot(on, ghOk)
+    // The engine's own drawing, beneath the mod: nothing, outside an active project.
+    on('ui.render', () => ({ type: 'Text', children: [''] }))
+    const ui = await $.ui.mount(PANE)
+    expect((await texts(ui)).join('\n')).not.toContain('Needs you')
+    await $.session.start(start)
+    await clock.settle()
+    expect((await texts(ui)).join('\n')).toContain('Needs you (1)')
+    await ui.unmount()
+  })
+
   test('empty states', async ($, on) => {
     const { clock } = boot(on, { repo: { nameWithOwner: 'o/r' }, issue: [], pr: [], api: [] })
     await $.session.start(start)

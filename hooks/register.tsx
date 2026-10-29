@@ -1,4 +1,4 @@
-import { update } from 'claude-code'
+import { read, update } from 'claude-code'
 import type { EngineInterface, Register, Timer } from 'claude-code'
 
 import { refresh } from './github'
@@ -104,7 +104,13 @@ export const register: Register = on => {
   }).catch(($, e, next) => next(e))
 
   on('ui.render', { component: 'Pane', requestId: PANE_ID }, async ($, e, next) => {
-    if (!active) return next(e)
+    if (!active) {
+      // A reload starts with active false: subscribe before giving up, so the
+      // writes of session.start and the first refresh redraw this render.
+      await read($, isRefreshing)
+      await read($, now)
+      if (!active) return next(e)
+    }
 
     return renderPane($, e)
   }).catch(($, e, next) => { return next(e) })
