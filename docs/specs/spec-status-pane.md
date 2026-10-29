@@ -706,3 +706,9 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   `$.process.run(` sites until `hooks/github.ts` exists, because issue A ships
   no `gh` call. From then on exactly one is required, and it must be a
   `['gh', …]` argv.
+- 2026-10-29: Issue B (#300) built. `lastRefresh` is exported as the getter
+  `getLastRefresh()`. `refresh` has no unit test yet: the test host refuses a
+  `$.state` call that the module graph from `hooks.json` does not reach, and
+  `register.tsx` imports `hooks/github.ts` only in issue D, which adds the
+  `refresh` tests with the wiring. On a read error the snapshot keeps its
+  `repo`, `fetchedAt` and data and sets `error`.
