@@ -64,7 +64,8 @@ drawn at terminal scale with sample data; it adds no UI tokens.
   (which shows the XML). It is durable GitHub state either way — the committed
   file is the state, never an external link.
 - Decisions it clarifies: flow, architecture, and the mental model of how the
-  loops interpret their inputs (the interpretation diagram is the exemplar).
+  loops interpret their inputs (the interpretation diagram is the exemplar),
+  plus the layout of the one UI surface as a mock (`status-pane.svg`).
 
 ## Durable form
 
@@ -93,8 +94,8 @@ link.
 
 ## Diagram conventions
 
-- One concept per diagram — a flow, a state model, or an architecture view; do
-  not cram unrelated concerns into one `.svg`.
+- One concept per diagram — a flow, a state model, an architecture view, or a
+  UI mock; do not cram unrelated concerns into one `.svg`.
 - Self-contained: readable from the committed file alone, with no external font
   or asset dependency (the interpretation SVG inlines `system-ui` fallbacks).
 - Keep the source hand-editable — a diffable `.svg` a future worktree can open

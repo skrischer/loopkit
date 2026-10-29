@@ -84,9 +84,8 @@ stay the engineer; the loop does the typing.
   gates at spec-acceptance and milestone-QA.
 - Dependency representation at milestone and issue level — the unblocked
   frontier the orchestrator parallelizes along.
-- A read-only in-session status view shipped with the plugin — what needs the
-  human, milestone progress, running and upcoming work — that reads GitHub and
-  the session and never acts.
+- A read-only in-session status view shipped with the plugin: what needs the
+  human, milestone progress, running and upcoming work.
 
 ### Out
 

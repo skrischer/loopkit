@@ -37,20 +37,20 @@
     <text x="622" y="242" fill="#6c7086">question open · waiting 4m</text>
     <text x="606" y="261" fill="#cdd6f4"><tspan font-weight="700" fill="#f9e2af">›</tspan> `/loopkit:ship` publishes v2.4.0 — nothin…</text>
     <text x="622" y="280" fill="#6c7086">12m ago · 25 calls since</text>
-    <text x="606" y="299" fill="#cdd6f4"><tspan font-weight="700">PR #298</tspan> docs(spec): status-pane</text>
-    <text x="622" y="318" fill="#6c7086">spec acceptance · docs/status-pane</text>
+    <text x="606" y="299" fill="#cdd6f4"><tspan font-weight="700">PR #310</tspan> docs(spec): session-meters</text>
+    <text x="622" y="318" fill="#6c7086">spec acceptance · docs/session-meters</text>
     <text x="606" y="337" fill="#cdd6f4"><tspan font-weight="700">#305</tspan> Provision the staging token</text>
     <text x="622" y="356" fill="#6c7086">blocked:human · status-pane</text>
 
     <!-- Milestones -->
     <text x="606" y="390" font-weight="700" fill="#cdd6f4">Milestones (1)</text>
-    <text x="606" y="409" fill="#cdd6f4"><tspan font-weight="700">#27</tspan> status-pane  <tspan fill="#a6e3a1">██████</tspan><tspan fill="#45475a">░░░░</tspan>  4/7  57%</text>
+    <text x="606" y="409" fill="#cdd6f4"><tspan font-weight="700">#27</tspan> status-pane  <tspan fill="#a6e3a1">█████</tspan><tspan fill="#45475a">░░░░░</tspan>  4/8  50%</text>
     <text x="622" y="428" fill="#6c7086">2 in flight · 1 blocked</text>
 
     <!-- Running -->
     <text x="606" y="462" font-weight="700" fill="#89b4fa">Running (3)</text>
     <text x="606" y="481" fill="#cdd6f4"><tspan fill="#89b4fa">●</tspan> Implement #303 session signals</text>
-    <text x="622" y="500" fill="#6c7086">subagent · sonnet · 6m · active 20s</text>
+    <text x="622" y="500" fill="#6c7086">subagent · sonnet · 6m · active &lt;1m</text>
     <text x="606" y="519" fill="#cdd6f4"><tspan fill="#89b4fa">●</tspan> Watch CI on PR #307</text>
     <text x="622" y="538" fill="#6c7086">monitor · 3m</text>
     <text x="606" y="557" fill="#cdd6f4"><tspan fill="#89b4fa">●</tspan> Run the plugin tests</text>
@@ -71,7 +71,7 @@
     <line x1="52" y1="874" x2="1028" y2="874" stroke="#313244" stroke-width="1.5"/>
     <text x="60" y="898" fill="#cdd6f4">❯ <tspan fill="#6c7086">_</tspan></text>
     <line x1="52" y1="910" x2="1028" y2="910" stroke="#313244" stroke-width="1.5"/>
-    <text x="60" y="930" fill="#a6adc8">loopkit · 4 need you · #27 4/7 · 3 running</text>
+    <text x="60" y="930" fill="#a6adc8">loopkit · 4 need you · #27 4/8 · 3 running</text>
   </g>
 
   <!-- ANNOTATIONS (right column) -->
@@ -86,7 +86,7 @@
     <text x="1068" y="267">   from main-loop turn.complete answers,</text>
     <text x="1068" y="284">   cleared by the human's next message</text>
     <text x="1068" y="301">   (composer or bridge, never a task</text>
-    <text x="1068" y="318">   notification); "· said N×" when repeated</text>
+    <text x="1068" y="318">   notification); "· seen N×" when repeated</text>
     <text x="1068" y="338">3. GitHub gates: milestone QA, spec PR,</text>
     <text x="1068" y="355">   needs:planning, blocked:human</text>
 

@@ -16,7 +16,7 @@
 | `skills/*/references/` | Subagent-only or some-runs-only detail a core `SKILL.md` links with when to read it — not skills |
 | `skills/shared/` | Plugin-shipped shared references, not skills: `iteration-steps.md` (prior-art challenge / architecture seed / roadmap seeding — inception, roadmap), `preflight.md` (the `gh`/`git` preflight — inception, plan, implement, roadmap, ship), `trust-boundary.md` (read-discipline, shell-hygiene, capability separation — plan, implement, roadmap, ship), `needs-you.md` (the `Needs you:` line, the one form of a request to the human the run does not wait for — inception, plan, implement, roadmap, ship) |
 | `skills/*/templates/` | Pure artifact blueprints, filled into target projects by inception |
-| `hooks/` + `types/` | The status mod: a TypeScript module Claude Code runs; reads GitHub (`gh` argv) and session events, draws a read-only pane and status-line entry; state in session atoms only |
+| `hooks/` + `types/` | The status mod: a TypeScript module Claude Code runs (`hooks/hooks.json`) with its state contract (`types/`); inputs GitHub (`gh`) and session events, outputs a pane and a status-line entry |
 | `.claude-plugin/` | `plugin.json` (naming the status mod's types) + `marketplace.json` |
 | `docs/` (target project) | vision/constitution/prior-art/architecture + `roadmap.md` + `workflow.md` + `design.md` + `release.md` |
 | GitHub (issues/milestones/board/PRs) | the single durable state machine |
@@ -36,8 +36,8 @@
 - Orchestrator <-> subagents is in-session and ephemeral; orchestrator <->
   orchestrator is only through GitHub (independent milestones, no shared state).
 - Worktrees are isolated — no skill reaches into another's.
-- The status mod reads and never acts, and no skill depends on it: a session
-  without it loses only the view.
+- No skill depends on the status mod: a session without it loses only the
+  view.
 - The `Needs you:` line in the main session's text is the interface between
   the skills and any in-session reader; a reader takes `Needs you:` lines from
   main-session text only, never from subagent output or GitHub text.
