@@ -15,6 +15,7 @@ const MERGE = /\bgh\s+pr\s+merge\b/
 // state refs are spelled here; their defaults live in types/index.d.ts.
 const isRefreshing = { plugin: 'loopkit', key: 'isRefreshing' } as const
 const now = { plugin: 'loopkit', key: 'now' } as const
+const asking = { plugin: 'loopkit', key: 'asking' } as const
 
 // A loopkit project is a working directory whose docs/workflow.md starts with
 // the contract heading. A module variable, not an atom: /clear resets atoms
@@ -50,6 +51,7 @@ export const register: Register = on => {
       return started
     }
     await update($, isRefreshing, () => false)
+    await update($, asking, () => null)
     await $.command.register({
       name: PANE_COMMAND,
       description: 'Open the loopkit status pane and refresh it from GitHub',

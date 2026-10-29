@@ -151,6 +151,23 @@ describe('the pane', () => {
     await ui.unmount()
   })
 
+  test('a held open-question marker is cleared on session.start', async ($, on) => {
+    const { clock } = boot(on, ghOk)
+    on('tool.call', { tool: 'AskUserQuestion' }, async () => new Promise(() => undefined))
+    await $.session.start(start)
+    await clock.settle()
+    void $.tool.call({ tool: 'AskUserQuestion', questions: [{ header: 'Pick one', question: 'Which?', options: [], multiSelect: false }] })
+    await clock.settle()
+    let ui = await $.ui.mount(PANE)
+    expect((await texts(ui)).join('\n')).toContain('Pick one')
+    await ui.unmount()
+    await $.session.start(start)
+    await clock.settle()
+    ui = await $.ui.mount(PANE)
+    expect((await texts(ui)).join('\n')).not.toContain('Pick one')
+    await ui.unmount()
+  })
+
   test('empty states', async ($, on) => {
     const { clock } = boot(on, { repo: { nameWithOwner: 'o/r' }, issue: [], pr: [], api: [] })
     await $.session.start(start)

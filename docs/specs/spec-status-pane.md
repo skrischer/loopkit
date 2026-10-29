@@ -746,3 +746,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   gap) after the header lines, between Needs you, Milestones, Running and Up
   next, and before the Refresh button, as the design draws them. The
   pre-snapshot layout is unchanged.
+- 2026-10-29: Issue #317 built. `session.start` also clears `asking` (the
+  open-question marker) beside `isRefreshing`, so a reload during an open
+  `AskUserQuestion` cannot leave Needs you showing a question no hook clears.
+  The ref is spelled in `hooks/register.tsx`, as the engine scan requires.
