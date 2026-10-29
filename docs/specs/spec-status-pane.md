@@ -737,3 +737,8 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   by description keeps the spawn's agent id in an optional `Task.agentId` while
   `id` becomes the Stop's task id (one row per task). `dropTask` and
   `touchTask` match either id; `mergeTasks` carries `agentId` across later Stops.
+- 2026-10-29: Issue #314 built. Claude Code draws a plugin's status line as
+  `<plugin>: <text>`, so `statusLine` drops its own `loopkit · ` lead (it read
+  `loopkit: loopkit · 2 need you …` at the QA gate). The pre-snapshot form is
+  `reading GitHub…` and the error form is the bare error; the README and the
+  design show the line as drawn.

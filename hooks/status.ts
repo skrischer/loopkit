@@ -19,11 +19,11 @@ export function statusLine(
   held: readonly Ask[],
   running: readonly Task[],
 ): string {
-  if (s === null) return 'loopkit · reading GitHub…'
-  if (s.error !== null) return `loopkit: ${s.error}`
+  if (s === null) return 'reading GitHub…'
+  if (s.error !== null) return s.error
   const needs = (question ? 1 : 0) + held.length + s.gates.length
   const m = s.milestones.find(row => row.inFlight > 0) ?? s.milestones[0]
-  const parts = ['loopkit', `${needs} need you`]
+  const parts = [`${needs} need you`]
   if (m) parts.push(`#${m.number} ${m.closed}/${m.total}`)
   parts.push(`${running.length} running`)
 
