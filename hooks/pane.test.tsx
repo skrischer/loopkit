@@ -126,9 +126,10 @@ describe('cutEvent', () => {
 describe('paneRows', () => {
   const state = { snap: snap(), held: [], question: null, running: [], events: [], header: false }
 
-  test('the empty snapshot: header, five gaps, six sections and the button', () => {
-    // loopkit, meta, 5 gaps, Needs you 2, Milestones 2, Running 2, Events 2, Up next 2, Refresh 1
-    expect(paneRows(state)).toBe(2 + 5 + 2 + 2 + 2 + 2 + 2 + 1)
+  test('the empty snapshot: header, six gaps, five sections and the button', () => {
+    // loopkit, meta, 6 gaps, Needs you 2, Milestones 2, Running 2, Events 2, Up next 2, Refresh 1
+    expect(paneRows(state)).toBe(2 + 6 + 2 + 2 + 2 + 2 + 2 + 1)
+    expect(paneRows(state)).toBe(19)
     expect(paneRows({ ...state, header: true })).toBe(paneRows(state) + 1)
   })
 
@@ -482,7 +483,7 @@ describe('session meters in the pane', () => {
     expect(all).toContain('Events (10)')
     expect(all).not.toContain('No events yet.')
     const rows = all.filter(t => /^\d\d:\d\d denied Bash: reason/.test(t))
-    expect(rows.length).toBeGreaterThanOrEqual(8)
+    expect(rows.length).toBe(8)
     expect(rows.some(t => t.includes('denied Bash: reason 9 ×2'))).toBe(true)
     expect(rows.some(t => t.includes('reason 0'))).toBe(false)
     expect(all).toContain('+2 more')
@@ -518,12 +519,13 @@ describe('session meters in the pane', () => {
     await $.session.start(start)
     await clock.settle()
     expect(opened).toHaveLength(1)
-    expect(opened[0]).toBeGreaterThan(0)
+    // The first snapshot is not in yet: the engine's default height applies.
+    expect(opened[0]).toBeUndefined()
     await $.command.run({ command: 'loopkit-status', args: '', origin: { kind: 'composer' } })
     expect(opened).toHaveLength(2)
     // The second open sees the refreshed snapshot: its rows match paneRows for it.
     const second = opened[1]!
-    expect(second).toBeGreaterThanOrEqual(opened[0]!)
+    expect(second).toBeGreaterThan(0)
     await $.command.run({ command: 'loopkit-status', args: '', origin: { kind: 'composer' } })
     expect(opened[2]).toBe(second)
   })

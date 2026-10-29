@@ -130,14 +130,16 @@ export function paneRows(s: PaneState): number {
     1 + (nextShown.length === 0 ? 1 : nextShown.reduce((n, item) => n + refLines(item), 0)) + (snap.upNext.length > nextShown.length ? 1 : 0)
   const eventLines = 1 + (s.events.length === 0 ? 1 : Math.min(s.events.length, MAX_EVENTS) + (s.events.length > MAX_EVENTS ? 1 : 0))
   const milestoneLines = 1 + (snap.milestones.length === 0 ? 1 : 2 * snap.milestones.length)
-  // loopkit, meta, [header], [error], five gaps and the Refresh button.
+  // loopkit, meta, [header], [error], six gaps and the Refresh button.
   const top = 2 + (s.header ? 1 : 0) + (snap.error ? 1 : 0)
 
-  return top + needsLines(s) + milestoneLines + runningLines(s) + eventLines + nextLines + 5 + 1
+  return top + needsLines(s) + milestoneLines + runningLines(s) + eventLines + nextLines + 6 + 1
 }
 
-// paneRows for the atoms as they stand now, for $.ui.open's `rows`.
-export async function openRows($: EngineInterface): Promise<number> {
+// paneRows for the atoms as they stand now, for $.ui.open's `rows`. Before
+// the first snapshot the content is not known yet: undefined keeps the
+// engine's default height rather than a strip that stays small.
+export async function openRows($: EngineInterface): Promise<number | undefined> {
   const at = await $.clock.now()
   const [snap, held, question, running, feed, m, b, text] = await Promise.all([
     read($, snapshot),
@@ -150,8 +152,10 @@ export async function openRows($: EngineInterface): Promise<number> {
     read($, lastText),
   ])
 
+  if (snap === null || snap === undefined) return undefined
+
   return paneRows({
-    snap: snap ?? null,
+    snap,
     held: held ?? [],
     question: question ?? null,
     running: running ?? [],

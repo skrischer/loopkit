@@ -568,8 +568,9 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   verdict and the unshaped `meters` atom are noted; #309's body was
   rewritten. Round 2 returned APPROVE; its test cases were added.
 - 2026-10-29: #309 built. `paneRows(state)` is pure over a `PaneState`;
-  `openRows($)` reads the atoms and feeds both `$.ui.open` calls, so the rows
-  at session start are those of the not-yet-refreshed pane. `cutEvent` keeps
+  `openRows($)` reads the atoms and feeds both `$.ui.open` calls; before the
+  first snapshot it gives `undefined`, so the engine's default height applies
+  instead of a three-row strip. `cutEvent` keeps
   the text after the title for `issue-closed` and `merge-failed` rows and
   falls back to an end cut when no room is left for a title. The
   `statusLine` limit-stop cases moved from `meters.test.ts` to
