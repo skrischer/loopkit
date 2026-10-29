@@ -190,14 +190,14 @@ End of ask marker.
 
 ## Prior art
 
-- [Non-blocking asks to the human — one deterministic marker (feature: ask-marker)](../prior-art.md#non-blocking-asks-to-the-human--one-deterministic-marker-feature-ask-marker)
+- [Non-blocking asks to the human — one deterministic marker (feature: ask-marker)](../../prior-art.md#non-blocking-asks-to-the-human--one-deterministic-marker-feature-ask-marker)
   - The evidence: 165 plain-text asks, 65 % scrolled away, 30 re-asks, one
     `/loopkit:ship` ask repeated 9 times.
   - The verdicts:
     - ADOPT one grep-verifiable line form;
     - AVOID re-asking as the remedy;
     - agent view's `Needs input` covers only a waiting session.
-- [In-session status pane — loopkit state and session signals in one view (feature: status-pane)](../prior-art.md#in-session-status-pane--loopkit-state-and-session-signals-in-one-view-feature-status-pane)
+- [In-session status pane — loopkit state and session signals in one view (feature: status-pane)](../../prior-art.md#in-session-status-pane--loopkit-state-and-session-signals-in-one-view-feature-status-pane)
   — the planned reader. The line form must stay greppable from a hook's text.
 
 ## Human prerequisites
@@ -303,3 +303,17 @@ it, because Verify's plugin-path guard fails on a pointer to a missing file.
   - inception's first session is defined;
   - the architecture bullet is narrowed to the structural fact, and scoped
     to the line, so a reader's other inputs stay open.
+- 2026-10-29: Milestone QA accepted (close-out sweep). No implementation
+  decision went unrecorded:
+  - #291 (PR #294) added `skills/shared/needs-you.md`, verbatim;
+  - #292 (PR #295) added the implement, plan §1 and plan acceptance pointers;
+  - #293 (PR #296) added the roadmap, ship and inception pointers and the
+    README sentence.
+
+  QA results:
+  - the whitespace-normalised diff against the normative text is empty;
+  - `grep -rl` lists the six files;
+  - the foundation edits and the README sentence are present.
+
+  Core bodies after the milestone: implement 12,718 and plan 12,769 of 12,800
+  bytes.
