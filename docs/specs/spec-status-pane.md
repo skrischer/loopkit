@@ -750,3 +750,8 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   open-question marker) beside `isRefreshing`, so a reload during an open
   `AskUserQuestion` cannot leave Needs you showing a question no hook clears.
   The ref is spelled in `hooks/register.tsx`, as the engine scan requires.
+- 2026-10-29: Hot reload (#321): after a reload `active` starts `false`, so a
+  render before `session.start` finished subscribed to nothing. The `ui.render`
+  hook now reads `isRefreshing` and `now` while `active` is `false`, then
+  re-checks; the first refresh's write redraws it. Outside a project the
+  render still falls through to `next(e)`.
