@@ -562,7 +562,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 | `hooks/status.ts`, in issue A, owns `statusLine` and `publishStatus`. | B (GitHub) and C (session) write the atoms the line reads, and they run in parallel, so the publisher must exist before either. | 2026-10-29 |
 | No dismiss and no other button besides Refresh. | No action in the pane (prior art AVOID). Asks clear by the human's own next message. | 2026-10-29 |
 | The read-only guard checks validate's `calls:` report against an allowlist, plus two source greps (one `gh` call site, no write argv tokens). | Validate is the native call report, but it enforces no policy. An allowlist cannot be bypassed by a new API name, and validate also catches a destructured `$`. The argv tokens catch a `gh` write. | 2026-10-29 |
-| The config-surface guard lists tracked files only, and the root `tsconfig.json` is committed. | Loading the mod from a folder the human owns writes `.claude-plugin/types/`, which is git-ignored and contains "cron", plus a root `tsconfig.json`. Tracked-only scanning keeps Verify green. The committed `tsconfig.json` keeps the clean-base preflight green after a `--plugin-dir` session. | 2026-10-29 |
+| The config-surface guard lists tracked plus new non-ignored files (`git ls-files --cached --others --exclude-standard`), and the root `tsconfig.json` is committed. | Loading the mod from a folder the human owns writes `.claude-plugin/types/`, which ignores itself and contains "cron", plus a root `tsconfig.json`. Skipping ignored files keeps Verify green, and listing new files still scans a PR before its first commit. The committed `tsconfig.json` keeps the clean-base preflight green after a `--plugin-dir` session. | 2026-10-29 |
 | Terminal only. | The docs say Remote Control draws in the terminal on the human's machine, so the phone shows nothing. Desktop and VS Code are unverified. | 2026-10-29 |
 | No `userConfig`, and the README states the verified version. | The manifest has no minimum-version key. Whether an older build skips `modules` or rejects the plugin is undocumented (see Risks). | 2026-10-29 |
 
@@ -579,8 +579,8 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
       - a `hooks/register.tsx` that only decides `active` and registers
         `/loopkit-status`;
       - `hooks/register.test.ts`;
-    - Verify's test step, read-only guard and tracked-files config-surface
-      guard;
+    - Verify's test step, read-only guard and the config-surface guard over
+      tracked and new files;
     - `docs/workflow.md` Commands.
     - Depends on: none.
   - **B — GitHub view:** `hooks/github.ts` (`gh`, `refresh`, `derive`) and
@@ -599,8 +599,8 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 ## Verification
 
 - [ ] **Verify passes** (`bash scripts/verify.sh`), with `claude plugin test .`,
-      the read-only guard and the tracked-files config-surface guard
-      included.
+      the read-only guard and the config-surface guard over tracked and new
+      files included.
 - [ ] **The read-only guard bites.** On a scratch branch, add
       `$.prompt.submit(` or a `'merge'` argv token to a `hooks/` module, and
       Verify fails. Do not commit it.
