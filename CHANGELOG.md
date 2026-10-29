@@ -8,6 +8,55 @@ Versioning and the release process are defined in [`docs/release.md`](docs/relea
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-10-29
+
+### Added
+
+- A read-only **status pane** ships inside the plugin as a Claude Code mod
+  (`hooks/`, Claude Code ≥ 2.1.287, verified on 2.1.312). In a loopkit
+  project (a `docs/workflow.md` whose first heading is `# Workflow contract`)
+  it opens beside the chat:
+  - **Needs you:** an open `AskUserQuestion` with its waiting time, the
+    session's held `Needs you:` asks, and the GitHub gates (milestone QA, spec
+    acceptance, `needs:planning`, `blocked:human`);
+  - **Milestones:** a bar, the closed/total count and percentage, and the
+    in-flight and blocked counts per open milestone;
+  - **Running:** one row per subagent, background shell, monitor or workflow;
+  - **Events:** closed issues with their title, failed `gh pr merge` calls,
+    stopped or failed subagents, `TaskStop`, auto-mode denials, compactions
+    and usage limits, with repeats collapsed as `×n`;
+  - **Up next:** the unblocked frontier issues and the unplanned roadmap
+    phases.
+
+  A header line shows the heartbeat (`working` / `idle`, `last text … ago`)
+  and the compaction count; a usage-limit stop opens it with
+  `limited until <when>`. The status line reads
+  `loopkit: <n> need you · #<m> <closed>/<total> · <k> running`, led by the
+  limit stop while one holds.
+  - `/loopkit-status` opens the pane and refreshes it. It also refreshes at
+    session start, on `/clear`, resume and fork, after a main-loop turn (at
+    most every 15 s), after `gh pr merge`, every 2 minutes, and from its
+    Refresh button. Seated inline, it asks for its content's height.
+  - Read-only by construction: GitHub through `gh` read calls passed as argv,
+    the session through hooks only; no write, no `$.store`, no file. Outside a
+    loopkit project it stays silent.
+- The **`Needs you:` ask-marker** (`skills/shared/needs-you.md`): a request a
+  run does not wait for is one line starting `Needs you: `. `/loopkit:plan`,
+  `/loopkit:implement`, `/loopkit:roadmap`, `/loopkit:ship`,
+  `/loopkit:inception` and the README state their next steps that way, and the
+  status pane collects them.
+- Verify covers the status mod: `claude plugin test .`, a read-only guard
+  (validate's `calls:` report against an allowlist, exactly one `gh` argv call
+  site, no write argv token in `hooks/`), and a config-surface scan that
+  includes new, untracked files.
+
+### Changed
+
+- The foundation docs admit the status mod: the vision's scope, the
+  constitution's tech stack and its "Read-only status mod" principle, the
+  architecture's component map and boundaries, and `docs/design.md`, which
+  now names one UI surface.
+
 ## [2.3.0] - 2026-10-28
 
 ### Added
