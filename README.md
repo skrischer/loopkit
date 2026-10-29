@@ -52,6 +52,40 @@ clear are parked (`blocked:human` label + comment), never fatal:
 `gh issue list --label blocked:human` is the delivery queue. A request the loop
 does not wait for appears as one `Needs you:` line.
 
+## Status pane
+
+In a loopkit project, the plugin ships a read-only status view, a Claude Code
+mod, that answers "what needs me?" without looking it up. It opens beside the
+chat at session start and shows four sections:
+
+- **Needs you** — what waits for the human: a milestone ready for QA, an open
+  spec-acceptance PR, issues labelled `needs:planning` or `blocked:human`, an
+  open `AskUserQuestion`, and any `Needs you:` line from the session's last
+  answers.
+- **Milestones** — each open milestone with a progress bar, closed/total and
+  percentage, plus how many issues are in flight and blocked (a living-spec
+  milestone shows its closed count).
+- **Running** — the session's subagents and background tasks, with their age.
+- **Up next** — the unblocked issue frontier, then the roadmap phases not yet
+  planned.
+
+The status line carries a one-line summary: `loopkit · <n> need you · #<m>
+<closed>/<total> · <n> running`.
+
+`/loopkit-status` opens the pane and refreshes it from GitHub, even mid-turn.
+Otherwise it refreshes every two minutes, after a turn (at most once every 15
+seconds) and after a `gh pr merge`.
+
+The engine seats the pane that opens unasked only on a terminal of at least 144
+columns, and keeps it waiting below that; once you have opened it, it stays from
+110 columns.
+
+The pane is read-only: it reads GitHub through `gh` read commands and the
+session through its hooks, writes nothing to GitHub or disk, and offers only
+open and refresh. It is active only in a loopkit project (a working directory
+whose `docs/workflow.md` starts with `# Workflow contract`) and stays silent
+elsewhere. Verified on Claude Code 2.1.312; mods are on by default from 2.1.287.
+
 ## Requirements
 
 - `gh` CLI authenticated with `repo` and `project` scopes.
