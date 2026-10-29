@@ -115,6 +115,8 @@ export async function renderPane($: EngineInterface, e: RenderInput): Promise<Re
   const heading = (label: string, count: number, color?: 'warning' | 'suggestion' | 'success') => (
     <Text bold color={color}>{`${label} (${count})`}</Text>
   )
+  // One blank line: the design's gap after the header, between sections and before Refresh.
+  const gap = <Text>{' '}</Text>
   const more = (n: number) => (n > 0 ? <Text dimColor>{`+${n} more`}</Text> : null)
 
   // Header
@@ -188,7 +190,9 @@ export async function renderPane($: EngineInterface, e: RenderInput): Promise<Re
       <Text bold>loopkit</Text>
       <Text dimColor>{cut(meta, width)}</Text>
       {errorLine}
+      {gap}
       {needs}
+      {gap}
       <Box flexDirection="column">
         {heading('Milestones', snap.milestones.length)}
         {snap.milestones.length === 0 ? <Text dimColor>No open milestone.</Text> : null}
@@ -209,7 +213,9 @@ export async function renderPane($: EngineInterface, e: RenderInput): Promise<Re
           )
         })}
       </Box>
+      {gap}
       {runningSection()}
+      {gap}
       <Box flexDirection="column">
         {heading('Up next', snap.upNext.length, 'success')}
         {nextShown.length === 0 ? <Text dimColor>Nothing unblocked.</Text> : null}
@@ -218,6 +224,7 @@ export async function renderPane($: EngineInterface, e: RenderInput): Promise<Re
         )}
         {more(hidden)}
       </Box>
+      {gap}
       <Button onPress={() => void refresh($).catch(() => undefined)}>Refresh</Button>
     </Box>
   )

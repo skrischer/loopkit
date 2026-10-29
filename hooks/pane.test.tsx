@@ -180,6 +180,21 @@ describe('the pane', () => {
     await ui.unmount()
   })
 
+  test('a blank line separates the header, the sections and the Refresh button', async ($, on) => {
+    const { clock } = boot(on, ghOk)
+    await $.session.start(start)
+    await clock.settle()
+    await $.command.run({ command: 'loopkit-status', args: '', origin: { kind: 'composer' } })
+    const ui = await $.ui.mount(PANE)
+    const all = await texts(ui)
+    const at = (needle: string) => all.findIndex(t => t.includes(needle))
+    // After the header, then between the four sections.
+    for (const section of ['Needs you (', 'Milestones (', 'Running (', 'Up next (']) expect(all[at(section) - 1]).toBe(' ')
+    // Before the Refresh button: five gaps in all.
+    expect(all.filter(t => t === ' ')).toHaveLength(5)
+    await ui.unmount()
+  })
+
   test('a read error shows in the header and keeps the status line', async ($, on) => {
     const { status, clock } = boot(on, { ...ghOk, repo: undefined })
     await $.session.start(start)
