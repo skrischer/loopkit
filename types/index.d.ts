@@ -27,6 +27,7 @@ export type Task = {
   detail?: string
   firstSeen: number
   lastActivity?: number
+  agentId?: string // the spawn's agent id once a Stop re-keys the row to its task id
 }
 
 declare module 'claude-code' {
