@@ -43,7 +43,7 @@ describe('mergeTasks', () => {
   test('a held subagent with the same description keeps its sighting and detail', () => {
     const held = [{ id: 'agent-1', kind: 'subagent', description: 'build', detail: 'sonnet', firstSeen: 5 }]
     const out = mergeTasks(held, [{ id: 'task-9', type: 'subagent', description: 'build', agent_type: 'general-purpose' }], T)
-    expect(out).toEqual([{ id: 'task-9', kind: 'subagent', description: 'build', detail: 'sonnet', firstSeen: 5 }])
+    expect(out).toEqual([{ id: 'task-9', kind: 'subagent', description: 'build', detail: 'sonnet', firstSeen: 5, agentId: 'agent-1' }])
   })
 
   test('a new task starts now; an empty list empties', () => {
@@ -89,5 +89,22 @@ describe('subagent rows', () => {
     const one = addSubagent([], 'a1', 'build', 'sonnet', T)
     expect(touchTask(one, 'a1', T + 9)[0]?.lastActivity).toBe(T + 9)
     expect(touchTask(one, 'zz', T + 9)).toEqual(one)
+  })
+
+  test('after a Stop match the spawn agent id still touches and drops the row', () => {
+    const spawned = addSubagent([], 'agent-1', 'build', 'sonnet', T)
+    const stop = [{ id: 'task-9', type: 'subagent', description: 'build', agent_type: 'general-purpose' }]
+    const matched = mergeTasks(spawned, stop, T + 1)
+    expect(matched).toEqual([{ id: 'task-9', kind: 'subagent', description: 'build', detail: 'sonnet', firstSeen: T, agentId: 'agent-1' }])
+    expect(touchTask(matched, 'agent-1', T + 5)[0]?.lastActivity).toBe(T + 5)
+    expect(dropTask(matched, 'agent-1')).toEqual([])
+  })
+
+  test('a second Stop still shows one row and keeps the agent id', () => {
+    const spawned = addSubagent([], 'agent-1', 'build', 'sonnet', T)
+    const stop = [{ id: 'task-9', type: 'subagent', description: 'build' }]
+    const once = mergeTasks(spawned, stop, T + 1)
+    const twice = mergeTasks(touchTask(once, 'agent-1', T + 5), stop, T + 9)
+    expect(twice).toEqual([{ id: 'task-9', kind: 'subagent', description: 'build', detail: 'sonnet', firstSeen: T, lastActivity: T + 5, agentId: 'agent-1' }])
   })
 })

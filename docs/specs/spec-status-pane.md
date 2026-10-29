@@ -733,3 +733,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   reach `fs.read` absolute, and the `refresh`, hook and pane tests all live
   in `hooks/pane.test.tsx`, which boots the mod through `$.session.start`
   with a `mock.clock`.
+- 2026-10-29: Issue #315 built. A held subagent row that `classic.Stop` matches
+  by description keeps the spawn's agent id in an optional `Task.agentId` while
+  `id` becomes the Stop's task id (one row per task). `dropTask` and
+  `touchTask` match either id; `mergeTasks` carries `agentId` across later Stops.

@@ -62,7 +62,8 @@ export type BackgroundTask = {
 
 // classic.Stop lists every task in flight. A held entry keeps its firstSeen,
 // lastActivity and detail: by id, or else a held subagent with the same
-// description (agent.spawn saw it first, under its agent id).
+// description (agent.spawn saw it first, under its agent id, which the row
+// keeps as agentId when it is re-keyed to the Stop's task id).
 export function mergeTasks(held: readonly Task[], running: readonly BackgroundTask[], now: number): Task[] {
   return running.map(item => {
     const description = (item.description ?? '').split('\n')[0] ?? ''
@@ -78,6 +79,9 @@ export function mergeTasks(held: readonly Task[], running: readonly BackgroundTa
     }
     if (detail !== undefined) task.detail = detail
     if (known?.lastActivity !== undefined) task.lastActivity = known.lastActivity
+    // The spawn's agent id outlives the re-key to the Stop's task id.
+    const agentId = known?.agentId ?? (known !== undefined && known.id !== item.id ? known.id : undefined)
+    if (agentId !== undefined) task.agentId = agentId
 
     return task
   })
@@ -96,11 +100,11 @@ export function addSubagent(held: readonly Task[], id: string, description: stri
 }
 
 export function dropTask(held: readonly Task[], id: string): Task[] {
-  return held.filter(task => task.id !== id)
+  return held.filter(task => task.id !== id && task.agentId !== id)
 }
 
 export function touchTask(held: readonly Task[], id: string, now: number): Task[] {
-  return held.map(task => (task.id === id ? { ...task, lastActivity: now } : task))
+  return held.map(task => (task.id === id || task.agentId === id ? { ...task, lastActivity: now } : task))
 }
 
 async function stamp($: EngineInterface): Promise<number> {
