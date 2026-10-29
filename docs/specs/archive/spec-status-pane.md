@@ -471,7 +471,7 @@ They follow the test kit's rules (stub `session.start` and
 
 ## Prior art
 
-- [In-session status pane — loopkit state and session signals in one view (feature: status-pane)](../prior-art.md#in-session-status-pane--loopkit-state-and-session-signals-in-one-view-feature-status-pane)
+- [In-session status pane — loopkit state and session signals in one view (feature: status-pane)](../../prior-art.md#in-session-status-pane--loopkit-state-and-session-signals-in-one-view-feature-status-pane)
   — the concern:
   - Claude Code mods (reuse; the ADOPT and AVOID list above);
   - claude-hud (compact line with opt-in detail);
@@ -479,7 +479,7 @@ They follow the test kit's rules (stub `session.start` and
   - agents-statusline (one row per task);
   - CCPM epic-status (percent from issue state);
   - the second-screen dashboard (AVOID a daemon).
-- [Non-blocking asks to the human — one deterministic marker (feature: ask-marker)](../prior-art.md#non-blocking-asks-to-the-human--one-deterministic-marker-feature-ask-marker)
+- [Non-blocking asks to the human — one deterministic marker (feature: ask-marker)](../../prior-art.md#non-blocking-asks-to-the-human--one-deterministic-marker-feature-ask-marker)
   — the marker the pane holds, and agent view's `Needs input` gap.
 - The archived `spec-ask-marker.md` (`docs/specs/archive/`) defines the line
   and the end-of-run carry the capture relies on.
