@@ -81,7 +81,7 @@ while IFS= read -r -d '' f; do
   fi
   surface_files+=("$f")
 done < <(
-  git ls-files -z --cached --others --exclude-standard -- \
+  git ls-files -z --deduplicate --cached --others --exclude-standard -- \
     '.claude-plugin' 'types' 'hooks' 'skills/*/templates/*.json' 'scripts/*.sh'
 )
 
@@ -157,7 +157,7 @@ if [ -d hooks ]; then
     fi
     case "$f" in *.test.ts|*.test.tsx) continue ;; esac
     hook_src+=("$f")
-  done < <(git ls-files -z --cached --others --exclude-standard -- 'hooks')
+  done < <(git ls-files -z --deduplicate --cached --others --exclude-standard -- 'hooks')
 
   if [ "${#hook_src[@]}" -gt 0 ]; then
     # One process call site, and it is a gh argv. Before hooks/github.ts exists

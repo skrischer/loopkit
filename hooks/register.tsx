@@ -11,7 +11,7 @@ let active = false
 
 async function isLoopkitProject($: EngineInterface): Promise<boolean> {
   try {
-    const text = await $.fs.read('docs/workflow.md', { as: 'text' })
+    const text = await $.fs.read('docs/workflow.md')
     const heading = text.split('\n').find(line => /^#{1,6}\s/.test(line))
 
     return heading?.trim() === '# Workflow contract'
