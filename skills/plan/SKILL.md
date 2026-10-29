@@ -71,8 +71,9 @@ Naming: in everything the human reads, name an issue, PR or milestone by number 
   gh issue list --state open --limit 200
   ```
 - If a merged spec already covers the scope (with a milestone and issues),
-  there is nothing to plan — point at `/loopkit:implement`. A spec still in an
-  open PR is in review, not accepted: do not start a second plan against it.
+  there is nothing to plan — state `/loopkit:implement` per
+  `${CLAUDE_PLUGIN_ROOT}/skills/shared/needs-you.md`. A spec still in an open
+  PR is in review, not accepted: do not start a second plan against it.
   Exception: a living-spec milestone is re-run with the same scope to accrete
   more issues — "already covered" is expected there, so go straight to issue
   creation in `living-spec.md`.
