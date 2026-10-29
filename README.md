@@ -83,7 +83,7 @@ columns, and keeps it waiting below that; once you have opened it, it stays from
 The pane is read-only: it reads GitHub through `gh` read commands and the
 session through its hooks, writes nothing to GitHub or disk, and offers only
 open and refresh. It is active only in a loopkit project (a working directory
-whose `docs/workflow.md` starts with `# Workflow contract`) and stays silent
+whose `docs/workflow.md` has `# Workflow contract` as its first heading) and stays silent
 elsewhere. Verified on Claude Code 2.1.312; mods are on by default from 2.1.287.
 
 ## Requirements
