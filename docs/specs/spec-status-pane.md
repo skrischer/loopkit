@@ -738,3 +738,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   `loopkit: loopkit · 2 need you …` at the QA gate). The pre-snapshot form is
   `reading GitHub…` and the error form is the bare error; the README and the
   design show the line as drawn.
+- 2026-10-29: Issue #316 built. The pane puts one blank line (a `<Text>{' '}</Text>`
+  gap) after the header lines, between Needs you, Milestones, Running and Up
+  next, and before the Refresh button, as the design draws them. The
+  pre-snapshot layout is unchanged.
