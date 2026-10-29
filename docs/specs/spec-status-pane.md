@@ -706,3 +706,12 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   `$.process.run(` sites until `hooks/github.ts` exists, because issue A ships
   no `gh` call. From then on exactly one is required, and it must be a
   `['gh', …]` argv.
+- 2026-10-29: Issue C (#301) built. The engine's scan follows only state
+  references and `$`-taking helpers written in the same module file, so
+  `hooks/session.ts` spells its own `{ plugin, key }` refs (with `?? default`)
+  and declares `stamp($)` at the top level. A test's own `on` hooks are refused
+  `$.state` calls ("its hooks module does not call it"), and a test hook holds
+  one hook per event, so `session.test.ts` covers the pure helpers (`parseAsks`,
+  `mergeAsks`, `mergeTasks`, `clearsAsks` and the subagent-row helpers). The
+  hooks themselves were checked end to end through a throwaway wiring in
+  `register.tsx`; issue D's wiring makes a real hook test possible there.
