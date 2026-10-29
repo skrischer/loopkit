@@ -33,7 +33,6 @@ export type Task = {
 }
 
 export type Meters = {
-  context?: number
   compactions: number
   limits: { kind: string; percentUsed: number; resetsAt?: string }[]
   limit?: { until?: string }

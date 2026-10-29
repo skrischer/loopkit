@@ -4,7 +4,7 @@ import type { EngineInterface, Register, Timer } from 'claude-code'
 import { registerEvents } from './events'
 import { refresh } from './github'
 import { registerMeters } from './meters'
-import { renderPane } from './pane'
+import { openRows, renderPane } from './pane'
 import { registerSession } from './session'
 import { publishStatus } from './status'
 
@@ -74,7 +74,10 @@ export const register: Register = on => {
       })()
     })
     refreshInBackground($)
-    void $.ui.open({ id: PANE_ID, title: 'loopkit' }).catch(() => undefined)
+    void openRows($)
+      .catch(() => undefined)
+      .then(rows => $.ui.open({ id: PANE_ID, title: 'loopkit', rows }))
+      .catch(() => undefined)
     await publishStatus($)
 
     return started
@@ -92,7 +95,7 @@ export const register: Register = on => {
 
   on('command.run', { command: PANE_COMMAND }, async ($, e, next) => {
     if (!active) return next(e)
-    await $.ui.open({ id: PANE_ID, title: 'loopkit' })
+    await $.ui.open({ id: PANE_ID, title: 'loopkit', rows: await openRows($).catch(() => undefined) })
     await refresh($)
 
     return { text: 'loopkit status pane opened and refreshed.' }

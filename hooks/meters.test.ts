@@ -1,7 +1,6 @@
 import { describe, expect, mock, test } from 'claude-code/testing'
 
-import { beatLine, clearsLimit, limitActive, limitUntil, meterLine, when, withCompaction, withReading, withStop } from './meters'
-import { statusLine } from './status'
+import { beatLine, clearsLimit, headerLine, limitActive, limitUntil, when, withCompaction, withReading, withStop } from './meters'
 
 
 const MIN = 60_000
@@ -17,43 +16,45 @@ describe('when', () => {
   })
 })
 
-describe('meterLine', () => {
-  test('parts without a reading are left out; compacted is left out at 0', () => {
-    expect(meterLine({ compactions: 0, limits: [] }, NOW)).toBeNull()
-    expect(meterLine({ compactions: 0, limits: [], context: 41.6 }, NOW)?.text).toBe('ctx 42%')
-    expect(meterLine({ compactions: 3, limits: [] }, NOW)?.text).toBe('3 compacted')
+describe('headerLine', () => {
+  const idle = { working: false, since: NOW - 3 * MIN }
+  const empty = { compactions: 0, limits: [] }
+
+  test('null when no part has a value', () => {
+    expect(headerLine(empty, null, null, NOW)).toBeNull()
   })
 
-  test('the full line and the window labels', () => {
-    const m = {
-      context: 87,
-      compactions: 3,
-      limits: [
-        { kind: 'five_hour', percentUsed: 41 },
-        { kind: 'seven_day', percentUsed: 12.4 },
-        { kind: 'spend_limit', percentUsed: 5 },
-      ],
-    }
-    expect(meterLine(m, NOW)?.text).toBe('ctx 87% · 3 compacted · 5h 41% · 7d 12% · spend_limit 5%')
+  test('the heartbeat, last text and compacted join with a middle dot; compacted is left out at 0', () => {
+    expect(headerLine(empty, idle, NOW - MIN, NOW)?.text).toBe('idle 3m · last text 1m ago')
+    expect(headerLine({ ...empty, compactions: 1 }, idle, NOW - MIN, NOW)?.text).toBe('idle 3m · last text 1m ago · 1 compacted')
+    expect(headerLine({ ...empty, compactions: 3 }, null, null, NOW)?.text).toBe('3 compacted')
   })
 
-  test('context at 85 % or more is flagged', () => {
-    const flag = (context: number) => meterLine({ compactions: 0, limits: [], context }, NOW)?.parts[0]?.warn
-    expect(flag(84)).toBe(false)
-    expect(flag(85)).toBe(true)
+  test('no last text before the first answer', () => {
+    expect(headerLine(empty, { working: true, since: NOW - 2 * MIN }, null, NOW)?.text).toBe('working 2m')
   })
 
-  test('the limited forms, with and without until', () => {
-    const base = { compactions: 2, limits: [{ kind: 'five_hour', percentUsed: 100 }], context: 62 }
-    const withUntil = meterLine({ ...base, limit: { until: today } }, NOW)
-    expect(withUntil?.text).toBe('limited until 19:00 · ctx 62%')
-    expect(withUntil?.limited).toBe(true)
-    expect(meterLine({ ...base, limit: {} }, NOW)?.text).toBe('limited · ctx 62%')
-    expect(meterLine({ compactions: 0, limits: [], limit: {} }, NOW)?.text).toBe('limited')
+  test('the limited forms, with and without until; only the limit part is flagged', () => {
+    const withUntil = headerLine({ ...empty, compactions: 2, limit: { until: today } }, idle, NOW - MIN, NOW)
+    expect(withUntil?.text).toBe('limited until 19:00 · idle 3m · last text 1m ago · 2 compacted')
+    expect(withUntil?.parts.map(part => part.warn)).toEqual([true, false, false])
+    expect(headerLine({ ...empty, limit: {} }, idle, null, NOW)?.text).toBe('limited · idle 3m')
+    expect(headerLine({ ...empty, limit: { until: friday } }, null, null, NOW)?.text).toBe('limited until Fri 19:00')
+  })
+
+  test('a lone limit part with no beat', () => {
+    const line = headerLine({ ...empty, limit: {} }, null, null, NOW)
+    expect(line?.text).toBe('limited')
+    expect(line?.parts).toEqual([{ text: 'limited', warn: true }])
   })
 
   test('a stop whose until is past reads as cleared', () => {
-    expect(meterLine({ compactions: 0, limits: [], context: 10, limit: { until: today } }, NOW + 8 * 60 * MIN)?.text).toBe('ctx 10%')
+    expect(headerLine({ ...empty, limit: { until: today } }, null, null, NOW + 8 * 60 * MIN)).toBeNull()
+  })
+
+  test('no ctx, 5h or 7d figure is drawn from the readings', () => {
+    const m = { compactions: 0, limits: [{ kind: 'five_hour', percentUsed: 41 }, { kind: 'seven_day', percentUsed: 12 }] }
+    expect(headerLine(m, null, null, NOW)).toBeNull()
   })
 })
 
@@ -94,31 +95,13 @@ describe('limit clearing', () => {
   })
 })
 
-describe('statusLine with a limit stop', () => {
-  const snap = { repo: 'o/r', fetchedAt: 0, error: null, gates: [], milestones: [], upNext: [], titles: {}, open: [] }
-
-  test('the part opens the text in all three forms', () => {
-    expect(statusLine(snap, null, [], [], { until: today }, NOW)).toBe('limited until 19:00 · 0 need you · 0 running')
-    expect(statusLine(null, null, [], [], {}, NOW)).toBe('limited · reading GitHub…')
-    expect(statusLine({ ...snap, error: 'boom' }, null, [], [], { until: friday }, NOW)).toBe('limited until Fri 19:00 · boom')
-  })
-
-  test('no stop, or a past one, leaves the text as it was', () => {
-    expect(statusLine(snap, null, [], [])).toBe('0 need you · 0 running')
-    expect(statusLine(snap, null, [], [], { until: today }, Date.parse(today) + 1)).toBe('0 need you · 0 running')
-  })
-})
-
 describe('the writes', () => {
-  const read = (rateLimits: { kind: string; percentUsed: number; resetsAt?: string }[], percent?: number) => ({
-    context: percent === undefined ? { window: 1 } : { window: 1, percent },
-    rateLimits,
-  })
+  const read = (rateLimits: { kind: string; percentUsed: number; resetsAt?: string }[]) => ({ rateLimits })
 
-  test('a reading sets context and windows; a missing context keeps the held one', () => {
-    const first = withReading(undefined, read([{ kind: 'five_hour', percentUsed: 41, resetsAt: today }], 40))
-    expect(first).toEqual({ compactions: 0, context: 40, limits: [{ kind: 'five_hour', percentUsed: 41, resetsAt: today }] })
-    expect(withReading(first, read([]))).toEqual({ compactions: 0, context: 40, limits: [] })
+  test('a reading sets the windows', () => {
+    const first = withReading(undefined, read([{ kind: 'five_hour', percentUsed: 41, resetsAt: today }]))
+    expect(first).toEqual({ compactions: 0, limits: [{ kind: 'five_hour', percentUsed: 41, resetsAt: today }] })
+    expect(withReading(first, read([]))).toEqual({ compactions: 0, limits: [] })
   })
 
   test('a stop clears on a reading under 100 %, not on an empty one', () => {

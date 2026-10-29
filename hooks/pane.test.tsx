@@ -1,7 +1,7 @@
 import { describe, expect, mock, test } from 'claude-code/testing'
 
 import type { Snapshot } from '../types'
-import { ageText, bar, cut } from './pane'
+import { ageText, bar, cut, cutEvent, paneRows } from './pane'
 import { statusLine } from './status'
 
 const PANE = {
@@ -90,6 +90,63 @@ describe('statusLine', () => {
   })
 })
 
+describe('statusLine with a limit stop', () => {
+  const at = new Date(2026, 9, 29, 12, 0).getTime()
+  const today = new Date(2026, 9, 29, 19, 0).toISOString()
+  const friday = new Date(2026, 9, 30, 19, 0).toISOString()
+
+  test('the part opens the text in all three forms', () => {
+    expect(statusLine(snap(), null, [], [], { until: today }, at)).toBe('limited until 19:00 · 0 need you · 0 running')
+    expect(statusLine(null, null, [], [], {}, at)).toBe('limited · reading GitHub…')
+    expect(statusLine(snap({ error: 'boom' }), null, [], [], { until: friday }, at)).toBe('limited until Fri 19:00 · boom')
+  })
+
+  test('no stop, or a past one, leaves the text as it was', () => {
+    expect(statusLine(snap(), null, [], [])).toBe('0 need you · 0 running')
+    expect(statusLine(snap(), null, [], [], { until: today }, Date.parse(today) + 1)).toBe('0 need you · 0 running')
+  })
+})
+
+describe('cutEvent', () => {
+  test('a short row is whole; a long closed or merge-failed row cuts its title and keeps the tail', () => {
+    expect(cutEvent('issue-closed', '#5 short closed', 40)).toBe('#5 short closed')
+    expect(cutEvent('issue-closed', '#302 pane, refresh triggers and the inline height closed', 30)).toBe('#302 pane, refresh tri… closed')
+    expect(cutEvent('merge-failed', 'PR #307 README section for the pane merge failed: not mergeable', 40)).toBe(
+      'PR #307 REA… merge failed: not mergeable',
+    )
+  })
+
+  test('any other row, or no room for a title, is cut at the end', () => {
+    expect(cutEvent('denied', 'denied Bash: [Data Exfiltration] posts to a host', 20)).toBe('denied Bash: [Data …')
+    expect(cutEvent('issue-closed', '#5 closed and some more words that are long', 20)).toBe('#5 closed and some …')
+    expect(cutEvent('merge-failed', 'PR #5 merge failed: a very long reason indeed', 20).length).toBe(20)
+  })
+})
+
+describe('paneRows', () => {
+  const state = { snap: snap(), held: [], question: null, running: [], events: [], header: false }
+
+  test('the empty snapshot: header, five gaps, six sections and the button', () => {
+    // loopkit, meta, 5 gaps, Needs you 2, Milestones 2, Running 2, Events 2, Up next 2, Refresh 1
+    expect(paneRows(state)).toBe(2 + 5 + 2 + 2 + 2 + 2 + 2 + 1)
+    expect(paneRows({ ...state, header: true })).toBe(paneRows(state) + 1)
+  })
+
+  test('rows grow with the content and the caps', () => {
+    const event = { kind: 'denied', text: 't', at: 0, count: 1 }
+    const base = paneRows(state)
+    expect(paneRows({ ...state, events: [event] })).toBe(base) // one row replaces the empty state
+    expect(paneRows({ ...state, events: Array(12).fill(event) })).toBe(base + 8) // 8 rows and +n more
+    expect(paneRows({ ...state, snap: snap({ error: 'x' }) })).toBe(base + 1)
+    const task = { id: 'a', kind: 'shell', description: 'd', firstSeen: 0 }
+    expect(paneRows({ ...state, running: Array(10).fill(task) })).toBe(base + (1 + 16 + 1) - 2)
+  })
+
+  test('before the first snapshot', () => {
+    expect(paneRows({ ...state, snap: null })).toBe(3)
+  })
+})
+
 type Host = Parameters<Parameters<typeof test>[1]>[1]
 
 // Boots the mod in a loopkit project with stubbed gh answers; returns the
@@ -105,7 +162,12 @@ function boot(on: Host, gh: Record<string, unknown>, workflow = '# Workflow cont
   const clock = mock.clock(on, { now: Date.UTC(2026, 9, 29, 12, 0) })
   on('session.start', (_$, e) => ({ cwd: e.cwd }))
   on('command.register', () => ({ value: { command: 'loopkit-status' } }))
-  on('ui.open', () => ({ value: { isPlaced: true } }))
+  const opened: (number | undefined)[] = []
+  on('ui.open', (_$, e) => {
+    opened.push(e.rows)
+
+    return { value: { isPlaced: true } }
+  })
   on('fs.read', (_$, e) => {
     if (e.path.endsWith('docs/workflow.md')) return { value: workflow }
     if (e.path.endsWith('docs/roadmap.md') && roadmap !== null) return { value: roadmap }
@@ -121,7 +183,7 @@ function boot(on: Host, gh: Record<string, unknown>, workflow = '# Workflow cont
     return { value: { exitCode: 0, stdout: JSON.stringify(out), stderr: '' } }
   })
 
-  return { ran, clock, status }
+  return { ran, clock, status, opened }
 }
 
 const ghOk = {
@@ -219,10 +281,10 @@ describe('the pane', () => {
     const ui = await $.ui.mount(PANE)
     const all = await texts(ui)
     const at = (needle: string) => all.findIndex(t => t.includes(needle))
-    // After the header, then between the four sections.
-    for (const section of ['Needs you (', 'Milestones (', 'Running (', 'Up next (']) expect(all[at(section) - 1]).toBe(' ')
-    // Before the Refresh button: five gaps in all.
-    expect(all.filter(t => t === ' ')).toHaveLength(5)
+    // After the header, then between the five sections.
+    for (const section of ['Needs you (', 'Milestones (', 'Running (', 'Events (', 'Up next (']) expect(all[at(section) - 1]).toBe(' ')
+    // Before the Refresh button: six gaps in all.
+    expect(all.filter(t => t === ' ')).toHaveLength(6)
     await ui.unmount()
   })
 
@@ -337,5 +399,132 @@ describe('the wiring', () => {
     expect(all).toContain('+5 more')
     expect(all).toContain('+2 more')
     await ui.unmount()
+  })
+})
+
+describe('session meters in the pane', () => {
+  const merge = { tool: 'Bash', command: 'gh pr merge 6 --squash' } as const
+  const long = 'A very long issue title that cannot fit the pane width at all'
+
+  // The hook stubs beneath the mod, and the opened rows.
+  function stubs(on: Host): void {
+    on('turn.start', () => ({ turnId: 't' }) as never)
+    on('turn.complete', () => ({ text: '' }))
+    on('classic.PostCompact', () => ({}))
+    on('classic.StopFailure', () => ({}))
+    on('classic.PermissionDenied', () => ({}))
+    on('session.measure', (_$, e) => ({ changed: e.changed }))
+    on('tool.call', () => ({ isError: true, result: undefined, text: 'Exit code 1\nnot mergeable' }) as never)
+
+  }
+
+  test('no header line before any reading', async ($, on) => {
+    const { clock } = boot(on, ghOk)
+    stubs(on)
+    await $.session.start(start)
+    await clock.settle()
+    const ui = await $.ui.mount(PANE)
+    const all = (await texts(ui)).join('\n')
+    expect(all).not.toMatch(/idle|working|compacted|limited/)
+    expect(all).not.toMatch(/ctx|5h|7d/)
+    await ui.unmount()
+  })
+
+  test('the header line: heartbeat, last text and compactions, without a limit stop', async ($, on) => {
+    const { clock } = boot(on, ghOk)
+    stubs(on)
+    await $.session.start(start)
+    await clock.settle()
+    await $.turn.start({ text: 'go', turnId: 't1' } as never)
+    let ui = await $.ui.mount(PANE)
+    expect((await texts(ui)).join('\n')).toContain('working <1m')
+    await ui.unmount()
+    await clock.advance(4 * 60_000)
+    await $.turn.complete({ turnId: 't1', answer: 'done', reason: 'complete' } as never)
+    await $.classic.PostCompact({ trigger: 'auto', compact_summary: 's' } as never)
+    ui = await $.ui.mount(PANE)
+    const all = await texts(ui)
+    expect(all.some(t => t === 'idle <1m · last text <1m ago · 1 compacted')).toBe(true)
+    expect(all.join('\n')).not.toContain('limited')
+    await ui.unmount()
+  })
+
+  test('a limit stop opens the header line', async ($, on) => {
+    const { clock } = boot(on, ghOk)
+    stubs(on)
+    await $.session.start(start)
+    await clock.settle()
+    await $.turn.complete({ turnId: 't1', answer: '', reason: 'complete' } as never)
+    const reset = new Date(Date.UTC(2026, 9, 29, 12, 0) + 6 * 3_600_000).toISOString()
+    await $.session.measure({ rateLimits: [{ kind: 'five_hour', percentUsed: 100, resetsAt: reset }], changed: [] } as never)
+    await $.classic.StopFailure({ error: 'rate_limit' } as never)
+    const ui = await $.ui.mount(PANE)
+    const all = await texts(ui)
+    expect(all.some(t => t.startsWith('limited until ') && t.includes(' · idle <1m'))).toBe(true)
+    expect(all.join('\n')).not.toMatch(/ctx|5h|7d/)
+    await ui.unmount()
+  })
+
+  test('Events: the empty state, then rows with the time, a ×n count and the cap', async ($, on) => {
+    const { clock } = boot(on, ghOk)
+    stubs(on)
+    await $.session.start(start)
+    await clock.settle()
+    let ui = await $.ui.mount(PANE)
+    let all = await texts(ui)
+    expect(all).toContain('Events (0)')
+    expect(all).toContain('No events yet.')
+    await ui.unmount()
+    for (let i = 0; i < 10; i++) await $.classic.PermissionDenied({ tool_name: 'Bash', reason: `reason ${i}` } as never)
+    await $.classic.PermissionDenied({ tool_name: 'Bash', reason: 'reason 9' } as never)
+    ui = await $.ui.mount(PANE)
+    all = await texts(ui)
+    expect(all).toContain('Events (10)')
+    expect(all).not.toContain('No events yet.')
+    const rows = all.filter(t => /^\d\d:\d\d denied Bash: reason/.test(t))
+    expect(rows.length).toBeGreaterThanOrEqual(8)
+    expect(rows.some(t => t.includes('denied Bash: reason 9 ×2'))).toBe(true)
+    expect(rows.some(t => t.includes('reason 0'))).toBe(false)
+    expect(all).toContain('+2 more')
+    // Between Running and Up next.
+    const at = (needle: string) => all.findIndex(t => t.includes(needle))
+    expect(at('Running (')).toBeLessThan(at('Events ('))
+    expect(at('Events (')).toBeLessThan(at('Up next ('))
+    await ui.unmount()
+  })
+
+  test('a failed merge cuts the title and keeps the tail; a closed issue shows its title', async ($, on) => {
+    const gh = { ...ghOk, issue: [{ ...ghOk.issue[1]!, title: long }, { ...ghOk.issue[0]!, number: 9, title: 'Gone soon', labels: [] }] }
+    const { clock } = boot(on, gh)
+    stubs(on)
+    await $.session.start(start)
+    await clock.settle()
+    await $.tool.call(merge)
+    await clock.settle()
+    gh.issue = [gh.issue[0]!]
+    await $.command.run({ command: 'loopkit-status', args: '', origin: { kind: 'composer' } })
+    const ui = await $.ui.mount(PANE)
+    const all = await texts(ui)
+    const failed = all.find(t => /PR #6 .*merge failed/.test(t))
+    expect(failed).toMatch(/^\d\d:\d\d PR #6 A very long.*… merge failed: not mergeable$/)
+    expect(failed!.length).toBeLessThanOrEqual(60)
+    expect(all.some(t => /^\d\d:\d\d #9 Gone soon closed$/.test(t))).toBe(true)
+    await ui.unmount()
+  })
+
+  test('both opens pass the content height as rows', async ($, on) => {
+    const { clock, opened } = boot(on, ghOk)
+    stubs(on)
+    await $.session.start(start)
+    await clock.settle()
+    expect(opened).toHaveLength(1)
+    expect(opened[0]).toBeGreaterThan(0)
+    await $.command.run({ command: 'loopkit-status', args: '', origin: { kind: 'composer' } })
+    expect(opened).toHaveLength(2)
+    // The second open sees the refreshed snapshot: its rows match paneRows for it.
+    const second = opened[1]!
+    expect(second).toBeGreaterThanOrEqual(opened[0]!)
+    await $.command.run({ command: 'loopkit-status', args: '', origin: { kind: 'composer' } })
+    expect(opened[2]).toBe(second)
   })
 })

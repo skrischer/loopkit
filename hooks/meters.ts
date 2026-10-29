@@ -1,7 +1,7 @@
 import { read, update } from 'claude-code'
 import type { EngineInterface, On } from 'claude-code'
 
-import type { Meters } from '../types'
+import type { Beat, Meters } from '../types'
 import { compactedText, limitText, recordEvent } from './events'
 import { ageText } from './pane'
 import { publishStatus } from './status'
@@ -12,8 +12,6 @@ const meters = { plugin: 'loopkit', key: 'meters' } as const
 const beat = { plugin: 'loopkit', key: 'beat' } as const
 const lastText = { plugin: 'loopkit', key: 'lastText' } as const
 
-const WARN_CONTEXT = 85
-const LABELS: Record<string, string> = { five_hour: '5h', seven_day: '7d' }
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 const initial = (): Meters => ({ compactions: 0, limits: [] })
@@ -60,7 +58,7 @@ export function limitUntil(limits: Meters['limits']): string | undefined {
   return best?.iso
 }
 
-export type Reading = { context?: { percent?: number }; rateLimits: Meters['limits'] }
+export type Reading = { rateLimits: Meters['limits'] }
 
 // The pure writes behind the hooks.
 export function withReading(held: Meters | undefined, e: Reading): Meters {
@@ -71,7 +69,6 @@ export function withReading(held: Meters | undefined, e: Reading): Meters {
     return row
   })
   const out: Meters = { ...(held ?? initial()), limits }
-  if (e.context?.percent !== undefined) out.context = e.context.percent
   if (out.limit !== undefined && clearsLimit(limits)) delete out.limit
 
   return out
@@ -90,34 +87,26 @@ export function withStop(held: Meters | undefined): Meters {
   return { ...m, limit: until === undefined ? {} : { until } }
 }
 
-export type MeterPart = { text: string; warn: boolean }
-export type MeterLine = { limited: boolean; parts: MeterPart[]; text: string }
+export type HeaderPart = { text: string; warn: boolean }
+export type HeaderLine = { parts: HeaderPart[]; text: string }
 
-// null when there is nothing to show. A limit stop shows `limited [until <when>]`
-// and the context part only; the pane draws the whole line in the warning colour.
-export function meterLine(m: Meters, now: number): MeterLine | null {
-  const ctx: MeterPart | undefined =
-    m.context === undefined ? undefined : { text: `ctx ${Math.round(m.context)}%`, warn: m.context >= WARN_CONTEXT }
+// null when no part has a value. The parts, in order: a held limit stop
+// (flagged for the warning colour), the heartbeat, and `<c> compacted`.
+export function headerLine(m: Meters, b: Beat | null, text: number | null, now: number): HeaderLine | null {
+  const parts: HeaderPart[] = []
   const limit = limitActive(m.limit, now)
   if (limit !== undefined) {
-    const head = limit.until === undefined ? 'limited' : `limited until ${when(limit.until, now)}`
-    const parts: MeterPart[] = [{ text: head, warn: true }]
-    if (ctx !== undefined) parts.push(ctx)
-
-    return { limited: true, parts, text: parts.map(part => part.text).join(' · ') }
+    parts.push({ text: limit.until === undefined ? 'limited' : `limited until ${when(limit.until, now)}`, warn: true })
   }
-  const parts: MeterPart[] = []
-  if (ctx !== undefined) parts.push(ctx)
+  const heart = beatLine(b, text, now)
+  if (heart !== null) parts.push({ text: heart, warn: false })
   if (m.compactions > 0) parts.push({ text: `${m.compactions} compacted`, warn: false })
-  for (const window of m.limits) {
-    parts.push({ text: `${LABELS[window.kind] ?? window.kind} ${Math.round(window.percentUsed)}%`, warn: false })
-  }
   if (parts.length === 0) return null
 
-  return { limited: false, parts, text: parts.map(part => part.text).join(' · ') }
+  return { parts, text: parts.map(part => part.text).join(' · ') }
 }
 
-export function beatLine(b: { working: boolean; since: number } | null, text: number | null, now: number): string | null {
+export function beatLine(b: Beat | null, text: number | null, now: number): string | null {
   if (b === null) return null
   const head = `${b.working ? 'working' : 'idle'} ${ageText(now - b.since)}`
 
