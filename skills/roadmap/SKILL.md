@@ -156,8 +156,9 @@ issue.
 
 ## Close out
 
-- Report the seeded phases and their backing concerns in one summary, and point
-  at `/loopkit:plan <phase>` as the next step — planning is where each seeded
+- Report the seeded phases and their backing concerns in one summary, then state
+  the next step as one `Needs you:` line per `${CLAUDE_PLUGIN_ROOT}/skills/shared/needs-you.md`,
+  naming every seeded phase in order (`/loopkit:plan <p1> <p2> …`) — planning is where each seeded
   phase becomes a spec + milestone + issues, and where any recorded
   foundation-doc impact is authored and ratified.
 - Nothing here creates milestones, issues, or board entries, and nothing edits a

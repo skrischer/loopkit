@@ -49,7 +49,8 @@ section). Machine gates run per PR (single Verify command + agent review);
 human gates run per milestone (spec acceptance with prerequisites handover,
 milestone QA from the spec's Verification section). Blockers only a human can
 clear are parked (`blocked:human` label + comment), never fatal:
-`gh issue list --label blocked:human` is the delivery queue.
+`gh issue list --label blocked:human` is the delivery queue. A request the loop
+does not wait for appears as one `Needs you:` line.
 
 ## Requirements
 
