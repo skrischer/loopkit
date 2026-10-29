@@ -27,6 +27,8 @@ parked issue does not stall the orchestrator (§4).
 
 Naming: in everything the human reads, name an issue, PR or milestone by number and short title (`#238 implement split`), and a PR also by its branch — never a bare number.
 
+Asks: a request the run does not wait for is one `Needs you:` line per `${CLAUDE_PLUGIN_ROOT}/skills/shared/needs-you.md`.
+
 Model tiers (optional): `docs/workflow.md` maps each role (`orchestrator` /
 `implementer` / `reviewer`) to a tier and an effort; unset or `inherit` means pass
 none. The orchestrator stays the session's model and effort; asked to change them,
