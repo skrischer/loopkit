@@ -69,8 +69,8 @@ chat at session start and shows four sections:
 - **Up next** — the unblocked issue frontier, then the roadmap phases not yet
   planned.
 
-The status line carries a one-line summary: `loopkit · <n> need you · #<m>
-<closed>/<total> · <n> running`.
+The status line carries a one-line summary: `loopkit: <n> need you · #<m>
+<closed>/<total> · <n> running` (Claude Code adds the `loopkit: ` lead).
 
 `/loopkit-status` opens the pane and refreshes it from GitHub, even mid-turn.
 Otherwise it refreshes every two minutes, after a turn (at most once every 15

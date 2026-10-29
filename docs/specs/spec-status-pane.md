@@ -733,3 +733,8 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   reach `fs.read` absolute, and the `refresh`, hook and pane tests all live
   in `hooks/pane.test.tsx`, which boots the mod through `$.session.start`
   with a `mock.clock`.
+- 2026-10-29: Issue #314 built. Claude Code draws a plugin's status line as
+  `<plugin>: <text>`, so `statusLine` drops its own `loopkit · ` lead (it read
+  `loopkit: loopkit · 2 need you …` at the QA gate). The pre-snapshot form is
+  `reading GitHub…` and the error form is the bare error; the README and the
+  design show the line as drawn.
