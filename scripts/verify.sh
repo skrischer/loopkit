@@ -64,18 +64,25 @@ fi
 echo "-- config-surface auth/state guard --"
 
 self="scripts/verify.sh"
+guard_hit=0
 # The surface is every tracked file plus every new, non-ignored one, so a PR's
 # new files are scanned before their first commit. The engine-written
 # .claude-plugin/types/ folder ignores itself and is therefore never listed.
 surface_files=()
-while IFS= read -r f; do
+while IFS= read -r -d '' f; do
   [ "$f" = "$self" ] && continue
-  [ -f "$f" ] || continue
+  # A tracked file deleted in the working tree is gone, not skipped silently
+  # for any other reason: anything else that is not a regular file fails.
+  if [ ! -e "$f" ] && [ ! -L "$f" ]; then continue; fi
+  if [ ! -f "$f" ]; then
+    echo "  surface entry is not a regular file: $f"
+    guard_hit=1
+    continue
+  fi
   surface_files+=("$f")
 done < <(
-  git ls-files --cached --others --exclude-standard -- \
-    '.claude-plugin' 'types' 'hooks' 'skills/*/templates/*.json' 'scripts/*.sh' |
-    sort -u
+  git ls-files -z --cached --others --exclude-standard -- \
+    '.claude-plugin' 'types' 'hooks' 'skills/*/templates/*.json' 'scripts/*.sh'
 )
 
 forbidden=(
@@ -86,7 +93,6 @@ forbidden=(
   'scheduler'
 )
 
-guard_hit=0
 if [ "${#surface_files[@]}" -gt 0 ]; then
   for pat in "${forbidden[@]}"; do
     if grep -n -F -e "$pat" -- "${surface_files[@]}"; then
@@ -142,11 +148,16 @@ if [ -d hooks ]; then
   fi
 
   hook_src=()
-  while IFS= read -r f; do
-    [ -f "$f" ] || continue
+  while IFS= read -r -d '' f; do
+    if [ ! -e "$f" ] && [ ! -L "$f" ]; then continue; fi
+    if [ ! -f "$f" ]; then
+      echo "  hooks entry is not a regular file: $f"
+      ro_fail=1
+      continue
+    fi
     case "$f" in *.test.ts|*.test.tsx) continue ;; esac
     hook_src+=("$f")
-  done < <(git ls-files --cached --others --exclude-standard -- 'hooks' | sort -u)
+  done < <(git ls-files -z --cached --others --exclude-standard -- 'hooks')
 
   if [ "${#hook_src[@]}" -gt 0 ]; then
     # One process call site, and it is a gh argv. Before hooks/github.ts exists
