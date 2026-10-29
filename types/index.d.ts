@@ -17,6 +17,8 @@ export type Snapshot = {
   gates: Item[]
   milestones: MilestoneRow[]
   upNext: Item[]
+  titles: Record<number, string> // open issues and open PRs
+  open: number[] // open issue numbers
 }
 export type Ask = { text: string; firstSeen: number; lastSeen: number; count: number; callsAt: number }
 export type Asking = { headers: string; since: number }
@@ -42,7 +44,7 @@ export type FeedEvent = { kind: string; text: string; at: number; count: number 
 declare module 'claude-code' {
   interface PluginState {
     loopkit: {
-      snapshot: Shaped<Snapshot | null> // shape 'snapshot-1', default null
+      snapshot: Shaped<Snapshot | null> // shape 'snapshot-2', default null
       isRefreshing: boolean // default false
       asks: Ask[] // default []
       calls: number // default 0

@@ -1,7 +1,8 @@
-import { update } from 'claude-code'
+import { read, update } from 'claude-code'
 import type { EngineInterface, On } from 'claude-code'
 
 import type { Meters } from '../types'
+import { compactedText, limitText, recordEvent } from './events'
 import { ageText } from './pane'
 import { publishStatus } from './status'
 
@@ -171,7 +172,7 @@ export function registerMeters(on: On, isActive: () => boolean): void {
     if (!isActive() || e.agent_id !== undefined) return done
     await safely(async () => {
       await update($, meters, withCompaction)
-      await publishStatus($)
+      await recordEvent($, { kind: 'compacted', text: compactedText(e.trigger) })
     })
 
     return done
@@ -182,7 +183,9 @@ export function registerMeters(on: On, isActive: () => boolean): void {
     if (!isActive() || e.error !== 'rate_limit') return done
     await safely(async () => {
       await update($, meters, withStop)
-      await publishStatus($)
+      const held = await read($, meters)
+      const at = await $.clock.now()
+      await recordEvent($, { kind: 'limit', text: limitText(held?.limit?.until, at) })
     })
 
     return done

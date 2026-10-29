@@ -26,6 +26,8 @@ const snap = (over: Partial<Snapshot> = {}): Snapshot => ({
   gates: [],
   milestones: [],
   upNext: [],
+  titles: {},
+  open: [],
   ...over,
 })
 

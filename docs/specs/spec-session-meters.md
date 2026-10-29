@@ -539,3 +539,10 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 - 2026-10-29: Spec gate for the amendment: accepted. At the status-pane QA
   gate the human chose to build the inline pane's height request (`rows`)
   in this phase, in issue C.
+- 2026-10-29: Issue B (#308) built. The test host reaches no `$.state`, so
+  `events.test.ts` tests the pure builders and extractors and observes the
+  hooks through the status line (a recorded event is one more publish).
+  `hooks/pane.tsx`'s own `snapshot` atom spelling moved to `snapshot-2` with
+  the shape (a one-line change; the engine matches the shape per spelling).
+  `session.ts` now guards `beatAfterTurn` and `subagentEnded` separately from
+  the ask parsing.

@@ -7,7 +7,7 @@ import { refresh } from './github'
 // The engine's scan follows only references written in this file, so the
 // state refs are spelled here; their defaults live in types/index.d.ts.
 // Same shape tag as hooks/status.ts: a write without it reads back as the default.
-const snapshot = atom({ plugin: 'loopkit', key: 'snapshot' } as const, null as Snapshot | null, { shape: 'snapshot-1' })
+const snapshot = atom({ plugin: 'loopkit', key: 'snapshot' } as const, null as Snapshot | null, { shape: 'snapshot-2' })
 const isRefreshing = { plugin: 'loopkit', key: 'isRefreshing' } as const
 const asks = { plugin: 'loopkit', key: 'asks' } as const
 const asking = { plugin: 'loopkit', key: 'asking' } as const
