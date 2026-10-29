@@ -2,7 +2,7 @@
 
 > Created: 2026-10-29
 
-Extend the status pane (`archive/spec-status-pane.md`) with session health:
+Extend the status pane (`spec-status-pane.md`, beside this file) with session health:
 
 - compactions;
 - a usage-limit stop with its resume time;
@@ -362,7 +362,7 @@ its hooks.
 
 ## Prior art
 
-- [Session health meters — context, usage limits, heartbeat, event feed (feature: session-meters)](../prior-art.md#session-health-meters--context-usage-limits-heartbeat-event-feed-feature-session-meters)
+- [Session health meters — context, usage limits, heartbeat, event feed (feature: session-meters)](../../prior-art.md#session-health-meters--context-usage-limits-heartbeat-event-feed-feature-session-meters)
   - The evidence: 31 compactions, 9 usage-limit stops, 474 silence reminders,
     49 failed or killed tasks, 46 merge failures, 209 re-notified tasks, and
     40 % of texts with three or more bare `#N`.
@@ -373,7 +373,7 @@ its hooks.
     - AVOID duplicating a native meter;
     - claude-hud's context-and-limit line: ADOPT two numbers in one line
       (not applied in the pane: see Prior decisions).
-- [In-session status pane — loopkit state and session signals in one view (feature: status-pane)](../prior-art.md#in-session-status-pane--loopkit-state-and-session-signals-in-one-view-feature-status-pane)
+- [In-session status pane — loopkit state and session signals in one view (feature: status-pane)](../../prior-art.md#in-session-status-pane--loopkit-state-and-session-signals-in-one-view-feature-status-pane)
   — the mods entry: AVOID transcript parsing and state in a file.
 - The status-pane spec (`docs/specs/archive/spec-status-pane.md`): the
   modules, atoms, guards and design this phase extends.
@@ -575,3 +575,22 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
   falls back to an end cut when no room is left for a title. The
   `statusLine` limit-stop cases moved from `meters.test.ts` to
   `pane.test.tsx`.
+- 2026-10-29: Milestone QA accepted. The human ran the smoke steps 1–7 and
+  an inline-height check:
+  - step 6 as written (a foreground subagent stopped with Esc) cannot be
+    produced on 2.1.312: the Agent tool always backgrounds a subagent, so
+    Esc ends only the main turn and the subagent finishes. Stopping the
+    background subagent from `/tasks` gave `subagent stopped: <description>`
+    as specified;
+  - step 7 gave `stopped: sleep 300`: the shell started and stopped in one
+    turn, so no held task had its description and the `command` fallback
+    applied;
+  - the inline pane requests its content's height (`rows`, about 28 lines
+    there), and the engine seated it at about a third of the terminal; the
+    content scrolls. `rows` is a request the engine caps at what the layout
+    spares, so the code is as specified;
+  - the scratch issue #329 was created and closed for step 3.
+
+  The 5h window reset before it filled, so the limit stop and the auto-mode
+  denial stay covered by the tests and the design only, as Verification
+  states.
