@@ -243,7 +243,7 @@ Vision: none.
 
 ## Tracking
 
-- Milestone: [ask-marker](<milestone-url>)
+- Milestone: [ask-marker](https://github.com/skrischer/loopkit/milestone/26)
 - Issues: created from this spec once it is merged (one per implementable step)
 
 Each issue references this spec path in its body. The issue that creates
