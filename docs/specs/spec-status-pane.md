@@ -569,7 +569,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 
 ## Tracking
 
-- Milestone: [status-pane](<milestone-url>), `Depends on milestone: #26`
+- Milestone: [status-pane](https://github.com/skrischer/loopkit/milestone/27), `Depends on milestone: #26`
   (ask-marker, closed).
 - Issues, one per step, created after the merge:
   - **A — Scaffold, state contract, status line, Verify:**
