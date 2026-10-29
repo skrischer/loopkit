@@ -65,11 +65,23 @@ export type BackgroundTask = {
 // description (agent.spawn saw it first, under its agent id, which the row
 // keeps as agentId when it is re-keyed to the Stop's task id).
 export function mergeTasks(held: readonly Task[], running: readonly BackgroundTask[], now: number): Task[] {
+  const runningIds = new Set(running.map(item => item.id))
+  const claimed = new Set<Task>()
   return running.map(item => {
     const description = (item.description ?? '').split('\n')[0] ?? ''
+    // The description fallback takes only a spawn row no Stop has claimed: not
+    // listed by id, not re-keyed before, not taken earlier in this merge.
     const known =
       held.find(task => task.id === item.id) ??
-      held.find(task => task.kind === 'subagent' && task.description === description)
+      held.find(
+        task =>
+          task.kind === 'subagent' &&
+          task.description === description &&
+          task.agentId === undefined &&
+          !runningIds.has(task.id) &&
+          !claimed.has(task),
+      )
+    if (known !== undefined) claimed.add(known)
     const detail = known?.detail ?? item.agent_type ?? item.command ?? item.tool ?? item.name
     const task: Task = {
       id: item.id,
@@ -96,7 +108,7 @@ export function clearsAsks(e: { origin: { kind: string }; isMeta?: true; command
 
 // A subagent seen at agent.spawn, before any Stop lists it. Keyed by id.
 export function addSubagent(held: readonly Task[], id: string, description: string, model: string, now: number): Task[] {
-  return held.some(task => task.id === id) ? [...held] : [...held, { id, kind: 'subagent', description, detail: model, firstSeen: now }]
+  return held.some(task => task.id === id || task.agentId === id) ? [...held] : [...held, { id, kind: 'subagent', description, detail: model, firstSeen: now }]
 }
 
 export function dropTask(held: readonly Task[], id: string): Task[] {

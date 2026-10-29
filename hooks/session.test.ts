@@ -107,4 +107,19 @@ describe('subagent rows', () => {
     const twice = mergeTasks(touchTask(once, 'agent-1', T + 5), stop, T + 9)
     expect(twice).toEqual([{ id: 'task-9', kind: 'subagent', description: 'build', detail: 'sonnet', firstSeen: T, lastActivity: T + 5, agentId: 'agent-1' }])
   })
+
+  test('two same-description subagents keep distinct agent ids', () => {
+    const spawned = addSubagent(addSubagent([], 'agent-1', 'review', 'opus', T), 'agent-2', 'review', 'opus', T + 1)
+    const stop = [
+      { id: 'task-9', type: 'subagent', description: 'review' },
+      { id: 'task-10', type: 'subagent', description: 'review' },
+    ]
+    const out = mergeTasks(spawned, stop, T + 2)
+    expect(out.map(t => [t.id, t.agentId])).toEqual([['task-9', 'agent-1'], ['task-10', 'agent-2']])
+    expect(dropTask(out, 'agent-2').map(t => t.id)).toEqual(['task-9'])
+    // a row already matched by id never lends its agent id to a new task
+    const again = mergeTasks(out, [...stop, { id: 'task-11', type: 'subagent', description: 'review' }], T + 3)
+    expect(again.map(t => t.agentId)).toEqual(['agent-1', 'agent-2', undefined])
+    expect(addSubagent(out, 'agent-1', 'review', 'opus', T + 4)).toEqual(out)
+  })
 })
