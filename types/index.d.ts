@@ -1,0 +1,44 @@
+export type Item = { kind: ItemKind; ref: string; title: string; note?: string }
+export type ItemKind = 'qa' | 'spec' | 'escalated' | 'parked' | 'frontier' | 'phase'
+export type MilestoneRow = {
+  number: number
+  title: string
+  closed: number
+  total: number
+  percent: number
+  inFlight: number
+  blocked: number
+  living: boolean
+}
+export type Snapshot = {
+  repo: string
+  fetchedAt: number
+  error: string | null
+  gates: Item[]
+  milestones: MilestoneRow[]
+  upNext: Item[]
+}
+export type Ask = { text: string; firstSeen: number; lastSeen: number; count: number; callsAt: number }
+export type Asking = { headers: string; since: number }
+export type Task = {
+  id: string
+  kind: string
+  description: string
+  detail?: string
+  firstSeen: number
+  lastActivity?: number
+}
+
+declare module 'claude-code' {
+  interface PluginState {
+    loopkit: {
+      snapshot: Shaped<Snapshot | null> // shape 'snapshot-1', default null
+      isRefreshing: boolean // default false
+      asks: Ask[] // default []
+      calls: number // default 0
+      asking: Asking | null // default null
+      tasks: Task[] // default []
+      now: number // default 0
+    }
+  }
+}
