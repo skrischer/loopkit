@@ -66,7 +66,7 @@ this spec at the spec-acceptance gate.
 - [ ] Seated inline above the prompt (a terminal too narrow for the side
       placement), the pane asks for as many rows as its content needs, so
       the Events section, Up next and the Refresh button are not cut off.
-- [ ] The README's "Status pane" section describes the meter lines, the
+- [ ] The README's "Status pane" section describes the header line, the
       limit stop and the Events section.
 - [ ] `docs/architecture.md` lists the meter inputs (see Foundation edits).
 
@@ -74,8 +74,8 @@ this spec at the spec-acceptance gate.
 
 ### In scope
 
-- The meter and heartbeat lines, the limit stop and the Events section, as
-  specified under Design, with their tests.
+- The header line, the limit stop and the Events section, as specified
+  under Design, with their tests.
 - The state-contract extension and the snapshot's title map.
 - The inline pane's height request (`rows`).
 - The README update and the architecture edit.
@@ -91,8 +91,8 @@ this spec at the spec-acceptance gate.
   `PreToolUse` block reach no hook.
 - **Context or usage in the status line or the pane.** Claude Code's own
   status line can already show them (prior art: AVOID duplicating a native
-  meter). Only the
-  limit stop enters the line, because it changes what the human must do.
+  meter). Only the limit stop enters the status line, because it changes
+  what the human must do.
 - **A feed of every event.** Only the kinds above are shown (prior art
   AVOID: a feed that mirrors every event).
 - **`$.session.usage()` or any other `$` op.** The mod reads the session only
@@ -208,14 +208,19 @@ at the moment of the write.
 - `beatAfterTurn($, e)` writes `beat` and `lastText` for a main-loop
   `turn.complete`. `hooks/session.ts`'s `turn.complete` hook calls it.
 - `beatLine(beat, lastText, now)` and `headerLine(meters, beat, lastText,
-  now)` are pure. `headerLine` joins the limit part (flagged for the
-  `warning` colour), `beatLine` and the `<c> compacted` part, and replaces
-  the `meterLine` of #307.
+  now)` are pure. `headerLine` joins the parts that have a value with
+  ` · `, in this order: the limit part (flagged for the `warning` colour),
+  `beatLine` and the `<c> compacted` part. When no part has a value
+  (`beat` is null, no compaction, no stop held), it returns `null`, and the
+  pane leaves the line out; `paneRows` counts it only when drawn.
+  `headerLine` replaces the `meterLine` of #307, which goes with its
+  `WARN_CONTEXT` and `LABELS`, and `Reading.context` and the `context`
+  write in `withReading` go too.
 - `when(iso, now)` gives `HH:MM` for a reset today, else `<Ddd> HH:MM`.
 
 ### State contract — `types/index.d.ts` additions
 
-Issue A adds:
+Issue A adds (shown as it stands after C drops `context`):
 
 ```ts
 export type Meters = {
@@ -365,7 +370,8 @@ its hooks.
     - ADOPT a title next to `#N`;
     - AVOID a feed of every event;
     - AVOID duplicating a native meter;
-    - claude-hud's context-and-limit line: ADOPT two numbers in one line.
+    - claude-hud's context-and-limit line: ADOPT two numbers in one line
+      (not applied in the pane: see Prior decisions).
 - [In-session status pane — loopkit state and session signals in one view (feature: status-pane)](../prior-art.md#in-session-status-pane--loopkit-state-and-session-signals-in-one-view-feature-status-pane)
   — the mods entry: AVOID transcript parsing and state in a file.
 - The status-pane spec (`docs/specs/archive/spec-status-pane.md`): the
@@ -391,7 +397,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 | Decision | Rationale | Date |
 |---|---|---|
 | Usage comes from `session.measure`; there is no `$.session.usage()` call. | The seed found no hook source, but the 2.1.312 API has one: `rateLimits` with `percentUsed` and `resetsAt`. The Read-only status mod principle allows reading the session only through hooks, so the meters wait for the first reading, which comes after the first answer. | 2026-10-29 |
-| The pane header shows one line: the heartbeat and `<c> compacted`, opened by a limit stop's part; no context or usage figures. | The human's choice before #309: Claude Code's own status line already shows `ctx`, `5h` and `7d`, so a pane copy duplicates a native meter (prior art AVOID); claude-hud's two-numbers line stays with that native line. The compaction count and the limit stop are what it lacks. `meters.context` is dropped, since nothing draws it. | 2026-10-29 |
+| The pane header shows one line: the heartbeat and `<c> compacted`, opened by a limit stop's part; no context or usage figures. | The human's choice before #309: Claude Code's own status line already shows `ctx`, `5h` and `7d`, so a pane copy duplicates a native meter (prior art AVOID); claude-hud's two-numbers line stays with that native line. The compaction count and the limit stop are what it lacks. `meters.context` is dropped, since nothing draws it. The `meters` atom keeps its unshaped form: a `context` held from before a reload is ignored and goes on `/clear`, so no shape change is needed. | 2026-10-29 |
 | Context and usage stay out of the status line; only a limit stop enters it. | Claude Code's status line can already show context and usage (prior art: AVOID duplicating a native meter). A limit stop changes what the human must do, and the evidence has 9 stops lasting 10 min to 15 h. | 2026-10-29 |
 | The limit stop's `until` comes only from windows at 100 % or more; otherwise it is unknown. | A fallback to any window could show a reset days away, and a transient 429 would claim a time. `limited` without a time is honest, and it clears on a reading under 100 %. | 2026-10-29 |
 | No failed-shell events. | A shell's exit status reaches the session only inside the task-notification text, which is internal and unversioned. | 2026-10-29 |
