@@ -345,7 +345,7 @@ Authored in this spec PR and ratified at the spec-acceptance gate:
 
 ## Tracking
 
-- Milestone: [session-meters](<milestone-url>), with
+- Milestone: [session-meters](https://github.com/skrischer/loopkit/milestone/28), with
   `Depends on milestone: #27` (status-pane).
 - Issues, one per step, created after the merge:
   - **A — Contract and meters:**
