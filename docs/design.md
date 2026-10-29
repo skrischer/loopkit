@@ -1,8 +1,9 @@
 ---
 kind: concept
 # UI-token blocks (color / type / spacing / radii / shadow) pruned per the
-# template's prune-on-fill rule: loopkit renders no UI, so a concept contract
-# carries no UI tokens. Its medium is defined in "Diagram medium" below.
+# template's prune-on-fill rule: loopkit's one UI surface (the status pane) is
+# drawn as an SVG mock, so a concept contract carries no UI tokens. Its medium
+# is defined in "Diagram medium" below.
 ---
 
 # Design contract
@@ -10,20 +11,26 @@ kind: concept
 > loopkit's design contract — the single source for its design medium, rules,
 > and handoff, read by `/loopkit:design`, `/loopkit:plan`, and
 > `/loopkit:implement` instead of hardcoding any tool. The sibling of
-> `docs/workflow.md`. loopkit is a **concept-design** project: it renders no UI,
-> so its design surface is the concept / flow / architecture diagrams that settle
-> recurring decisions — `docs/design/loopkit-interpretation.svg` is the exemplar.
+> `docs/workflow.md`. loopkit is a **concept-design** project: apart from the
+> status pane it renders no UI, so its design surface is the concept / flow /
+> architecture diagrams that settle recurring decisions —
+> `docs/design/loopkit-interpretation.svg` is the exemplar.
 
 ## Overview
 
 loopkit's design intent is **conceptual clarity**: diagrams drawn to settle
 flow, architecture, and mental-model decisions — not visual or brand design.
-There is no UI to style, so the "design surface" is the shared understanding a
-diagram creates. `docs/design/loopkit-interpretation.svg` is the exemplar — no
+Apart from the status pane there is no UI to style, so the "design surface" is
+the shared understanding a diagram creates.
+`docs/design/loopkit-interpretation.svg` is the exemplar — no
 UI, yet a design artifact that drove alignment on how the loops interpret their
 inputs. A diagram earns a place here only when it **materially clarifies a
 recurring decision**; proportional ceremony holds, so a change that needs no
 visualisation carries no design artifact.
+
+One UI surface exists: the status mod's terminal pane and status line. Its
+design is an SVG mock in the same medium, `docs/design/status-pane.svg`,
+drawn at terminal scale with sample data; it adds no UI tokens.
 
 ## Design tool
 
