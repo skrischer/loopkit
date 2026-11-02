@@ -178,7 +178,10 @@ function boot(on: Host, gh: Record<string, unknown>, workflow = '# Workflow cont
     ran.push([...e.argv])
     if (hang) await new Promise(() => undefined)
     const key = e.argv[1] === 'api' ? 'api' : `${e.argv[1]} ${e.argv[2]}`.trim()
-    const out = gh[e.argv[1] === 'api' ? 'api' : (e.argv[1] ?? '')]
+    const milestone = e.argv.indexOf('--milestone')
+    const out = milestone > 0
+      ? (gh.counts as Record<string, unknown> | undefined)?.[e.argv[milestone + 1] ?? '']
+      : gh[e.argv[1] === 'api' ? 'api' : (e.argv[1] ?? '')]
     if (out === undefined) return { value: { exitCode: 1, stderr: `no stub for ${key}\n`, stdout: '' } }
 
     return { value: { exitCode: 0, stdout: JSON.stringify(out), stderr: '' } }
@@ -186,6 +189,11 @@ function boot(on: Host, gh: Record<string, unknown>, workflow = '# Workflow cont
 
   return { ran, clock, status, opened }
 }
+
+const states = (open: number, closed: number) => [
+  ...Array(open).fill({ state: 'OPEN' }),
+  ...Array(closed).fill({ state: 'CLOSED' }),
+]
 
 const ghOk = {
   repo: { nameWithOwner: 'o/r' },
@@ -195,7 +203,10 @@ const ghOk = {
   ],
   pr: [],
   api: [{ number: 7, title: 'alpha', open_issues: 2, closed_issues: 2 }],
+  counts: { 7: states(2, 2) },
 }
+// One refresh of ghOk: repo, issues, PRs, milestones, and one count per milestone.
+const READS = 5
 
 const start = { cwd: '/work', surface: 'terminal', isInteractive: true } as const
 const texts = async (ui: Awaited<ReturnType<Host['ui']['mount']>>) => {
@@ -218,10 +229,14 @@ describe('the pane', () => {
 
   test('a held open-question marker is cleared on session.start', async ($, on) => {
     const { clock } = boot(on, ghOk)
-    on('tool.call', { tool: 'AskUserQuestion' }, async () => new Promise(() => undefined))
+    // The question stays open until the test answers it: a call left pending
+    // past the test is cut off at the file's end and fails it.
+    let answer = () => {}
+    on('tool.call', { tool: 'AskUserQuestion' }, async () =>
+      new Promise(resolve => { answer = () => resolve({ result: {} }) }) as never)
     await $.session.start(start)
     await clock.settle()
-    void $.tool.call({ tool: 'AskUserQuestion', questions: [{ header: 'Pick one', question: 'Which?', options: [], multiSelect: false }] })
+    const asked = $.tool.call({ tool: 'AskUserQuestion', questions: [{ header: 'Pick one', question: 'Which?', options: [], multiSelect: false }] })
     await clock.settle()
     let ui = await $.ui.mount(PANE)
     expect((await texts(ui)).join('\n')).toContain('Pick one')
@@ -231,6 +246,8 @@ describe('the pane', () => {
     ui = await $.ui.mount(PANE)
     expect((await texts(ui)).join('\n')).not.toContain('Pick one')
     await ui.unmount()
+    answer()
+    await asked
   })
 
   test('a render before session.start finishes redraws once the session is active', async ($, on) => {
@@ -308,11 +325,49 @@ describe('the wiring', () => {
     const { ran, clock } = boot(on, ghOk)
     await $.session.start(start)
     await clock.settle()
-    expect(ran.length).toBe(4)
+    expect(ran.length).toBe(READS)
     expect(ran.every(argv => argv[0] === 'gh')).toBe(true)
     const res = await $.command.run(run)
     expect(JSON.stringify(res)).toContain('opened and refreshed')
-    expect(ran.length).toBe(8)
+    expect(ran.length).toBe(2 * READS)
+  })
+
+  test('milestone counts and the QA gate come from the issues; only a valid number is read', async ($, on) => {
+    const api = [
+      { number: 7, title: 'drifted', open_issues: 4, closed_issues: 0 },
+      { number: 9, title: 'done', open_issues: 1, closed_issues: 2 },
+      { number: 0, title: 'zero', open_issues: 2, closed_issues: 3 },
+      { number: 1.5, title: 'fraction', open_issues: 2, closed_issues: 3 },
+      { number: '8', title: 'text', open_issues: 2, closed_issues: 3 },
+    ]
+    const { ran, clock } = boot(on, { ...ghOk, api, counts: { 7: states(10, 0), 9: states(0, 3) } })
+    await $.session.start(start)
+    await clock.settle()
+    expect(ran.filter(argv => argv.includes('--milestone'))).toEqual(
+      ['7', '9'].map(n => ['gh', 'issue', 'list', '--milestone', n, '--state', 'all', '--limit', '1000', '--json', 'state']),
+    )
+    const ui = await $.ui.mount(PANE)
+    const all = (await texts(ui)).join('\n')
+    expect(all).toContain('0/10')
+    expect(all).not.toContain('0/4')
+    expect(all).toContain('milestone #9')
+    expect(all).toContain('3/5') // the REST counters of the three without a valid number
+    await ui.unmount()
+  })
+
+  test('a failed count read goes down the read-error path and keeps the rows', async ($, on) => {
+    const gh: Record<string, unknown> = { ...ghOk }
+    const { status, clock } = boot(on, gh)
+    await $.session.start(start)
+    await clock.settle()
+    gh.counts = {}
+    await $.command.run(run)
+    expect(status.at(-1)).toBe('no stub for issue list')
+    const ui = await $.ui.mount(PANE)
+    const all = (await texts(ui)).join('\n')
+    expect(all).toContain('no stub for issue')
+    expect(all).toContain('50%')
+    await ui.unmount()
   })
 
   test('a gh pr merge in Bash refreshes; other commands do not', async ($, on) => {
@@ -326,7 +381,7 @@ describe('the wiring', () => {
     expect(ran.length).toBe(base)
     await $.tool.call({ tool: 'Bash', command: 'gh pr merge 5 --squash' })
     await clock.settle()
-    expect(ran.length).toBe(base + 4)
+    expect(ran.length).toBe(base + READS)
   })
 
   test('a main-loop turn end refreshes at most every 15 s; a subagent turn never', async ($, on) => {
@@ -345,7 +400,7 @@ describe('the wiring', () => {
     expect(ran.length).toBe(base)
     await $.turn.complete(done)
     await clock.settle()
-    expect(ran.length).toBe(base + 4)
+    expect(ran.length).toBe(base + READS)
   })
 
   test('the timer re-reads on every second tick', async ($, on) => {
@@ -356,7 +411,7 @@ describe('the wiring', () => {
     await clock.advance(60_000)
     expect(ran.length).toBe(base)
     await clock.advance(60_000)
-    expect(ran.length).toBe(base + 4)
+    expect(ran.length).toBe(base + READS)
   })
 
   test('/clear re-reads', async ($, on) => {
@@ -367,7 +422,7 @@ describe('the wiring', () => {
     const base = ran.length
     await $.classic.SessionStart({ source: 'clear' })
     await clock.settle()
-    expect(ran.length).toBe(base + 4)
+    expect(ran.length).toBe(base + READS)
   })
 
   test('caps: Running 8 rows, Up next 6 frontier issues and 3 phases, each with +n more', async ($, on) => {

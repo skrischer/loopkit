@@ -21,6 +21,7 @@ export type RawIssue = {
   milestone?: { number: number; title: string } | null
   projectItems?: { status?: { name: string } | null }[]
 }
+export type RawIssueState = { state: string }
 export type RawPr = { number: number; title: string; headRefName: string; isDraft?: boolean }
 export type RawMilestone = {
   number: number
@@ -196,13 +197,34 @@ export function derive(input: DeriveInput): Derived {
   return { gates, milestones, upNext: [...frontier, ...phases] }
 }
 
-// The module's only process call site. argv, no shell: nothing read from
-// GitHub is ever interpolated into a command.
+// A milestone's counts from its issues: GitHub's REST counters can drift, and
+// the bar, the percentage and the QA gate all read them.
+export function withIssueCounts(ms: RawMilestone, issues: RawIssueState[]): RawMilestone {
+  const open = issues.filter(issue => issue.state === 'OPEN').length
+
+  return { ...ms, open_issues: open, closed_issues: issues.length - open }
+}
+
+// The module's only process call site. argv, no shell: of everything read from
+// GitHub, only a validated milestone number reaches a command.
 async function gh($: EngineInterface, args: string[]): Promise<unknown> {
   const { exitCode, stdout, stderr } = await $.process.run(['gh', ...args])
   if (exitCode !== 0) throw new Error(stderr.trim().split('\n')[0] || `gh ${args[0]} failed`)
 
   return JSON.parse(stdout)
+}
+
+// The one deliberate exception to "nothing from GitHub becomes an argument":
+// the milestone number, a validated integer in an argv. A milestone without
+// such a number keeps its REST counters.
+async function countedMilestone($: EngineInterface, ms: RawMilestone): Promise<RawMilestone> {
+  if (!Number.isInteger(ms.number) || ms.number <= 0) return ms
+  const issues = await gh($, [
+    'issue', 'list', '--milestone', String(ms.number), '--state', 'all', '--limit', '1000',
+    '--json', 'state',
+  ]) as RawIssueState[]
+
+  return withIssueCounts(ms, issues)
 }
 
 async function readOrNull($: EngineInterface, path: string): Promise<string | null> {
@@ -223,7 +245,7 @@ export async function refresh($: EngineInterface): Promise<void> {
   try {
     let next: Snapshot
     try {
-      const [repo, issues, prs, milestones, roadmap] = await Promise.all([
+      const [repo, issues, prs, restMilestones, roadmap] = await Promise.all([
         gh($, ['repo', 'view', '--json', 'nameWithOwner']) as Promise<{ nameWithOwner: string }>,
         gh($, [
           'issue', 'list', '--state', 'open', '--limit', '200',
@@ -236,6 +258,7 @@ export async function refresh($: EngineInterface): Promise<void> {
         gh($, ['api', 'repos/{owner}/{repo}/milestones?state=open&per_page=100']) as Promise<RawMilestone[]>,
         readOrNull($, 'docs/roadmap.md'),
       ])
+      const milestones = await Promise.all(restMilestones.map(ms => countedMilestone($, ms)))
       next = {
         repo: clean(repo.nameWithOwner),
         fetchedAt: lastRefreshAt,
