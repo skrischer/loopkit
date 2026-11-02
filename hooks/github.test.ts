@@ -1,7 +1,7 @@
 import { expect, test } from 'claude-code/testing'
 
-import { derive } from './github'
-import type { DeriveInput, RawIssue } from './github'
+import { derive, withIssueCounts } from './github'
+import type { DeriveInput, RawIssue, RawMilestone } from './github'
 
 const issue = (n: number, over: Partial<RawIssue> = {}): RawIssue => ({
   number: n,
@@ -91,6 +91,24 @@ test('milestone QA gate, never for a living-spec milestone', async () => {
     [9, true],
     [11, false],
   ])
+})
+
+test('issue counts replace a drifted REST counter, and the QA gate follows them', async () => {
+  const ms = (open_issues: number, closed_issues: number): RawMilestone =>
+    ({ number: 7, title: 'alpha', open_issues, closed_issues, description: 'd' })
+  const states = (open: number, closed: number) => [
+    ...Array(open).fill({ state: 'OPEN' }),
+    ...Array(closed).fill({ state: 'CLOSED' }),
+  ]
+  const gates = (milestone: RawMilestone) => derive(input({ milestones: [milestone] })).gates.map(g => g.ref)
+
+  expect(withIssueCounts(ms(4, 0), states(10, 0))).toEqual(ms(10, 0))
+  expect(withIssueCounts(ms(4, 0), states(3, 7))).toEqual(ms(3, 7))
+  expect(withIssueCounts(ms(4, 2), [])).toEqual(ms(0, 0))
+  expect(gates(ms(1, 2))).toEqual([])
+  expect(gates(withIssueCounts(ms(1, 2), states(0, 3)))).toEqual(['milestone #7'])
+  expect(gates(ms(0, 3))).toEqual(['milestone #7'])
+  expect(gates(withIssueCounts(ms(0, 3), states(1, 3)))).toEqual([])
 })
 
 test('spec acceptance PRs: docs/ branch, docs(spec) title, no archive', async () => {
