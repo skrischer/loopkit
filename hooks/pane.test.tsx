@@ -208,7 +208,7 @@ const ghOk = {
 // One refresh of ghOk: repo, issues, PRs, milestones, and one count per milestone.
 const READS = 5
 
-const start ={ cwd: '/work', surface: 'terminal', isInteractive: true } as const
+const start = { cwd: '/work', surface: 'terminal', isInteractive: true } as const
 const texts = async (ui: Awaited<ReturnType<Host['ui']['mount']>>) => {
   const out: string[] = []
   for (const hit of (await ui.findAll({ type: 'Text' })) ?? []) out.push(hit.text ?? '')
