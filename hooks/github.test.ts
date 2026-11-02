@@ -156,7 +156,7 @@ test('unplanned phases follow the frontier, in roadmap order', async () => {
         '| **gamma** — a phase | — | — |',
         '| **beta** — planned | [spec](x) | [#8](y) |',
         '| **alpha** — another | — | — |',
-        '| not a phase | — | — |',
+        'not a | table | — | — | row',
       ].join('\n'),
     }),
   )
@@ -166,6 +166,44 @@ test('unplanned phases follow the frontier, in roadmap order', async () => {
     ['phase', 'gamma', 'gamma', 'roadmap · /loopkit:plan'],
     ['phase', 'alpha', 'alpha', 'roadmap · /loopkit:plan'],
   ])
+})
+
+const phasesOf = (...roadmap: string[]): string[] =>
+  derive(input({ roadmap: roadmap.join('\n') })).upNext.map(i => i.ref)
+
+test('the inception template shape lists its unplanned phases, in order', async () => {
+  expect(
+    phasesOf(
+      '| Phase | Name | Spec | Milestone |',
+      '| ----- | ---- | ---- | --------- |',
+      '| 1 | First plannable phase | — | — |',
+      '| 2 | Planned phase | [spec](x) | [#8](y) |',
+      '| 3 | **Third** phase | — | — |',
+      '| — | Board variants | — | — |',
+      '|  | No number | — | — |',
+    ),
+  ).toEqual(['1 First plannable phase', '3 Third phase', 'Board variants', 'No number'])
+})
+
+test('a three-column row: bold name, else before the dash, else the cell', async () => {
+  expect(
+    phasesOf(
+      '| Feature | Spec | Milestone |',
+      '| --- | --- | --- |',
+      '| **bold** *(NEW)* — a phase | — | — |',
+      '| plain — another | — | — |',
+      '| whole cell | — | — |',
+      '| planned — x | [spec](x) | — |',
+    ),
+  ).toEqual(['bold', 'plain', 'whole cell'])
+})
+
+test('an escaped pipe stays inside its cell', async () => {
+  expect(phasesOf('| a \\| b | — | — |', '| a \\| — | — |')).toEqual(['a \\| b'])
+})
+
+test('a row without a label is no phase', async () => {
+  expect(phasesOf('|  | — | — |', '| — |  | — | — |')).toEqual([])
 })
 
 test('control characters are stripped from titles, bodies and branches', async () => {
