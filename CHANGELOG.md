@@ -8,6 +8,23 @@ Versioning and the release process are defined in [`docs/release.md`](docs/relea
 
 ## [Unreleased]
 
+## [2.4.1] - 2026-11-02
+
+### Fixed
+
+- The status pane lists the unplanned phases of a roadmap in the inception
+  template's shape. A phase is now any table row whose last two cells are `—`:
+  a `Phase | Name | Spec | Milestone` row shows `<phase> <name>` (the name alone
+  when the phase cell is `—` or empty), and a `Feature | Spec | Milestone` row
+  shows the bold name, else the text before ` — `, else the whole cell. Before,
+  only a bold first cell counted, so a project that follows the template showed
+  no phase under Up next. (#332)
+- The status pane's milestone bar, count, percentage and QA gate come from the
+  milestone's issues (`gh issue list --milestone <n> --state all`), not from
+  GitHub's REST milestone counters, which can drift. The milestone number,
+  checked to be a positive integer, is the one value from GitHub that reaches a
+  `gh` argument. Pull requests in a milestone no longer count. (#333)
+
 ## [2.4.0] - 2026-10-29
 
 ### Added
@@ -284,7 +301,8 @@ marker, not a reconstructed history; changes from here forward are recorded abov
 - Foundation docs (vision, constitution, architecture, prior-art, roadmap) and
   the per-project contracts (`docs/workflow.md`, `docs/design.md`).
 
-[Unreleased]: https://github.com/skrischer/loopkit/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/skrischer/loopkit/compare/v2.4.1...HEAD
+[2.4.1]: https://github.com/skrischer/loopkit/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/skrischer/loopkit/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/skrischer/loopkit/compare/v2.2.1...v2.3.0
 [2.2.1]: https://github.com/skrischer/loopkit/compare/v2.2.0...v2.2.1
