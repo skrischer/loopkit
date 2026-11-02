@@ -67,12 +67,27 @@ function dependencies(body: string): number[] {
   return refs
 }
 
+// The label of a phase row, its Spec and Milestone cells still attached.
+// Four or more cells are `Phase | Name | ...`, three are `Feature | ...`.
+function phaseLabel(cells: string[]): string {
+  const [first, second] = cells
+  const label = cells.length > 3
+    ? first && first !== '—' ? `${first} ${second}` : second
+    : (/^\*\*(.+?)\*\*/.exec(first)?.[1] ?? first.split(' — ')[0])
+
+  return label.replaceAll('**', '').trim()
+}
+
+// A phase is a table row whose Spec and Milestone cells are both `—`.
 function unplannedPhases(roadmap: string | null): string[] {
   const names: string[] = []
   for (const raw of (roadmap ?? '').split('\n')) {
-    const line = clean(raw).trimEnd()
-    const m = /^\|\s*\*\*([^*]+)\*\*/.exec(line)
-    if (m && /\|\s*—\s*\|\s*—\s*\|$/.test(line)) names.push(m[1].trim())
+    const parts = clean(raw).trim().split(/(?<!\\)\|/).map(cell => cell.trim())
+    const cells = parts.slice(1, -1)
+    if (parts[0] || parts[parts.length - 1] || cells.length < 3) continue
+    if (cells[cells.length - 1] !== '—' || cells[cells.length - 2] !== '—') continue
+    const label = phaseLabel(cells)
+    if (label) names.push(label)
   }
 
   return names
