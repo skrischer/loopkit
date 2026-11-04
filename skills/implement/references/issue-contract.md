@@ -82,7 +82,10 @@ dispatch). Its steps:
   `docs/constitution.md` — it owns the language-specific rules; this skill does
   not restate them. An issue that applies a ratified foundation-doc change
   copies the spec's target text verbatim, character for character; a needed
-  wording change is a design fork (`needs:planning`), never an edit.
+  wording change is a design fork (`needs:planning`), never an edit. Files
+  outside `docs/` (code, tests, comments) cite no spec path, live or archived: a
+  comment that needs a contract points at the living doc that holds it. The
+  commit body and the PR reference the spec.
 - **Source checkout when stuck on technique (optional, spec-backed only).** When a
   supposedly simple, spec-backed change is struggling on technique (how to
   build X, not what to build), you may check out an OSS repo the spec's

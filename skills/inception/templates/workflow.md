@@ -82,7 +82,9 @@ skills pass neither, and asked to change them they tell the human to run
 
 - Branches: `feat/<scope>`, `fix/<scope>`, `chore/<scope>`, `docs/<scope>`, `refactor/<scope>`.
 - Specs: `docs/specs/spec-<scope>.md` — the single source of truth for design.
-- Completed specs: moved to `docs/specs/archive/` with the same name.
+- Completed specs: moved to `docs/specs/archive/` with the same name. Nothing
+  outside `docs/` cites a spec, live or archived: a comment that needs a contract
+  points at the living doc that holds it.
 
 ## Proportional tracks
 

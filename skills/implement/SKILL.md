@@ -209,7 +209,7 @@ On acceptance, first sweep any implementation choice made during the milestone t
 did not record pre-merge into the spec's Decision log (the catch-all, before the
 spec moves to archive). Then:
 
-- full-spec milestone: move the spec to `docs/specs/archive/`, repoint links, update
+- full-spec milestone: move the spec to `docs/specs/archive/`, repoint `docs/` links, update
   `docs/roadmap.md` (own `docs:` worktree + PR, merged autonomously), and close the
   milestone.
 - living-spec milestone: emit a per-batch summary and do nothing else — no archive,
