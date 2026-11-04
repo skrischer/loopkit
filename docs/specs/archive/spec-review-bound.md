@@ -202,7 +202,7 @@ Target text:
 
 ## Prior art
 
-- [Review bound — round-limited agent review with blocking classes (feature: review-bound)](../prior-art.md#review-bound--round-limited-agent-review-with-blocking-classes-feature-review-bound)
+- [Review bound — round-limited agent review with blocking classes (feature: review-bound)](../../prior-art.md#review-bound--round-limited-agent-review-with-blocking-classes-feature-review-bound)
   - relay's bound and loopkit's #335 round spent on a whitespace glitch:
     - ADOPT a fixed round shape plus named blocking classes;
     - AVOID a bound that lets a reachable defect through because it was found
@@ -211,7 +211,7 @@ Target text:
     - ADOPT approval once the change is clearly better, and the `Nit:` prefix
       for optional polish;
     - AVOID leaving the bound to the reviewer's judgment alone.
-- [Loop safety / bounded retry](../prior-art.md#loop-safety--bounded-retry) —
+- [Loop safety / bounded retry](../../prior-art.md#loop-safety--bounded-retry) —
   the no-progress rule the bound sits beside.
 
 ## Human prerequisites
@@ -302,3 +302,7 @@ none
   rules. The workflow template names the plugin's `skills/shared/review-bound.md`
   in prose, since the template is copied into a project where no plugin path
   resolves.
+- 2026-11-04: Milestone QA. The workflow template names the shared file by its
+  name only (the plugin's shared `review-bound.md` reference), with no plugin
+  path, per the constitution's Conventions (#350). This supersedes the path in
+  the issue-A entry above.
