@@ -1491,3 +1491,132 @@ and session signals in one view (feature: status-pane)" above.
 - Notes: ADOPT — context fill and limit as two numbers in one line. AVOID —
   duplicating a meter Claude Code's own status line already shows (check at
   plan time).
+
+## Planning-artifact lifecycle — decision scope, foundation-doc landing, spec citations, permanent phase ids (feature: artifact-hygiene)
+
+A spec is a planning artifact: written for one change, ratified at
+spec-acceptance, frozen in the archive at the QA gate. Four habits break that
+shape: a Decision log that records everything an implementer did, a foundation
+doc that states behavior the code does not have yet, code that cites a spec
+that is about to freeze, and phase numbers that drift. Builds on the ADR entry
+under "Non-UI concept design + the durable diagram medium" and on "Process-PR
+overhead — ceremony telemetry (feature: ceremony-overhead)" above.
+
+### loopkit dogfooding finding (relay, loopkit) — the originating evidence
+
+- Path: a handoff from the relay project, written from a read-only inventory
+  of relay at `0de4e33` on 2026-11-04; loopkit's `docs/specs/archive/`,
+  `docs/constitution.md` and `scripts/verify.sh`, checked the same day
+- License: n/a (internal evidence)
+- Verdict: reference-only — relay: across four archived specs, 104 of 145
+  Decision-log entries settle no design question (test helpers, waits, initial
+  file contents), and Decision logs are 39 % of all archived-spec lines (5,693
+  of 14,493), in one spec 940 of 1,277; a project rule against it did not hold,
+  because the implementer reads the skill's "record any decision" directly. Its
+  constitution requires an environment variable with 0 hits in the code and
+  names a file that does not exist; one phase had to take a ratified
+  constitution edit back. 263 citations of archived specs in 207 code, test and
+  template files; one archive move rewrote paths in 41 files, and one test
+  reads an archived spec as its oracle. Phases 12 and 18 finished before 8,
+  letter phases (1a–1c, 5a–5f), one phase went 5j → 14 → 11, and two concerns
+  legitimately feed two phases each. loopkit: 106 dated Decision-log entries in
+  27 archived specs (867 of 6,494 lines, 13 %); the "Read-only status mod"
+  principle stood in the constitution before the mod existed;
+  `scripts/verify.sh:346` cites `docs/specs/spec-skill-structure.md`, which has
+  moved to the archive.
+- Date: 2026-11-04
+- Notes: ADOPT — define a Decision-log entry once, in the text the implementer
+  reads, since a project-level rule does not reach it; land a foundation-doc
+  change with the PR that makes it true. AVOID — a second Decision-log record
+  for what a Prior decisions row already holds.
+
+### Michael Nygard — "Documenting Architecture Decisions" (2011)
+
+- Path: https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+- License: n/a (article)
+- Verdict: reference-only — the source of the ADR practice. It keeps records
+  only for "architecturally significant" decisions, "those that affect the
+  structure, non-functional characteristics, dependencies, interfaces, or
+  construction techniques"; "One ADR describes one significant decision"; and
+  "ADRs will be numbered sequentially and monotonically. Numbers will not be
+  reused."
+- Date: 2026-11-04
+- Notes: ADOPT — the significance filter as the Decision log's scope (a design
+  fork a later change must keep); a number that is never reused as the
+  phase-id rule. AVOID — the deprecated / superseded status (loopkit's specs
+  and roadmap carry no lifecycle markers, as the ADR entry above already
+  records); reading the number as order (loopkit's queue order is the
+  roadmap's row order).
+
+### OpenSpec — main specs vs. archived change proposals
+
+- Path: https://openspec.dev/docs/glossary ; https://github.com/Fission-AI/OpenSpec
+- License: MIT
+- Verdict: reference-only — two trees with different jobs. "Main specs: The
+  `openspec/specs/` tree: the current, agreed behavior of your system." A change
+  proposal is "a folder under `openspec/changes/<name>/` holding its planning
+  artifacts", with delta specs listing only what changes. Archive: "merge its
+  deltas into the main specs and move its folder to `openspec/changes/archive/`".
+  The living text changes when the change is complete, not when it is proposed.
+- Date: 2026-11-04
+- Notes: ADOPT — a loopkit spec is the change proposal and the foundation docs
+  and contracts are the living text: a spec's foundation-doc change is a delta
+  (target text) that lands when the behavior exists, and code points at the
+  living text, never at an archived proposal. AVOID — per-capability main specs
+  (spec-as-source, out of scope per the vision); merging only at archive time,
+  since a milestone can run for weeks and per PR keeps the always-loaded docs
+  true sooner.
+
+### Docs-as-code — the doc change rides the PR that changes behavior
+
+- Path: https://kluster.ai/blog/documentation-as-code ; https://www.docuwriter.ai/posts/keeping-documentation-in-sync-with-code
+- License: n/a (articles)
+- Verdict: reference-only — a common practice, stated mostly in vendor
+  material rather than research: a change that alters behavior,
+  configuration, an API's shape or an operator workflow carries its
+  documentation update in the same pull request; a separate docs follow-up is
+  where drift starts.
+- Date: 2026-11-04
+- Notes: ADOPT — a behavior-describing foundation-doc change lands with the
+  issue PR that builds the behavior. AVOID — a CI drift check as the
+  enforcement (loopkit runs no CI in its loop; the per-PR review checks the
+  verbatim match instead).
+
+## Review bound — round-limited agent review with blocking classes (feature: review-bound)
+
+The per-PR review loop (`REQUEST_CHANGES` → fix → re-review) ends today only
+on `APPROVE` or when the identical failure repeats. An agent reviewer does not
+tire: it can find a new polish point every round, and each round is a
+full-tier subagent. Builds on "Loop safety / bounded retry" above.
+
+### loopkit dogfooding finding (relay, loopkit) — rounds spent on non-blocking findings
+
+- Path: relay's `docs/workflow.md` review bound (the architect's rules of
+  2026-10-29 and 2026-11-03), read from the relay handoff of 2026-11-04;
+  loopkit PR #335 (`fix/pane-milestone-counts`)
+- License: n/a (internal evidence)
+- Verdict: reference-only — relay bounds the review at one full review plus
+  one check of the fixes; after that only a violation of acceptance, spec or
+  constitution, or a red Verify, blocks; a non-blocking finding is fixed in the
+  PR only for a reachable defect, a surviving mutant's missing guard or a doc
+  that would be wrong; cosmetics become a PR-body note. loopkit #335 spent one
+  commit and a second full-tier review round on a whitespace glitch; the same
+  PR's flaky-test finding, a reachable defect, would block under the bound too.
+- Date: 2026-11-04
+- Notes: ADOPT — a fixed round count plus named blocking classes. AVOID — a
+  bound that lets a reachable defect through because it was found late.
+
+### Google Engineering Practices — "The Standard of Code Review"
+
+- Path: https://google.github.io/eng-practices/review/reviewer/standard.html
+- License: CC-BY-3.0
+- Verdict: reference-only — "reviewers should favor approving a CL once it is
+  in a state where it definitely improves the overall code health … even if the
+  CL isn't perfect"; "there is no such thing as 'perfect' code—there is only
+  better code"; a polish point is prefixed "Nit:" to "indicate that it's not
+  mandatory for the author to resolve it in this CL."
+- Date: 2026-11-04
+- Notes: ADOPT — approve once the change is clearly better and carry polish as
+  an optional note (the PR-body note). AVOID — leaving the bound to the
+  reviewer's judgment alone: a human reviewer stops on their own, an agent
+  reviewer needs a fixed round count.
