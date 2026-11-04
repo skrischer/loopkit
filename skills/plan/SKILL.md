@@ -177,7 +177,7 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   `docs/constitution.md`, or `docs/architecture.md` (blocking if so). Verify every
   foundation-doc citation against the full source, never at face value: a spec
   citing one criterion while passing over a line that answers the other way must
-  be caught here. Check each foundation-doc change's `Replaces`/`After:` text against its doc.
+  be caught here. Check each foundation-doc change's `Replaces`/`After:` against its doc or pending text.
   Ask for a verdict whose first line is `VERDICT: APPROVE` or
   `VERDICT: REQUEST_CHANGES`, with blocking vs non-blocking findings. The Agent
   tool runs in-session — never shell out to a billed CLI. Pass the `reviewer`
