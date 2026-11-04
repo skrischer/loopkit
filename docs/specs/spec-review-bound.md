@@ -74,8 +74,8 @@ and milestone. A completed spec is moved to `docs/specs/archive/`.
     plus one `Needs you:` line offering to file it. A follow-up filed under an
     account that is itself not OWNER or MEMBER waits in `Todo` for explicit
     selection, like any such issue.
-- [ ] O3. (Per gate decision G1.) Plan's spec-acceptance review takes the same
-  bound:
+- [ ] O3. Plan's spec-acceptance review takes the same bound (gate decision
+  G1):
   - **Blocking classes**: a contradiction with the vision, the constitution or
     the architecture; an open question an implementer would hit; a wrong
     factual claim the spec relies on; a section the spec template requires
@@ -105,7 +105,7 @@ and milestone. A completed spec is moved to `docs/specs/archive/`.
   fix-dispatch case.
 - `skills/implement/SKILL.md`: step 3b's review-fix loop and §5's "anything
   the reviewers flagged".
-- `skills/plan/SKILL.md`: step 6's review loop (if G1 is A).
+- `skills/plan/SKILL.md`: step 6's review loop.
 - `skills/inception/templates/workflow.md` and `docs/workflow.md`: the Gates
   section.
 - `docs/constitution.md` and `docs/architecture.md`: the target texts below.
@@ -127,7 +127,7 @@ and milestone. A completed spec is moved to `docs/specs/archive/`.
 - Body-size guard (guard 11). Measured on 2026-11-04: plan 12,769 bytes,
   implement 12,718. After `artifact-hygiene`'s #339 and #340, plan has about
   10 bytes left and implement about 60. So each core change replaces text:
-  - plan's step 6 (if G1 is A) swaps today's "Address the findings and
+  - plan's step 6 swaps today's "Address the findings and
     re-review, bounded by `docs/workflow.md`'s no-progress rule — a repeated
     failure stops and parks (see If blocked)." (143 bytes) for "Address the
     blocking findings and re-review per
@@ -186,8 +186,7 @@ Target text:
 
 ### docs/architecture.md — Components, the `skills/shared/` row: MODIFIED
 
-Lands: with the issue that builds O1 and O2. If G1 is B, the target text names
-implement only.
+Lands: with the issue that builds O1 and O2.
 
 Replaces:
 
@@ -223,7 +222,7 @@ none
 
 | Decision | Rationale | Date |
 |---|---|---|
-| The bound is defined once, in `skills/shared/review-bound.md`. The cores and `issue-contract.md` point at it. | It is used by implement, and by plan if G1 is A. Shared method lives in `skills/shared/` (constitution Conventions), and the body-size guard leaves the cores room only for pointers. | 2026-11-04 |
+| The bound is defined once, in `skills/shared/review-bound.md`. The cores and `issue-contract.md` point at it. | It is used by implement and plan. Shared method lives in `skills/shared/` (constitution Conventions), and the body-size guard leaves the cores room only for pointers. | 2026-11-04 |
 | Blocking classes as in O1, the project's contract and `CLAUDE.md` rules included. A blocking finding blocks in any round, anywhere in the change. | relay's blocking classes plus its three fix-in-PR cases, folded into one class, since each must be fixed before the merge. relay's mutation-guard case maps to "a reachable defect". Without the contract and `CLAUDE.md` rules, a rule a project keeps only in its contract (in target projects, `artifact-hygiene`'s no-spec-citation rule) would be a `Nit:`. A defect round 1 missed must still block (prior art AVOID). | 2026-11-04 |
 | A non-blocking finding is raised only in round 1 and never fixed in the PR it was found in. It is recorded in the PR body's `Review notes`. | relay (2026-11-03): cosmetics are a PR-body note. With only non-blocking findings, round 1 then merges without a fix round, which is the saving, and the fix diff stays tight. Google's `Nit:` marks the finding as optional. | 2026-11-04 |
 | Later rounds continue the round-1 reviewer where its runner can still reach it; otherwise, and always for a fix-dispatch subagent, a fresh reviewer gets the full change diff, the fix diff and the open blocking findings. The fix brief carries the open blocking findings, the non-blocking findings and follow-ups so far, the reviewed SHA and the round number. A fix that touches source after a cheaper-tier round 1 gets a fresh full-tier reviewer. | A check of the fixes needs round 1's findings, and continuing the agent is the native way to keep them, but a fix-dispatch subagent has no handle on the orchestrator's reviewer. A fresh reviewer needs the whole change to see a defect round 1 missed, and the runner that ends the gate needs the notes and follow-ups to record them. "Any source or config touch keeps the full tier" (issue contract) must hold across rounds. | 2026-11-04 |
@@ -232,7 +231,7 @@ none
 | The round count and the classification are in-session memory, never a label or a file. | The failed-dispatch count sets the precedent, and durable state stays GitHub-only. | 2026-11-04 |
 | Floor: no contract loosens the bound; a project may tighten it (more blocking classes, or every finding blocks). The floor is stated as a prohibition in the shared file and in the template's Gates line. | A skill-stated prohibition is not a layer-4 default, and the contract states the floor too, so layers 3 and 4 agree. A project that deletes the floor from its own contract has made a deliberate choice loopkit cannot prevent, as with the skills' other prohibitions. A target project's constitution has no Bounded retry, so the floor is stated where its contract and the skills say it. | 2026-11-04 |
 | The architecture's `skills/shared/` row lists `review-bound.md`. | That row lists every shared file with its users; without the entry the change would leave a doc wrong. | 2026-11-04 |
-| OPEN — G1: does plan's spec-acceptance review take the same bound (O3)? A: yes, with O3's blocking classes, notes shown at the gate, and no follow-up issues. B: no; it keeps today's loop, bounded only by the no-progress rule, and the architecture row names implement only. | resolved at the spec-acceptance gate | — |
+| G1: plan's spec-acceptance review takes the same bound, with O3's blocking classes, its notes in the spec PR body's `Review notes` shown at the gate, and no follow-up issues in planning. | Decided A at the spec-acceptance gate. One rule set serves both reviews; planning defects still block, and the human sees every note at the gate and can ask for any of them. | 2026-11-04 |
 
 ## Tracking
 
@@ -243,7 +242,7 @@ none
     - the shared file;
     - the issue contract's review gate and fix-dispatch case;
     - implement's step 3b and its fix brief;
-    - plan's step 6, if G1 is A;
+    - plan's step 6;
     - the workflow template and `docs/workflow.md`;
     - both target texts, applied verbatim;
     - its own review already follows the bound: classified findings, and a
@@ -261,8 +260,7 @@ none
   step 3b, point at the shared file, and §5 names the follow-ups and
   `Review notes`. The reviewer brief asks for classified
   findings, and the fix brief carries the findings, the reviewed SHA and the
-  round. If G1 is A, plan's step 6 carries the 127-byte sentence from
-  Constraints.
+  round. Plan's step 6 carries the 127-byte sentence from Constraints.
 - [ ] The workflow template's Gates and `docs/workflow.md` name the bound,
   point at the shared file and state the floor.
 - [ ] The constitution's Bounded retry and the architecture's `skills/shared/`
@@ -296,3 +294,5 @@ none
 ## Decision log
 
 - 2026-11-04: Drafted. The planning decisions are the Prior decisions rows.
+- 2026-11-04: Accepted at the spec-acceptance gate. G1 decided A: plan's
+  spec-acceptance review takes the same bound (O3).
