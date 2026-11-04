@@ -114,7 +114,7 @@ result by adopting its own `docs/design.md` (medium: committed SVG).
 
 ## Prior art
 
-- [Non-UI concept design + the durable diagram medium](../prior-art.md#non-ui-concept-design--the-durable-diagram-medium-feature-design-in-the-loop)
+- [Non-UI concept design + the durable diagram medium](../../prior-art.md#non-ui-concept-design--the-durable-diagram-medium-feature-design-in-the-loop)
   — the core concern. **Mermaid** (reuse: GitHub-native, diffs cleanly, fragile
   syntax) and **C4** / **ADR-minus-lifecycle** (reference-only: the notation and
   the decision-artifact shape) directly settle the medium and the prose skeleton.
@@ -123,7 +123,7 @@ result by adopting its own `docs/design.md` (medium: committed SVG).
   default, whereas the roadmap row + operator chose **committed SVG for loopkit** —
   reconciled by keeping the constitution agnostic (both valid) and letting
   loopkit's own `docs/design.md` pick SVG.
-- [Design phase in the loop — optional, tool-agnostic design anchored to the spec](../prior-art.md#design-phase-in-the-loop--optional-tool-agnostic-design-anchored-to-the-spec-feature-design-phase)
+- [Design phase in the loop — optional, tool-agnostic design anchored to the spec](../../prior-art.md#design-phase-in-the-loop--optional-tool-agnostic-design-anchored-to-the-spec-feature-design-phase)
   — the base this builds on: Superdesign `DESIGN.md` (the `docs/design.md`
   precedent) and the deliver-or-produce → review-at-the-gate loop are unchanged;
   this phase only widens the trigger and the medium.

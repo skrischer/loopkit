@@ -66,7 +66,7 @@ fast with an actionable remedy, before any repo or network work.
 
 ## Prior art
 
-- [Loop safety / bounded retry](../prior-art.md#loop-safety--bounded-retry) —
+- [Loop safety / bounded retry](../../prior-art.md#loop-safety--bounded-retry) —
   Taskmaster's ADOPT note ("bounded retry that fails safe with an actionable
   resume state") is the same principle applied to preconditions: stop early with
   a remedy the human can act on, rather than failing deep and cryptically.

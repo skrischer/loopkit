@@ -71,7 +71,7 @@ review kept top-tier.
 
 ## Prior art
 
-- [Model-tier-per-agent — role-to-tier routing in the contract](../prior-art.md#model-tier-per-agent--role-to-tier-routing-in-the-contract-feature-model-tier-slots)
+- [Model-tier-per-agent — role-to-tier routing in the contract](../../prior-art.md#model-tier-per-agent--role-to-tier-routing-in-the-contract-feature-model-tier-slots)
   — Anthropic model-config: ADOPT an OPTIONAL `docs/workflow.md` role->tier field,
   default `inherit`, passed to native subagent model selection; model names only
   in the contract. Native mechanism (frontmatter `model` / resolution order /

@@ -106,7 +106,7 @@ Reference `docs/constitution.md` / `docs/prior-art.md` rather than restating.
 
 ## Prior art
 
-- [Structural verification of a Claude Code plugin — reuse the native validator](../prior-art.md#structural-verification-of-a-claude-code-plugin--reuse-the-native-validator-feature-structural-verify) — the concern this scope implements.
+- [Structural verification of a Claude Code plugin — reuse the native validator](../../prior-art.md#structural-verification-of-a-claude-code-plugin--reuse-the-native-validator-feature-structural-verify) — the concern this scope implements.
   - **Claude Code `claude plugin validate`** — REUSE the native validator (JSON + schema, frontmatter, duplicate names, path traversal); set it as Verify + a thin companion; wire into both gates. AVOID hand-rolling a validator or adding npm/ajv/python.
   - **hesreallyhim/claude-code-json-schema** — reference-only; documentation-grade schema shapes. AVOID depending on it at runtime (needs a JSON-Schema engine → a package manager).
   - **Claude Code issue #25380 (frontmatter validator rejects extended fields)** — CAUTION driving the non-strict decision: validate required fields (`name`, `description`), treat extended-field warnings as non-fatal, do NOT fail Verify on false positives.

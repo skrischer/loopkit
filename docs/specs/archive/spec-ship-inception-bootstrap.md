@@ -70,11 +70,11 @@ Reference the constitution rather than restating it.
 
 ## Prior art
 
-- [Release contract bootstrap — inception authors the per-project release medium](../prior-art.md#release-contract-bootstrap--inception-authors-the-per-project-release-medium-feature-ship-inception-bootstrap)
+- [Release contract bootstrap — inception authors the per-project release medium](../../prior-art.md#release-contract-bootstrap--inception-authors-the-per-project-release-medium-feature-ship-inception-bootstrap)
   — the Superdesign/loopkit design-contract bootstrap precedent (reuse the same
   move for release.md) + spec-kit's setup-vs-iteration command topology (author
   the contract once at inception, `/ship` runs it per release).
-- [Release/ship phase — attended, GitHub-native release automation](../prior-art.md#releaseship-phase--attended-github-native-release-automation-feature-ship-skill)
+- [Release/ship phase — attended, GitHub-native release automation](../../prior-art.md#releaseship-phase--attended-github-native-release-automation-feature-ship-skill)
   — the shape being templatized (what `docs/release.md` must contain).
 
 ## Human prerequisites

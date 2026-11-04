@@ -87,7 +87,7 @@ UI-surface changes use it.
 
 ## Prior art
 
-- [Design phase in the loop — optional, tool-agnostic design anchored to the spec](../prior-art.md#design-phase-in-the-loop--optional-tool-agnostic-design-anchored-to-the-spec-feature-design-phase)
+- [Design phase in the loop — optional, tool-agnostic design anchored to the spec](../../prior-art.md#design-phase-in-the-loop--optional-tool-agnostic-design-anchored-to-the-spec-feature-design-phase)
   — Superdesign `DESIGN.md` (the `docs/design.md` precedent: YAML tokens + prose
   + Components + Do's/Don'ts, repo-versioned, agent-readable) and W3C Design
   Tokens (the durable, repo-storable, vendor-neutral interchange = state) are the

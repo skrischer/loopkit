@@ -88,7 +88,7 @@ block. Reuse native mechanisms; reimplement nothing.
 
 ## Prior art
 
-- [Worktree resume & merge-conflict recovery](../prior-art.md#worktree-resume--merge-conflict-recovery-feature-implement-resume-safety)
+- [Worktree resume & merge-conflict recovery](../../prior-art.md#worktree-resume--merge-conflict-recovery-feature-implement-resume-safety)
   — the **"Claude Code background agents — resume is re-derived, not restored"**
   sub-entry is the one this package adopts: ADOPT re-derive resume state from
   GitHub (existing branch? open PR for the issue? -> re-attach and continue from

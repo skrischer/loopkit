@@ -67,7 +67,7 @@ reference.
 
 ## Prior art
 
-- [Orchestrator loop exit states & bounded review retry](../prior-art.md#orchestrator-loop-exit-states--bounded-review-retry-feature-implement-frontier-exits)
+- [Orchestrator loop exit states & bounded review retry](../../prior-art.md#orchestrator-loop-exit-states--bounded-review-retry-feature-implement-frontier-exits)
   — the design substrate: **explicit terminal states per dispatched unit** with a
   defined default (failed dispatch: one retry, then auto-park `blocked:human`) when
   a subagent exit maps to none; **frontier membership as a total function** of

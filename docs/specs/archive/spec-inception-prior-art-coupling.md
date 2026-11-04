@@ -70,7 +70,7 @@ N" deterministically.
 
 ## Prior art
 
-- [Research-to-plan coupling — every plannable phase backed by prior art](../prior-art.md#research-to-plan-coupling--every-plannable-phase-backed-by-prior-art-feature-inception-prior-art-coupling)
+- [Research-to-plan coupling — every plannable phase backed by prior art](../../prior-art.md#research-to-plan-coupling--every-plannable-phase-backed-by-prior-art-feature-inception-prior-art-coupling)
   — the originating concern: the Rack dogfooding finding (the exact gap this
   spec fixes) plus dual-track agile (research gates entry to the plannable queue)
   and spec-kit's per-feature `research.md` (research as a first-class artifact

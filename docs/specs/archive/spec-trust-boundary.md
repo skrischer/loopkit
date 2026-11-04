@@ -68,12 +68,12 @@ instruction-following context in the loopkit skills.
 
 ## Prior art
 
-- [State-machine trust boundary](../prior-art.md#state-machine-trust-boundary--untrusted-github-text-as-instructionshell-feature-trust-boundary)
+- [State-machine trust boundary](../../prior-art.md#state-machine-trust-boundary--untrusted-github-text-as-instructionshell-feature-trust-boundary)
   — Willison lethal-trifecta + prompt-injection design patterns
   (plan-then-execute / dual-LLM) + Meta Rule of Two: adopt inert-request framing,
   shell-hygiene, and a human gate when all three legs coincide; avoid
   injection-detection filters (futile — "99% is a failing grade").
-- [Attended-loop permission guardrails](../prior-art.md#attended-loop-permission-guardrails-feature-permission-template-hardening)
+- [Attended-loop permission guardrails](../../prior-art.md#attended-loop-permission-guardrails-feature-permission-template-hardening)
   — the sibling deny-list/bypass work; the boundary here is the instruction/shell
   path a deny-list structurally cannot reach.
 
