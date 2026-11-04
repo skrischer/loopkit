@@ -98,7 +98,15 @@ they are checked by the human here.
 
 ## Decision log
 
-Decisions made during implementation. Claude Code adds entries here as work
-progresses.
+Implementation choices only. An implementation choice is a choice the spec
+leaves to the implementer on purpose (a latitude it grants, or a construction
+technique the spec and code leave free) that a later change must keep. Claude
+Code adds an entry here pre-merge, on the issue branch.
+
+Not entries — they go in the commit or PR body: test helpers, waits and
+timeouts, initial file contents, review-fix records, and anything the code or
+its tests already state. A design fork, a choice that changes the spec's
+design, is not an entry either: it escalates `needs:planning`, and the re-plan
+records its answer as a Prior decisions row.
 
 - YYYY-MM-DD: [Decision and rationale]

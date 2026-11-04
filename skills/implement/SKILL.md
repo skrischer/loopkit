@@ -205,7 +205,7 @@ The cleanup sweep has already run; whatever it could not clean is in its report 
 - For checks a human must run, hand over the exact commands.
 - **STOP and wait for the human verdict.**
 
-On acceptance, first sweep any decision made during the milestone that a subagent
+On acceptance, first sweep any implementation choice made during the milestone that a subagent
 did not record pre-merge into the spec's Decision log (the catch-all, before the
 spec moves to archive). Then:
 
