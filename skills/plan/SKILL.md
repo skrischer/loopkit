@@ -91,7 +91,7 @@ turn out to be already determined:
    not an article), you are encouraged to check that source out and read the
    specific implementation — a read-only, ephemeral clone outside the repo
    (e.g. `../loopkit-priorart/<project>`), discarded when done. Record the
-   finding (file/approach) in the spec's Prior decisions + Decision log; never
+   finding (file/approach) in the spec's Prior decisions; never
    commit the external code into this repo. Only when it hardens a real
    decision.
 2. Constraint-determined — derivable from this codebase, `docs/constitution.md`,
@@ -137,8 +137,7 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   contract, or unstated default a subagent would hit mid-build.
 - Resolve each from `docs/vision.md`, `docs/constitution.md`,
   `docs/architecture.md`, and `docs/prior-art.md`. When one settles the
-  question, bake the answer into the spec — a Prior decisions row plus a
-  Decision log entry — so the implementer never has to ask.
+  question, bake the answer into the spec — a Prior decisions row — so the implementer never has to ask.
 - What none of them settles becomes a genuinely-open item carried into the
   acceptance gate (step 6), marked in the spec as in step 3; do not guess.
 - Scope it to questions those docs answer or that are genuinely open; a fork reaching an implementer is a
@@ -198,7 +197,7 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   rest of the spec — not a separate stop.
 - **STOP — the cycle's one human gate:**
   - Resolve each genuinely-open decision via `AskUserQuestion` — do not guess.
-    Bake the answer into the spec — a Prior decisions row + Decision log entry,
+    Bake the answer into the spec — a Prior decisions row,
     committed onto the spec branch pre-merge (never to a branch the merge has
     already deleted).
   - Present the Human prerequisites: the human provides the keys/config or

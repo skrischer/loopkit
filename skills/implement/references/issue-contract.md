@@ -86,7 +86,7 @@ dispatch). Its steps:
   build X, not what to build), you may check out an OSS repo the spec's
   Prior art section links as a clonable code `Path:` (not an article), analyse
   the specific implementation, harvest facts/approaches, then discard it — and
-  record any resulting decision in the spec's Decision log. Operationally: a
+  record a resulting implementation choice in the spec's Decision log. Operationally: a
   read-only, ephemeral clone outside the repo (e.g. `../loopkit-priorart/<project>`),
   discarded after; never copy external code into this repo.
   Boundaries: a technique aid tried before the
@@ -100,10 +100,11 @@ dispatch). Its steps:
   an app-affecting PR. Bounded retry: apply `docs/workflow.md`'s no-progress
   rule — a repeated failure stops and parks the issue (see Escalate or park),
   never grinds.
-- **Commit, push, open the PR (no pause).** Before committing, record any decision
-  made during implementation in the spec's Decision log on this issue branch
-  (skip for a `track:adhoc` issue — no spec), so it rides the squash-merge instead
-  of being stranded on the branch `--delete-branch` removes. Commit with
+- **Commit, push, open the PR (no pause).** Before committing, record each implementation
+  choice (defined in `../../plan/templates/spec-template.md`, Decision log) in the
+  spec's Decision log on this issue branch (skip for a `track:adhoc` issue — no
+  spec), so it rides the squash-merge instead of being stranded on the branch
+  `--delete-branch` removes. Everything else goes in the commit or PR body. Commit with
   Conventional Commits; the body references the spec (omit for a `track:adhoc`
   issue) and ends with `Closes #<n>`. Stage specific files (the spec Decision-log
   edit among them); never blind `git add -A`. Push via
@@ -162,7 +163,7 @@ dispatch). Its steps:
   re-merging: the re-attached worktree holds the branch exactly as before, so
   merging with it in place re-orphans the branch.
   The merge auto-closes the issue (`Closes #<n>`); set its board status to `Done`
-  (visibility only — not a lock). The spec Decision-log entry already rode in with
+  (visibility only — not a lock). An implementation-choice Decision-log entry already rode in with
   the merge (recorded pre-merge, above) — nothing to write here on a deleted branch.
 - **Escalate or park.** Two ways out of the frontier, by destination:
   - `needs:planning` — a design fork (routes to the planner): the spec and code do
