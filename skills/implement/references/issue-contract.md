@@ -80,7 +80,9 @@ dispatch). Its steps:
   verification cannot run in an un-bootstrapped worktree.
 - **Implement (in `$wt`).** Keep the change minimal. Follow the project's
   `docs/constitution.md` — it owns the language-specific rules; this skill does
-  not restate them.
+  not restate them. An issue that applies a ratified foundation-doc change
+  copies the spec's target text verbatim, character for character; a needed
+  wording change is a design fork (`needs:planning`), never an edit.
 - **Source checkout when stuck on technique (optional, spec-backed only).** When a
   supposedly simple, spec-backed change is struggling on technique (how to
   build X, not what to build), you may check out an OSS repo the spec's
@@ -117,7 +119,9 @@ dispatch). Its steps:
   nesting. Its `model` and `effort` come from the run's human instruction (relayed in
   the brief when you are a subagent) first, else from `docs/workflow.md`'s
   `reviewer`, where unset or `inherit` means pass none. Seed it with the diff (`git -C "$wt" diff "$base"...HEAD`) and the project's own
-  constitution/CLAUDE.md rules. No-source-change exception: when the PR diff
+  constitution/CLAUDE.md rules. When the issue applies a ratified foundation-doc
+  change, also give it the spec's target text and ask it to check the diff
+  carries it exactly. No-source-change exception: when the PR diff
   touches only `docs/`, templates, or `*.md` (no source or config), this review
   may drop to the `reviewer` role's documented no-source-change cheaper tier (the
   `docs/workflow.md` `reviewer` line may note a fallback — never substitute the

@@ -18,7 +18,7 @@
   grows — re-run this skill with the same scope to add more (the merged spec
   already covers them). Use `Depends on: #N` for ordering as usual.
 - It is not a roadmap phase: skip the roadmap-link commit (`acceptance.md` §1
-  step 2) — do not add it to the roadmap overview's phase table, and never fill a
+  step 3) — do not add it to the roadmap overview's phase table, and never fill a
   current-focus/status marker. Loop-mode never sees it, so the loop terminal
   state is unaffected.
 - It is never archived or closed by the QA gate. Closing one of its issues

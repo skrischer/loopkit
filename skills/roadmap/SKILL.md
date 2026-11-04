@@ -118,10 +118,11 @@ doc itself:
   table where each row is one physical line — a multi-line block breaks it. The
   same inline form is used at both locations named above (the roadmap row and
   the backing prior-art entry) so there is one form to write and grep, not two.
-- The actual foundation-doc edit is authored inside that phase's
-  `/loopkit:plan` spec PR and ratified at its spec-acceptance gate — never
-  landed on the default branch by roadmap alone, never left as a dangling draft
-  in the main checkout, never authored in `/loopkit:implement`. This keeps even a
+- The actual foundation-doc change is authored as target text in that phase's
+  `/loopkit:plan` spec and ratified at its spec-acceptance gate, then lands with
+  the PR that makes it true — never landed on the default branch by roadmap
+  alone, never left as a dangling draft in the main checkout, never authored in
+  `/loopkit:implement`. This keeps even a
   large change (e.g. a stack swap) under the one planning gate.
 - Forward rule: roadmap never backfills a verdict onto an existing row.
 
@@ -160,7 +161,8 @@ issue.
   the next step as one `Needs you:` line per `${CLAUDE_PLUGIN_ROOT}/skills/shared/needs-you.md`,
   naming every seeded phase in order (`/loopkit:plan <p1> <p2> …`) — planning is where each seeded
   phase becomes a spec + milestone + issues, and where any recorded
-  foundation-doc impact is authored and ratified.
+  foundation-doc impact is authored as target text and ratified, and lands with
+  the PR that makes it true.
 - Nothing here creates milestones, issues, or board entries, and nothing edits a
   foundation doc — those are `/loopkit:plan`'s job.
 
