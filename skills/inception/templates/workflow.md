@@ -289,8 +289,8 @@ per idea:
   /loopkit:roadmap <idea...> — spar each raw idea against prior art (research
   mode asked per idea) and seed 1..n roadmap phases with their backing prior-art
   entries; no loop-readiness sweep. A foundation-doc impact is recorded onto the
-  seeded phase, authored later in that phase's /loopkit:plan spec PR — never
-  edited here. Ceiling: <N> iterations.
+  seeded phase, authored later as target text in that phase's /loopkit:plan spec
+  and landed with the PR that makes it true — never edited here. Ceiling: <N> iterations.
   ```
 
 - Plan loop:

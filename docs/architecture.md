@@ -52,17 +52,20 @@
    `skills/shared/iteration-steps.md`; an exploratory visualisation may sharpen a
    design-shaped idea here — no durable artifact, that is the plan cycle) -> seed
    1..n roadmap rows + backing prior-art; a foundation-doc impact is recorded onto
-   the seeded phase (edited later in that phase's plan cycle), never here.
+   the seeded phase (authored later as target text in that phase's plan cycle),
+   never here.
 3. **Plan cycle (producer):** roadmap phase (human-pointed) -> sort decisions
-   (+ prior-art) -> spec (with prior-art links) -> [if UI surface OR a
-   decision-clarifying visualisation: `/loopkit:design` delivers/produces a design
-   per `docs/design.md`, committed as a file and referenced by the spec] ->
-   in-session review -> **spec-acceptance gate (human, reviews the design too)** ->
-   milestone + roadmap link on the spec branch -> merge -> issues with two-level
-   `depends-on`.
+   (+ prior-art) -> spec (with prior-art links and any foundation-doc change as
+   target text) -> [if UI surface OR a decision-clarifying visualisation:
+   `/loopkit:design` delivers/produces a design per `docs/design.md`, committed
+   as a file and referenced by the spec] -> in-session review ->
+   **spec-acceptance gate (human, reviews the design too)** -> milestone +
+   roadmap link (+ a foundation-doc change that lands with the spec PR) on the
+   spec branch -> merge -> issues with two-level `depends-on`.
 4. **Implement cycle (orchestrator):** human points it at one milestone -> read
    spec + issues -> compute the issue DAG -> fan out in-session subagents along
-   the frontier (each: worktree -> implement -> Verify -> review -> merge, or
+   the frontier (each: worktree -> implement, applying a ratified foundation-doc
+   change verbatim when the issue carries one -> Verify -> review -> merge, or
    `pr-open` -> the orchestrator reviews and merges) ->
    board mirrors status -> **milestone-QA gate (human)** -> archive spec + close
    milestone.

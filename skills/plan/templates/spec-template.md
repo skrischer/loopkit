@@ -35,6 +35,46 @@ implementation. Reference the constitution rather than restating it.
 - Constraint 1
 - Constraint 2
 
+## Foundation-doc changes
+
+Changes this spec makes to `docs/vision.md`, `docs/constitution.md` or
+`docs/architecture.md`, written as ratified target text. Start from the
+foundation impact the roadmap row records, or from your own three verdicts
+(vision, constitution, architecture) where the row records none. Write `none`
+explicitly if there is no change.
+
+Per change, a heading naming the doc, the section and the kind:
+
+- MODIFIED: `Replaces:` the current text, then `Target text:`.
+- ADDED: `After:` the verbatim line it follows, then `Target text:`.
+- REMOVED: `Replaces:` the text removed.
+
+Put each text in a fenced `text` block at column 0, so it compares as it
+stands. A `Lands:` line names the Outcome whose issue builds the behavior the
+change describes, or `spec PR` for a rule that holds once adopted.
+
+A change is pending while this spec is still in `docs/specs/` (not archived)
+and its doc does not yet contain the target text verbatim; a REMOVED change is
+pending while its doc still contains the `Replaces` text. Write a new change to
+the same text against the pending target text, and add a `Depends on milestone:`
+edge to the pending spec's milestone.
+
+### <doc> — <section>: MODIFIED | ADDED | REMOVED
+
+Lands: Outcome N | spec PR
+
+Replaces:
+
+```text
+<current text>
+```
+
+Target text:
+
+```text
+<new text>
+```
+
 ## Prior art
 
 Relevant entries from `docs/prior-art.md` that inform this scope. `/loopkit:plan`
@@ -87,6 +127,7 @@ command is `none yet`, list every acceptance item no machine check covers —
 they are checked by the human here.
 
 - [ ] Verify passes
+- [ ] Every Foundation-doc change landed verbatim, where its `Lands:` line says
 - [ ] [Specific behavioral test]
 - [ ] [Specific edge case handled]
 
