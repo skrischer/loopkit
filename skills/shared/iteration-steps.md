@@ -57,9 +57,11 @@ sub-problems. Fill `docs/prior-art.md` from the template
 (`../inception/templates/prior-art.md`): per entry concern, repo
 + concrete path, license, verdict (reuse / reference-only / avoid + why), date,
 and the harvest notes (adopt / avoid) in Notes. Living document — gaps are fine.
-Tag each concern's `##` header with the phase it feeds — `## <Concern> (Phase N)`
-for a roadmap P-number or `## <Concern> (feature: <slug>)` for a Features-table
-row — so `/loopkit:plan` can resolve "prior art for phase N" deterministically.
+Tag each concern's `##` header with the rows it feeds, one kind per header —
+`(Phase N)`, `(Phase N, M)`, `(feature: <slug>)` or `(feature: <slug>, <slug>)` —
+so `/loopkit:plan` can resolve "prior art for phase N" deterministically. A header
+keeps the tag it was created with; a row that later draws on the concern goes on an
+`Also feeds:` line directly under the header.
 
 ## Architecture seed
 
@@ -79,7 +81,13 @@ derived from the scope and the architecture seed. From the roadmap template
 - Then run a prior-art pass: for any phase concern not already covered in
   `docs/prior-art.md`, run the prior-art challenge (same research-mode choice) and
   add a per-concern entry, indexed by concern and tagged with the phase it feeds —
-  or record an explicit `greenfield — no prior art` note for that phase.
+  or record an explicit `greenfield — no prior art` note for that phase. For a
+  concern already in `docs/prior-art.md`, keep its header tag and write the new row
+  on an `Also feeds:` line directly under the header.
+- A phase number is a permanent id: never reused or renumbered, no letter suffix
+  (5a, 1c), no order (the queue order is the row order). A new phase takes the
+  next free number, a split takes new numbers, and a Features-table row carries a
+  slug instead.
 - A one-line north star tying back to the vision.
 
 No status markers in the roadmap — progress lives in the GitHub issues and

@@ -3,9 +3,11 @@
 > Descriptive, living document. Indexed BY CONCERN, not by project. Add
 > entries whenever new references surface; gaps are fine.
 >
-> Tag each concern header with the one roadmap phase it feeds: `(Phase N)` for a
-> roadmap P-number or `(feature: <slug>)` for a Features-table row (one tag, not
-> both) — so `/loopkit:plan` can resolve "prior art for phase N" deterministically.
+> Tag each concern header with the roadmap rows it feeds, one kind per header:
+> `(Phase N)`, `(Phase N, M)`, `(feature: <slug>)` or `(feature: <slug>, <slug>)`
+> — so `/loopkit:plan` can resolve "prior art for phase N" deterministically. A
+> header keeps the tag it was created with; a row that later draws on the concern
+> goes on an `Also feeds:` line directly under the header.
 
 ## <Concern> (Phase N)
 

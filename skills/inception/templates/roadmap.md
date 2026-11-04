@@ -10,6 +10,11 @@
 
 ## Phase overview
 
+A phase number is a permanent id: never reused or renumbered, no letter suffix
+(5a, 1c), and no order — the queue order is this table's row order. A new phase
+takes the next free number, and a split takes new numbers. A Features-table row
+carries a slug instead.
+
 | Phase | Name | Spec | Milestone |
 |---|---|---|---|
 | 1 | [First plannable phase] | — | — |

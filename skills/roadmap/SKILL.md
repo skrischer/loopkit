@@ -90,7 +90,8 @@ current-focus / status marker, do not invent milestone/spec links — both colum
 start `—`, `/loopkit:plan` fills them later):
 
 - One idea seeds 1..n phases — break it into ordered, plannable rows when it
-  is more than one phase of work.
+  is more than one phase of work. A seeded phase takes the next free phase
+  number, never a reused or lettered one.
 - Uphold the coupling: run the shared reference's per-concern prior-art pass
   so every seeded phase is backed by ≥1 prior-art concern (or carries the
   reference's explicit `greenfield — no prior art` note). No seeded row without
