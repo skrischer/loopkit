@@ -219,7 +219,7 @@ gate.
 - **Per PR — machine gates, no human stop:** Verify green + in-session agent
   review (`VERDICT: APPROVE`, via the Agent tool — never a billed CLI) ->
   autonomous squash-merge. The review follows loopkit's review bound (the
-  plugin's `skills/shared/review-bound.md`): only a blocking finding withholds
+  plugin's shared `review-bound.md` reference): only a blocking finding withholds
   the merge, and after one full review a later round raises only blocking
   findings. This project may tighten the bound (more blocking classes, or every
   finding blocks) and never loosen it.
