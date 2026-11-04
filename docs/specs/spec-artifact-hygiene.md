@@ -111,9 +111,11 @@ lives in the GitHub issues and milestone. A completed spec is moved to
   most 12,800 bytes. Today plan is at 12,769 and implement at 12,718. New
   instruction text goes into the spec template,
   `skills/plan/references/acceptance.md` or
-  `skills/implement/references/issue-contract.md`. Issue B's step-6 sentence
-  in plan fits in the room issue A frees in steps 2, 4 and 6; an edit that
-  adds bytes to a `SKILL.md` body frees the same room in that body.
+  `skills/implement/references/issue-contract.md`. Issue A's three removals in
+  plan's steps 2, 4 and 6 free about 60 bytes, which leaves about 90 for issue
+  B's step-6 sentence, for example "Check each Foundation-doc change's
+  `Replaces` and `After:` text against its doc." An edit that adds bytes to a
+  `SKILL.md` body frees the same room in that body.
 - Plugin paths follow the constitution's Conventions (guard 7). The spec
   template is copied into target projects, so it names no plugin path.
 - Templates carry no project-specific values (constitution Quality gates).
@@ -122,7 +124,10 @@ lives in the GitHub issues and milestone. A completed spec is moved to
   rules yet. Each issue's `Acceptance:` states what the rules ask of that
   issue. Issue B's names the architecture change it applies and its
   ratification (this spec, PR #338), so the per-PR review judges the diff
-  against the ratified text.
+  against the ratified text. The installed `acceptance.md` has no step that
+  applies a `spec PR` change, so this cycle's planner applies the corollary
+  verbatim on the spec branch, beside the roadmap-link commit, before the
+  acceptance merge.
 - Issues A and B change behavior for every project on loopkit. Their PRs are
   `feat:` commits, so `/loopkit:ship` computes a minor, and the changelog names
   both.
@@ -273,7 +278,7 @@ none
 | The definition lives once, in the spec template's Decision log section. The issue contract states the rule in its own sentence (implementation choices only, everything else in the commit or PR body) and points at that section (`../../plan/templates/spec-template.md`); implement's sweep and plan use the same term. | The section is where entries are written. A template is a plugin-shipped artifact a skill may point at (`skills/shared/iteration-steps.md`), while a copied template cannot point at a plugin path. A new shared file for three sentences is the ceremony the ceremony-overhead entry warns about. relay shows the implementer acts on the contract sentence itself, so that sentence carries the rule as well as the pointer. | 2026-11-04 |
 | A Foundation-doc change uses OpenSpec's delta kinds. MODIFIED has `Replaces:` and `Target text:`, ADDED has `After:` (the verbatim line it follows) and `Target text:`, and REMOVED has `Replaces:`. The texts sit in fenced `text` blocks at column 0. `Lands:` names an Outcome or `spec PR`. | OpenSpec delta specs (prior art). Column-0 blocks make the apply and the review a plain text comparison. The template and plan forbid a step list in the spec, so the landing cannot name an issue letter, while every spec has Outcomes. | 2026-11-04 |
 | A change that describes behavior lands with the issue PR that builds it. Acceptance assigns each change not landing with the spec PR to exactly one issue, the last one building its Outcome, and that issue's `Acceptance:` reads "applies the ratified <doc> change (<section>) from the spec verbatim". A rule that holds once adopted lands with the spec PR: the planner applies it on the spec branch beside the roadmap-link commit, before the acceptance merge. | The handoff's rule. One owner per change keeps the always-loaded docs true at every merge. | 2026-11-04 |
-| A change is pending while its spec is still in `docs/specs/` (not archived) and its doc does not yet contain its target text verbatim. A new change to the same text is written against the pending target text, the milestone takes a `Depends on milestone:` edge to the pending spec's milestone, and the acceptance review compares against that pending text. The rule sits in the template section and in `acceptance.md`. | No issue lookup is needed: the repo shows it. The constitution's two-level dependency representation is the existing mechanism, and it keeps each verbatim apply exact. | 2026-11-04 |
+| A change is pending while its spec is still in `docs/specs/` (not archived) and its doc does not yet contain its target text verbatim; a REMOVED change is pending while its doc still contains its `Replaces` text. A new change to the same text is written against the pending target text, the milestone takes a `Depends on milestone:` edge to the pending spec's milestone, and the acceptance review compares against that pending text. The rule sits in the template section and in `acceptance.md`. | No issue lookup is needed: the repo shows it. The constitution's two-level dependency representation is the existing mechanism, and it keeps each verbatim apply exact. | 2026-11-04 |
 | The implementer applies the target text verbatim, and a needed wording change is `needs:planning`. The per-PR review receives the issue's target text and checks that the diff carries it exactly. | "Never authored in `/loopkit:implement`" stays true: the implementer copies ratified text and authors none. | 2026-11-04 |
 | This spec's constitution corollary lands with the spec PR; its architecture flows land with issue B. | The corollary is a rule that holds once adopted. The current corollary already allows it ("authored in a `/loopkit:plan` spec PR"), and once on `main` it licenses issue B's verbatim apply, which a reviewer seeded with the old wording could otherwise refuse. The flows describe what plan, implement and roadmap do, and issue B builds that. | 2026-11-04 |
 | A spec citation is a concrete spec file name (`spec-<slug>.md`, live or archived) in a tracked file outside `docs/`, root files included. Path patterns (`spec-<scope>.md`, `spec-*.md`, `spec-$scope.md`) and `spec-template.md` are not citations. The issue, the commit body and the PR keep referencing the spec. | The handoff's rule. Skill prose has to name the path convention, and today no root file cites a spec. | 2026-11-04 |
@@ -318,8 +323,8 @@ none
 - [ ] The spec template has the Foundation-doc changes section (the three
   kinds with their parts, column-0 blocks, `Lands:`, the pending-change rule,
   `none`) and a Verification item that every change landed.
-- [ ] `acceptance.md` assigns each change to one issue and applies a `spec PR`
-  change before the merge; `issue-contract.md` has the verbatim apply, the
+- [ ] `acceptance.md` assigns each change that does not land with the spec PR
+  to one issue and applies a `spec PR` change before the merge; `issue-contract.md` has the verbatim apply, the
   `needs:planning` route and the review check; plan's step 6 checks the
   `Replaces` and `After:` texts.
 - [ ] Every Foundation-doc change of this spec is on `main` verbatim, landed
