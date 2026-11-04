@@ -91,9 +91,9 @@ Reference `docs/constitution.md` / `docs/architecture.md` rather than restating.
 
 ## Prior art
 
-- [Bootstrap vs iteration — separate one-time inception from ongoing prior-art-driven planning](../prior-art.md#bootstrap-vs-iteration--separate-one-time-inception-from-ongoing-prior-art-driven-planning-feature-roadmap-iteration) — spec-kit's `/constitution` (once) vs `/specify`+`/plan` (iterative) is the direct precedent for splitting the one-time dialog from an iteration entry point; ADOPT the split, DIFFERENTIATE by centring prior-art research.
-- [Research-to-plan coupling — every plannable phase backed by prior art](../prior-art.md#research-to-plan-coupling--every-plannable-phase-backed-by-prior-art-feature-inception-prior-art-coupling) — dual-track discovery feeds the delivery backlog; per-phase prior-art must back every seeded phase (the coupling `/loopkit:roadmap` must uphold when seeding 1..n phases).
-- [Prior-art as the substrate for every artifact](../prior-art.md#prior-art-as-the-substrate-for-every-artifact--research--adoptavoid--sources-feature-prior-art-elevation) — context for why the iteration loop centres research; the elevation itself is a separate phase.
+- [Bootstrap vs iteration — separate one-time inception from ongoing prior-art-driven planning](../../prior-art.md#bootstrap-vs-iteration--separate-one-time-inception-from-ongoing-prior-art-driven-planning-feature-roadmap-iteration) — spec-kit's `/constitution` (once) vs `/specify`+`/plan` (iterative) is the direct precedent for splitting the one-time dialog from an iteration entry point; ADOPT the split, DIFFERENTIATE by centring prior-art research.
+- [Research-to-plan coupling — every plannable phase backed by prior art](../../prior-art.md#research-to-plan-coupling--every-plannable-phase-backed-by-prior-art-feature-inception-prior-art-coupling) — dual-track discovery feeds the delivery backlog; per-phase prior-art must back every seeded phase (the coupling `/loopkit:roadmap` must uphold when seeding 1..n phases).
+- [Prior-art as the substrate for every artifact](../../prior-art.md#prior-art-as-the-substrate-for-every-artifact--research--adoptavoid--sources-feature-prior-art-elevation) — context for why the iteration loop centres research; the elevation itself is a separate phase.
 
 ## Human prerequisites
 

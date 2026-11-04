@@ -107,7 +107,7 @@ Reference `docs/constitution.md` / `docs/vision.md` rather than restating.
 
 ## Prior art
 
-- [Prior-art as the substrate for every artifact — research + adopt/avoid + sources](../prior-art.md#prior-art-as-the-substrate-for-every-artifact--research--adoptavoid--sources-feature-prior-art-elevation) — the concern this scope implements: the thesis that every loopkit artifact is downstream of a thick prior-art pass, and the move to carry `/plan`'s source-checkout into the implement loop.
+- [Prior-art as the substrate for every artifact — research + adopt/avoid + sources](../../prior-art.md#prior-art-as-the-substrate-for-every-artifact--research--adoptavoid--sources-feature-prior-art-elevation) — the concern this scope implements: the thesis that every loopkit artifact is downstream of a thick prior-art pass, and the move to carry `/plan`'s source-checkout into the implement loop.
   - **loopkit source-checkout precedent (PR #93)** — the granted `/plan` mechanism this generalises to `/implement`; ADOPT source-level analysis as a first-class loop input.
   - **Clean-room design + MALUS (satire)** — the licensing line: transient, read-only, harvest facts, never copy expression; the durable output is the decision.
   - **Manus — per-execution isolated sandbox** — ADOPT disposable-by-default; DIFFERENTIATE: a read-only checkout outside the repo is the whole mechanism, no VM/daemon (stays subscription-only).

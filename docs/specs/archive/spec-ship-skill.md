@@ -88,7 +88,7 @@ Reference the constitution rather than restating it.
 
 ## Prior art
 
-- [Release/ship phase — attended, GitHub-native release automation](../prior-art.md#releaseship-phase--attended-github-native-release-automation-feature-ship-skill)
+- [Release/ship phase — attended, GitHub-native release automation](../../prior-art.md#releaseship-phase--attended-github-native-release-automation-feature-ship-skill)
   — release-please's human-merge Release-PR shape (attended) and
   conventional-commits->semver mapping to ADOPT; semantic-release's
   release-on-every-merge to AVOID (adversarial anchor); changesets' "the pause is

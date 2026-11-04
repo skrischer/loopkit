@@ -72,7 +72,7 @@ deferred to `model-tier-slots` — see Out of scope.)
 
 ## Prior art
 
-- [Process-PR overhead — ceremony telemetry](../prior-art.md#process-pr-overhead--ceremony-telemetry-feature-ceremony-overhead)
+- [Process-PR overhead — ceremony telemetry](../../prior-art.md#process-pr-overhead--ceremony-telemetry-feature-ceremony-overhead)
   — Scott Logic / OpenSpec: ADOPT **measure ceremony as a first-class number and
   drive it down — fold the roadmap-link commit onto the accepted spec branch, keep
   one QA close-out PR**; AVOID fixing ceremony by introducing a **new artifact

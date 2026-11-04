@@ -242,7 +242,7 @@ Target text:
 
 ## Prior art
 
-- [Planning-artifact lifecycle — decision scope, foundation-doc landing, spec citations, permanent phase ids (feature: artifact-hygiene)](../prior-art.md#planning-artifact-lifecycle--decision-scope-foundation-doc-landing-spec-citations-permanent-phase-ids-feature-artifact-hygiene)
+- [Planning-artifact lifecycle — decision scope, foundation-doc landing, spec citations, permanent phase ids (feature: artifact-hygiene)](../../prior-art.md#planning-artifact-lifecycle--decision-scope-foundation-doc-landing-spec-citations-permanent-phase-ids-feature-artifact-hygiene)
   - The evidence: relay's 104 of 145 Decision-log entries that settle no design
     question, its constitution ahead of its code, its 263 spec citations in
     non-doc files and its drifting phase numbers; loopkit's 13 % Decision-log
@@ -257,10 +257,10 @@ Target text:
     specs and merging only at archive time.
   - Docs-as-code: ADOPT the doc change in the PR that changes behavior; AVOID a
     CI drift check.
-- [Non-UI concept design + the durable diagram medium (feature: design-in-the-loop)](../prior-art.md#non-ui-concept-design--the-durable-diagram-medium-feature-design-in-the-loop)
+- [Non-UI concept design + the durable diagram medium (feature: design-in-the-loop)](../../prior-art.md#non-ui-concept-design--the-durable-diagram-medium-feature-design-in-the-loop)
   — the ADR entry: the decision shape loopkit's Prior decisions and Decision
   log already follow, and its AVOID of lifecycle status.
-- [Process-PR overhead — ceremony telemetry (feature: ceremony-overhead)](../prior-art.md#process-pr-overhead--ceremony-telemetry-feature-ceremony-overhead)
+- [Process-PR overhead — ceremony telemetry (feature: ceremony-overhead)](../../prior-art.md#process-pr-overhead--ceremony-telemetry-feature-ceremony-overhead)
   — measure ceremony and drive it down, and AVOID a new artifact type as the
   fix (this spec adds a spec section, not a new artifact).
 
