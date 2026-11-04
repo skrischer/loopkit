@@ -584,6 +584,8 @@ implement/plan must consult it by reference, not restate it.
 
 ## Worktree resume & merge-conflict recovery (feature: implement-resume-safety)
 
+Also feeds: (feature: implement-conflict-recovery)
+
 The orchestrator's autonomous-merge core has no defined behavior for its two
 most likely mid-run failures (2026-07-02 codebase analysis): a prior run's
 leftover branch/worktree (`git worktree add -b` collides) and a conflicting
