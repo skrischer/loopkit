@@ -88,9 +88,12 @@ Each one is checkable in review.
   open questions for implementation. A fork that reaches an implementer is a
   planning defect: the implementer escalates it back to the planner (reopen the
   spec), which resolves it at the spec-acceptance gate. Corollary: foundation-doc
-  edits (vision/constitution/architecture) belong to planning too — authored in a
-  `/loopkit:plan` spec PR and ratified at the spec-acceptance gate, never in
-  `/loopkit:implement`, never left as a dangling draft.
+  edits (vision/constitution/architecture) belong to planning too — authored as
+  target text in a `/loopkit:plan` spec and ratified at the spec-acceptance gate,
+  never authored in `/loopkit:implement`, never left as a dangling draft. A
+  ratified edit lands with the PR that makes it true — a behavior change with the
+  issue PR that builds it, a rule that holds once adopted with the spec PR — and
+  the implementer applies it verbatim.
 - **Exactly two human gates.** Spec-acceptance and milestone-QA; everything else
   is autonomous. The two gates scope the plan/implement cycle. A design is
   reviewed at spec-acceptance as part of the spec package, and a human-invoked
