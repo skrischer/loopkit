@@ -8,6 +8,71 @@ Versioning and the release process are defined in [`docs/release.md`](docs/relea
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-11-04
+
+### Changed
+
+- **The Decision log records implementation choices only.** An entry is a
+  choice the spec leaves to the implementer on purpose (a latitude it grants,
+  or a construction technique the spec and code leave free) that a later
+  change must keep. Test helpers, waits and timeouts, initial file contents,
+  review-fix records and anything the code or its tests already state go in
+  the commit or PR body; a design fork still escalates `needs:planning`, and
+  the re-plan records its answer as a Prior decisions row. The spec template's
+  Decision log section holds the definition; the issue contract and
+  `/loopkit:implement`'s QA-gate sweep apply it, and `/loopkit:plan` writes
+  Prior decisions rows only. (#345)
+- **A foundation-doc change is ratified target text and lands with the PR that
+  makes it true.** The spec template gains a Foundation-doc changes section:
+  each change is MODIFIED, ADDED or REMOVED, with `Replaces:` / `After:` /
+  `Target text:` blocks and a `Lands:` line naming the Outcome whose issue
+  builds the behavior, or `spec PR` for a rule that holds once adopted.
+  Acceptance assigns each change to exactly one issue (or applies a `spec PR`
+  change on the spec branch before the merge), plan's step 6 checks every
+  `Replaces` and `After:` text against its doc, and the implementer applies
+  the target text verbatim — a needed wording change is `needs:planning`,
+  never an edit — while the review checks the diff carries it exactly.
+  `/loopkit:roadmap` and the workflow template say the same. (#346)
+- **The agent review is bounded by finding class and round**
+  (`skills/shared/review-bound.md`). Only a blocking finding withholds the
+  merge: a violation of the issue's acceptance, the spec, the constitution,
+  the project's contract or its `CLAUDE.md` rules, a red Verify, a defect in
+  reachable behavior the change adds or alters, or a doc the change makes
+  wrong — in whichever round it is seen. A non-blocking finding is a `Nit:`,
+  raised only in round 1, never fixed in its PR and recorded in the PR body's
+  `Review notes`. After the full first review, a later round checks the fixes
+  and raises only blocking findings; the no-progress rule still parks the
+  same blocking finding twice in a row. An out-of-scope finding with a
+  concrete failure scenario becomes a `fix:` follow-up issue marked
+  `Follow-up of #<n> (PR #<pr>)` — in the milestone, or as `track:adhoc` only
+  when the reviewed issue is auto-pick eligible, else a note plus a
+  `Needs you:` line. `/loopkit:plan`'s spec-acceptance review takes the same
+  bound with planning's own blocking classes, its notes shown at the gate. The
+  milestone QA gate lists the follow-ups and `Review notes`. A project's
+  contract may tighten the bound, never loosen it. (#349)
+- **A roadmap phase number is a permanent id**: never reused or renumbered, no
+  letter suffix, no order — the queue order is the roadmap's row order, and a
+  new phase or a split takes the next free number. A prior-art concern header
+  keeps the tag it was created with; a later phase or feature that draws on
+  it goes on an `Also feeds:` line under the header. (#347)
+- **Nothing outside `docs/` cites a spec**, live or archived: a comment that
+  needs a contract points at the living doc that holds it, and the commit body
+  and PR reference the spec. The issue contract and the workflow template
+  state it; the QA-gate archive move repoints `docs/` links only. (#348)
+
+### Added
+
+- Verify guard 13 fails on any spec file name cited outside `docs/` in
+  loopkit's own repo, naming the file and line. (#348)
+
+### Fixed
+
+- The workflow template names the review bound's `review-bound.md` without a
+  plugin path, which would not resolve in a target project. (#351)
+- 22 prior-art links in archived specs resolve again
+  (`../../prior-art.md`); earlier archive moves had left them pointing at
+  `docs/specs/`. (#353)
+
 ## [2.4.1] - 2026-11-02
 
 ### Fixed
@@ -301,7 +366,8 @@ marker, not a reconstructed history; changes from here forward are recorded abov
 - Foundation docs (vision, constitution, architecture, prior-art, roadmap) and
   the per-project contracts (`docs/workflow.md`, `docs/design.md`).
 
-[Unreleased]: https://github.com/skrischer/loopkit/compare/v2.4.1...HEAD
+[Unreleased]: https://github.com/skrischer/loopkit/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/skrischer/loopkit/compare/v2.4.1...v2.5.0
 [2.4.1]: https://github.com/skrischer/loopkit/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/skrischer/loopkit/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/skrischer/loopkit/compare/v2.2.1...v2.3.0
