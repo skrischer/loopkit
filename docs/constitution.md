@@ -138,7 +138,9 @@ Each one is checkable in review.
   no substitution). Never a repo-relative plugin path — it resolves only inside
   loopkit's own repo. (grep-verifiable.)
 - Foundation docs in `docs/`; specs in `docs/specs/`, archived to
-  `docs/specs/archive/`.
+  `docs/specs/archive/`. Nothing outside `docs/` cites a spec, live or archived:
+  a comment that needs a contract points at the living doc that holds it.
+  (grep-verifiable.)
 - All artifacts, code, comments, and commits in English. Conventional Commits
   (`feat`/`fix`/`chore`/`docs`/`refactor`).
 - Skill prose is terse, imperative, and gate-marked. No duplication across the

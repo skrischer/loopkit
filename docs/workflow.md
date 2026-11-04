@@ -85,7 +85,8 @@ Model aliases live only here, never in skill prose.
 
 - Branches: `feat/<scope>`, `fix/<scope>`, `chore/<scope>`, `docs/<scope>`, `refactor/<scope>`.
 - Specs: `docs/specs/spec-<scope>.md` — the single source of truth for design.
-- Completed specs: moved to `docs/specs/archive/` with the same name.
+- Completed specs: moved to `docs/specs/archive/` with the same name. Citing a
+  spec outside `docs/`: see the constitution's Conventions.
 - Proportional tracks (one per change): full-spec (a feature), a living-spec
   milestone (an ongoing theme), a `track:adhoc` fast-lane (a bug/QoL change —
   no spec, no milestone).

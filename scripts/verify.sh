@@ -343,7 +343,8 @@ else
 fi
 
 # --- Skill-structure guards (7-11) -------------------------------------------
-# docs/specs/spec-skill-structure.md owns the rules. Each guard is its own
+# The constitution's Conventions own the plugin-path rule (guard 7); each
+# guard's own comment owns its rule. Each guard is its own
 # check, none folded into guard 5 (whose note limits it to the ordering
 # invariant). Shared helpers first.
 
@@ -622,6 +623,20 @@ if [ "$name_fail" -eq 0 ]; then
   echo "  naming-rule guard: OK"
 else
   echo "  naming-rule guard: FAILED"
+  fail=1
+fi
+
+# 13. Spec-citation guard — nothing outside docs/ cites a spec, live or archived
+#     (constitution Conventions). A citation is a concrete spec file name in a
+#     tracked file outside docs/; `spec-template.md` is not one.
+echo "-- spec-citation guard (no spec file name cited outside docs/) --"
+
+cite_hits=$(git grep -n -E 'spec-[a-z0-9][a-z0-9-]*\.md' -- ':!docs' | grep -v 'spec-template\.md' || true)
+if [ -z "$cite_hits" ]; then
+  echo "  spec-citation guard: OK"
+else
+  printf '%s\n' "$cite_hits" | sed 's/^/  /'
+  echo "  spec-citation guard: FAILED (file:line above cites a spec)"
   fail=1
 fi
 
