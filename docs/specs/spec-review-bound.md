@@ -296,3 +296,9 @@ none
 - 2026-11-04: Drafted. The planning decisions are the Prior decisions rows.
 - 2026-11-04: Accepted at the spec-acceptance gate. G1 decided A: plan's
   spec-acceptance review takes the same bound (O3).
+- 2026-11-04: Implementation (issue A). The reviewer-brief, fix-brief and
+  later-round mechanics live in the shared file, and the issue contract's review
+  gate and fix-dispatch case point at it, so the contract carries no copy of the
+  rules. The workflow template names the plugin's `skills/shared/review-bound.md`
+  in prose, since the template is copied into a project where no plugin path
+  resolves.

@@ -137,7 +137,10 @@ never lists steps; the issues never restate the design.
 - **Per PR — machine gate, no human stop:** the Verify command
   (`bash scripts/verify.sh`) runs green, then in-session agent review
   (`VERDICT: APPROVE`, via the Agent tool — never a billed CLI) -> autonomous
-  squash-merge.
+  squash-merge. The review follows the bound in `skills/shared/review-bound.md`:
+  only a blocking finding withholds the merge, and after one full review a later
+  round raises only blocking findings. A project may tighten the bound (more
+  blocking classes, or every finding blocks) and never loosen it.
 - **Per milestone — human gates:**
   - Planning: the spec-acceptance gate — genuinely-open decisions
     (AskUserQuestion, never guess) + human-prerequisites handover.
