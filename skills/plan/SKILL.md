@@ -191,8 +191,8 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   despite the docs-only diff: it is the planning-rigor checkpoint, and only the
   human's explicit in-session instruction can change it. The cheaper
   no-source-change reviewer, or any other contract or skill rule, never lowers it.
-  Address the findings and re-review, bounded by `docs/workflow.md`'s
-  no-progress rule — a repeated failure stops and parks (see If blocked).
+  Address the blocking findings and re-review per
+  `${CLAUDE_PLUGIN_ROOT}/skills/shared/review-bound.md` (park: see If blocked).
   The design artifact the spec references (step 3) is reviewed here with the
   rest of the spec — not a separate stop.
 - **STOP — the cycle's one human gate:**

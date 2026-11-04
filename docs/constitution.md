@@ -75,7 +75,10 @@ Each one is checkable in review.
   cannot; the wave fan-out walks GitHub's `Depends on:` graph, which `/batch`
   does not read.
 - **Bounded retry.** The identical failure twice in a row stops the loop with a
-  resumable report; loops never grind.
+  resumable report; loops never grind. An agent review is bounded too: only a
+  blocking finding withholds the merge, and after one full review a later round
+  checks the fixes and raises only blocking findings
+  (`skills/shared/review-bound.md`).
 - **Prior art is consulted, linked, and read to source when it earns it.**
   `/plan` checks `docs/prior-art.md` per spec and links the relevant entries so
   `/implement` can reach them. When the distilled verdict does not settle a

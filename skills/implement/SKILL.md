@@ -131,7 +131,7 @@ Repeat while the unblocked frontier is non-empty:
    as in step 2 (inherits the brief line unchanged; the brief also carries the findings, outside that line); a merge conflict routes the
    same way, with the conflict as the finding. You never edit. Await each fix
    subagent and repeat review -> fix until the issue is merged, escalated or
-   parked, bounded by `docs/workflow.md`'s no-progress rule: the same finding twice
+   parked, bounded per `${CLAUDE_PLUGIN_ROOT}/skills/shared/review-bound.md`: the same blocking finding twice
    parks it `blocked:human`, and you then run the contract's park cleanup
    (`git worktree remove "$wt"` if the tree is clean, never `--force`). A fix
    dispatch that returns nothing is a failed dispatch (below); its re-dispatch
@@ -201,7 +201,7 @@ The cleanup sweep has already run; whatever it could not clean is in its report 
 - Derive concrete QA scenarios from the spec's Verification section — it is the QA
   script — including every acceptance item no machine check covers. Present them as
   a numbered list of what to do and what to look for, plus anything the reviewers
-  flagged. The default check type is in `docs/workflow.md`.
+  flagged (follow-ups, `Review notes`). The default check type is in `docs/workflow.md`.
 - For checks a human must run, hand over the exact commands.
 - **STOP and wait for the human verdict.**
 

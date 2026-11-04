@@ -42,7 +42,12 @@ dispatch). Its steps:
   - **fix dispatch** (the brief carries review findings or a merge conflict) ->
     re-attach the branch and resume at Implement with the findings, then Verify
     and push. Review and merge if the Agent tool is available, else return
-    the `pr-open` report (form under Report back) again. This overrides the open-PR case below.
+    the `pr-open` report (form under Report back) again. A brief that carries
+    findings makes this a later round of the review bound
+    (`../../shared/review-bound.md`): the open blocking findings, the
+    non-blocking findings and follow-ups so far, the reviewed head SHA and the
+    round number come from the brief, and a fresh reviewer gets the full change
+    diff plus the fix diff. This overrides the open-PR case below.
   - **open PR for the issue** -> skip Implement; continue from the Review gate ->
     Merge stage (below) on the existing branch.
   - **branch with commits/diff but no PR** -> re-attach and continue from Verify
@@ -131,13 +136,17 @@ dispatch). Its steps:
   `implementer` tier for a review). That lowers the tier only; the effort stays
   the reviewer's, and a narrower scope stated in the contract's reviewer line
   replaces the generic one. Any source/config touch keeps the full
-  `reviewer` tier, and when in doubt use the full tier. Ask for a verdict whose
-  first line is `VERDICT: APPROVE` or `VERDICT: REQUEST_CHANGES`, with findings.
+  `reviewer` tier, and when in doubt use the full tier. The review follows the bound in `../../shared/review-bound.md`.
+  Brief the reviewer to classify each finding (blocking, non-blocking `Nit:`,
+  follow-up) and to give a verdict whose first line is `VERDICT: APPROVE` or
+  `VERDICT: REQUEST_CHANGES`, `REQUEST_CHANGES` only with a blocking finding.
   The Agent tool runs in-session — never shell out to a billed CLI. On
-  `REQUEST_CHANGES`, address the findings (back to Implement) and push the fix,
-  then re-review; this `REQUEST_CHANGES` -> address -> re-review loop is bounded
-  by `docs/workflow.md`'s no-progress rule — a repeated failure stops and parks
-  the issue, never grinds. Only an `APPROVE` (or explicit human override) clears
+  `REQUEST_CHANGES`, address the blocking findings (back to Implement) and push
+  the fix, then run the next round as that file says; this loop is bounded by
+  `docs/workflow.md`'s no-progress rule — the same blocking finding twice in a
+  row stops and parks the issue, never grinds. When the gate ends (merge, park or
+  escalation) write the `Review notes` into the PR body and file the follow-ups
+  once, as that file says. Only an `APPROVE` (or explicit human override) clears
   this gate.
   - **`pr-open` fallback.** If the Agent tool is unavailable (depth limit, a
     `tools` list without `Agent`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`) or the
