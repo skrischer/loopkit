@@ -52,10 +52,10 @@ lives in the GitHub issues and milestone. A completed spec is moved to
   makes it true, and is never authored in `/loopkit:implement`.
 - [ ] O6. The issue contract forbids citing a spec in a file outside `docs/`;
   implement's QA-gate archive move repoints links inside `docs/` only; the
-  workflow template states the rule, and loopkit's `docs/workflow.md` states it
-  too (G1 = B) or points at the constitution's Conventions (G1 = A); and
+  workflow template states the rule, and loopkit's `docs/workflow.md` points at
+  the constitution's Conventions (G1); and
   `scripts/verify.sh` cites no spec.
-- [ ] O7. (Only if G1 is A.) loopkit's constitution Conventions carry the
+- [ ] O7. (G1.) loopkit's constitution Conventions carry the
   no-spec-citation rule, and `scripts/verify.sh` guards it as guard 13.
 - [ ] O8. The roadmap template, the prior-art template,
   `skills/shared/iteration-steps.md` and the roadmap skill's Step 2 state that
@@ -91,7 +91,7 @@ lives in the GitHub issues and milestone. A completed spec is moved to
 - `docs/workflow.md`: the spec-naming lines.
 - `docs/prior-art.md`: an `Also feeds:` line under the one concern that backs
   two rows.
-- `scripts/verify.sh`: the comment at line 346, and guard 13 if G1 is A.
+- `scripts/verify.sh`: the comment at line 346, and guard 13 (G1).
 
 ### Out of scope
 
@@ -219,7 +219,7 @@ Target text:
    change verbatim when the issue carries one -> Verify -> review -> merge, or
 ```
 
-### docs/constitution.md — Conventions, the specs line: MODIFIED (only if G1 is A)
+### docs/constitution.md — Conventions, the specs line: MODIFIED
 
 Lands: with the issue that builds O6 and O7 (issue C), once `scripts/verify.sh`
 cites no spec and guards the rule.
@@ -283,13 +283,14 @@ none
 | This spec's constitution corollary lands with the spec PR; its architecture flows land with issue B. | The corollary is a rule that holds once adopted. The current corollary already allows it ("authored in a `/loopkit:plan` spec PR"), and once on `main` it licenses issue B's verbatim apply, which a reviewer seeded with the old wording could otherwise refuse. The flows describe what plan, implement and roadmap do, and issue B builds that. | 2026-11-04 |
 | A spec citation is a concrete spec file name (`spec-<slug>.md`, live or archived) in a tracked file outside `docs/`, root files included. Path patterns (`spec-<scope>.md`, `spec-*.md`, `spec-$scope.md`) and `spec-template.md` are not citations. The issue, the commit body and the PR keep referencing the spec. | The handoff's rule. Skill prose has to name the path convention, and today no root file cites a spec. | 2026-11-04 |
 | `scripts/verify.sh:346` points at the living rules instead: the constitution's Conventions for plugin paths, and each guard's own comment for its rule. | `docs/specs/spec-skill-structure.md` has moved to the archive, the very rot this rule prevents. | 2026-11-04 |
-| If G1 is A, guard 13 in `scripts/verify.sh` runs `git grep -n -E 'spec-[a-z0-9][a-z0-9-]*\.md' -- ':!docs'`, drops the lines naming `spec-template.md`, and fails on any line left, naming the file and line. loopkit's `docs/workflow.md` then points at the Conventions line instead of restating it. | Tested on 2026-11-04: the pattern finds exactly `scripts/verify.sh:346` and `skills/plan/SKILL.md:105` (`spec-template.md`); `spec-<scope>.md`, `spec-*.md` and `spec-$scope.md` do not match, and the regex does not match its own text. Pointing at the Conventions keeps the rule in one place. | 2026-11-04 |
+| Guard 13 in `scripts/verify.sh` runs `git grep -n -E 'spec-[a-z0-9][a-z0-9-]*\.md' -- ':!docs'`, drops the lines naming `spec-template.md`, and fails on any line left, naming the file and line. loopkit's `docs/workflow.md` then points at the Conventions line instead of restating it. | Tested on 2026-11-04: the pattern finds exactly `scripts/verify.sh:346` and `skills/plan/SKILL.md:105` (`spec-template.md`); `spec-<scope>.md`, `spec-*.md` and `spec-$scope.md` do not match, and the regex does not match its own text. Pointing at the Conventions keeps the rule in one place. | 2026-11-04 |
 | A concern header keeps the tag it was created with — `(Phase N)`, `(Phase N, M)`, `(feature: <slug>)` or `(feature: <slug>, <slug>)`, one kind per header — and is never edited for a later row. A row that later draws on the concern is added to an `Also feeds:` line directly under the header. "Prior art for phase N" reads the header and that line. loopkit's "Worktree resume & merge-conflict recovery" concern gains `Also feeds: (feature: implement-conflict-recovery)`. | A header is a link target: two archived specs link this very header by its anchor. A tag that grows with every row would break those links on each extension, or make every extension repoint them. A permanent header fits the permanent-id rule. No code parses the tags, and the status pane's unplanned-phase rule reads only the Spec and Milestone cells. | 2026-11-04 |
-| OPEN — G1: do loopkit's own constitution Conventions carry the no-spec-citation rule? A: yes, with guard 13 in `scripts/verify.sh` (O7). B: no; the rule lives in the skills and templates, and `scripts/verify.sh:346` is fixed either way. | resolved at the spec-acceptance gate | — |
+| G1: loopkit's own constitution Conventions carry the no-spec-citation rule, guarded by guard 13 in `scripts/verify.sh` (O7). | Decided by the human at the spec-acceptance gate (option A). A constitution principle must be verifiable, and loopkit already has one stale citation; the guard is tested and today finds exactly that line. | 2026-11-04 |
 
 ## Tracking
 
-- Milestone: created at acceptance.
+- Milestone: [artifact-hygiene](https://github.com/skrischer/loopkit/milestone/29),
+  with `Depends on milestone: none`.
 - Issues, one per step, created after the merge:
   - **A — The Decision log records implementation choices (O1, O2).** The
     spec template's Decision log section; `issue-contract.md`'s
@@ -304,8 +305,8 @@ none
     applied verbatim.
   - **C — No spec citation outside `docs/` (O6, O7).** Depends on B.
     `issue-contract.md`'s Implement step; implement's archive move; the
-    workflow template; `docs/workflow.md`; `scripts/verify.sh:346`; and, if G1
-    is A, the Conventions change, applied verbatim, and guard 13.
+    workflow template; `docs/workflow.md`; `scripts/verify.sh:346`; the
+    Conventions change, applied verbatim; and guard 13.
   - **D — A phase number is a permanent id (O8).** Depends on B. The roadmap
     and prior-art templates; `skills/shared/iteration-steps.md`; the roadmap
     skill's Step 2; the `Also feeds:` line in `docs/prior-art.md`.
@@ -329,10 +330,10 @@ none
   `Replaces` and `After:` texts.
 - [ ] Every Foundation-doc change of this spec is on `main` verbatim, landed
   where its `Lands:` line says: the corollary in the spec PR's merge commit,
-  the architecture flows in issue B's PR, and the Conventions line (if G1 is
-  A) in issue C's PR. QA compares each fenced target text with the doc.
+  the architecture flows in issue B's PR, and the Conventions line in issue
+  C's PR. QA compares each fenced target text with the doc.
 - [ ] `git grep -n -E 'spec-[a-z0-9][a-z0-9-]*\.md' -- ':!docs'` finds only
-  `spec-template.md` lines. If G1 is A, Verify fails on a planted citation
+  `spec-template.md` lines. Verify fails on a planted citation
   outside `docs/` and passes once it is removed.
 - [ ] The roadmap and prior-art templates, `iteration-steps.md` and the
   roadmap skill's Step 2 state the permanent-id rule, the row-order queue and
@@ -353,7 +354,7 @@ none
 | This milestone's implementers run the installed 2.4.x skills and do not know the new rules. | Each issue's `Acceptance:` states what the rules ask of it. The corollary is on `main` before issue B runs, and B's `Acceptance:` names its ratified architecture change. |
 | A planner skips the Foundation-doc changes section. | The template asks for `none` explicitly, and plan's spec-acceptance review checks the section. |
 | Two specs change the same text before either lands. | The pending-change rule writes the later text against the earlier and adds a milestone edge. |
-| If G1 is A, guard 13 flags a changelog entry that names a spec: `/loopkit:ship` drafts entries from PR and commit bodies, which reference the spec. | Ship's curation keeps spec paths out of changelog entries, and Verify runs before the tag, so a slip fails before anything is published. |
+| Guard 13 flags a changelog entry that names a spec: `/loopkit:ship` drafts entries from PR and commit bodies, which reference the spec. | Ship's curation keeps spec paths out of changelog entries, and Verify runs before the tag, so a slip fails before anything is published. |
 | Guard 13 flags a future non-spec file named `spec-<x>.md` outside `docs/`. | Its failure names the file and line; the file is renamed, or the guard's exclusion is widened in that PR. |
 
 ## Decision log
