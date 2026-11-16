@@ -634,6 +634,8 @@ a defined recovery path is differentiating because nobody else has one.
 
 ## Process-PR overhead — ceremony telemetry (feature: ceremony-overhead)
 
+Also feeds: (feature: checks-not-lines)
+
 The loudest criticism of every SDD leader is ceremony (Spec Kit: "a permit
 application to move a chair", ~800 artifact lines per run; Kiro: one bug -> 4
 user stories / 16 acceptance criteria). loopkit's own telemetry exhibits the
@@ -658,6 +660,8 @@ ordered.
   milestone, artifact lines per change) and drive it down: fold the roadmap-link
   commit onto the accepted spec branch, keep one QA close-out PR. AVOID —
   fixing ceremony by introducing a new artifact type (the meta-failure).
+  Refined 2026-11-16: artifact lines per change stay a telemetry number,
+  never a budget or a stop condition (see "Checks, not lines" below).
 
 ## Gate evidence & review-payload compression (feature: gate-evidence)
 
@@ -1586,6 +1590,8 @@ overhead — ceremony telemetry (feature: ceremony-overhead)" above.
 
 ## Review bound — round-limited agent review with blocking classes (feature: review-bound)
 
+Also feeds: (feature: checks-not-lines)
+
 The per-PR review loop (`REQUEST_CHANGES` → fix → re-review) ends today only
 on `APPROVE` or when the identical failure repeats. An agent reviewer does not
 tire: it can find a new polish point every round, and each round is a
@@ -1622,3 +1628,119 @@ full-tier subagent. Builds on "Loop safety / bounded retry" above.
   an optional note (the PR-body note). AVOID — leaving the bound to the
   reviewer's judgment alone: a human reviewer stops on their own, an agent
   reviewer needs a fixed round count.
+
+## Checks, not lines — contract-to-check mapping, structural phase size, growth by cause (feature: checks-not-lines)
+
+A line budget measures a spec's size, not its defect. The defects are a
+contract no check covers (dead text), a phase too wide to review and QA as one
+unit, and scope that slips in during review. A size number used as a budget or a
+stop condition fires on the very fixes a review asks for, and pushes text out of
+the reviewed spec into prose, issue bodies or nowhere. Builds on "Process-PR
+overhead — ceremony telemetry (feature: ceremony-overhead)" and "Review bound —
+round-limited agent review with blocking classes (feature: review-bound)" above.
+
+### loopkit dogfooding finding (relay, loopkit) — line rules that fired on healthy changes
+
+- Path: a handoff from the relay project of 2026-11-16 (its `docs/workflow.md`
+  spec budget and review-bound tightening, and its Phase 22 and 23 planning);
+  loopkit's `docs/specs/archive/`, milestones #1–#30 and `scripts/verify.sh`,
+  checked the same day
+- License: n/a (internal evidence)
+- Verdict: reference-only — relay: a phase spec stays at about 250 lines, not
+  counting its Foundation-doc changes and Contract changes sections, and "A
+  spec that grows between two review rounds stops the cycle." In Phase 22 and
+  23 the spec-acceptance review closed forks an implementer could not have
+  resolved (request checks, a session lifecycle, a child process's environment,
+  a form's coverage of a schema); every fix added lines, the growth rule
+  stopped the cycle twice, and the line count pushed the planner to fold lists
+  back into prose. relay made the same move twice before: Knip replaced a line
+  budget for code, and its product's change specs are sized by their change.
+  loopkit: no line budget and no growth rule; the eight specs planned since
+  2026-10-28 run 281–799 lines, the 21 before at most 262; five of 30
+  milestones planned more than three issues (skill-structure 6,
+  contract-precedence 5, status-pane 5, design-in-the-loop 4,
+  artifact-hygiene 4), and the two QA gates that filed several fix issues
+  closed skill-structure (4) and status-pane (5); review-bound's Constraints
+  carry a byte probe and a sequencing note that no Verification item checks.
+- Date: 2026-11-16
+- Notes: ADOPT — measure the defect, not the size: a check per contract, a
+  phase cap counted in issues, scope growth (not line growth) as the stop.
+  AVOID — a line count as a budget or a stop condition; moving reviewed detail
+  into issue bodies or prose to meet one.
+
+### github/spec-kit — `/speckit.analyze` coverage gaps
+
+- Path: https://github.com/github/spec-kit/blob/main/templates/commands/analyze.md
+- License: MIT
+- Verdict: reference-only — a read-only consistency pass after task
+  generation. Its "Coverage Gaps" check lists "Requirements with zero
+  associated tasks", "Tasks with no mapped requirement/story" and "Success
+  Criteria requiring buildable work (performance, security, availability) not
+  reflected in tasks"; the report carries a "Coverage Summary Table"
+  (`| Requirement Key | Has Task? | Task IDs | Notes |`) and the metric
+  "Coverage % (requirements with >=1 task)". CRITICAL includes a "requirement
+  with zero coverage that blocks baseline functionality"; HIGH includes an
+  "untestable acceptance criterion".
+- Date: 2026-11-16
+- Notes: ADOPT — coverage both ways, keyed by an id: every contract has a
+  check, and every check covers a stated contract. AVOID — a separate command
+  and report artifact (the ceremony meta-failure); mapping requirements to
+  tasks rather than to checks — loopkit's issues own the steps, the spec's
+  Verification owns the checks.
+
+### Fission-AI/OpenSpec — requirements with concrete scenarios
+
+- Path: https://github.com/Fission-AI/OpenSpec (README)
+- License: MIT
+- Verdict: reference-only — "Plain Markdown — requirements with concrete
+  scenarios, no special syntax to learn"; each `### Requirement:` carries
+  `#### Scenario:` blocks in WHEN/THEN form, so a contract and its check sit
+  together. Community copies of its validation spec report a
+  `MISSING_SCENARIOS` error for a requirement without a scenario; not
+  confirmed in the official docs (`openspec.dev/docs/writing-specs` returned
+  404 on 2026-11-16).
+- Date: 2026-11-16
+- Notes: ADOPT — name a contract and its check together, so a missing check
+  shows at review. AVOID — one fixed scenario syntax: loopkit's checks are
+  Verify guards, tests and QA-gate items, not all of them scenarios.
+
+### webpro/knip — find the defect, not the size
+
+- Path: https://github.com/webpro/knip
+- License: unverified (OSS)
+- Verdict: reference-only — finds "unused dependencies, exports and files in
+  your TypeScript and JavaScript projects" (its package description); the
+  relay project replaced a line budget for code with it.
+- Date: 2026-11-16
+- Notes: ADOPT — the model for the contract-to-check rule: report the defect
+  (a contract nothing checks), not a size. AVOID — a new tool for it: in
+  loopkit the pre-mortem and the spec-acceptance review are the finder.
+
+### Marilyn Strathern / Charles Goodhart — a measure that becomes a target
+
+- Path: Strathern, "Improving Ratings: Audit in the British University System"
+  (1997); Goodhart (1975)
+- License: n/a (papers)
+- Verdict: reference-only — commonly quoted as "When a measure becomes a
+  target, it ceases to be a good measure", Strathern's 1997 summary of
+  Goodhart (the paper's exact sentence unverified). Goodhart's own remark is
+  usually given as "Any observed statistical regularity will tend to collapse
+  once pressure is placed upon it for control purposes."
+- Date: 2026-11-16
+- Notes: ADOPT — artifact lines per change stay a telemetry number, never a
+  budget or a stop. AVOID — a proxy number the planner can meet by moving text
+  out of the reviewed spec.
+
+### DORA — working in small batches
+
+- Path: https://dora.dev/capabilities/working-in-small-batches/
+- License: n/a (article)
+- Verdict: reference-only — "try to break them down into work units that can
+  be completed independently and in short timeframes"; "Any batch of code that
+  takes longer than a week to complete and check is too big." It measures batch
+  size by what fits a short window: "What proportion of features can you
+  complete in one week or less?"
+- Date: 2026-11-16
+- Notes: ADOPT — size a phase by its count of independently completable units
+  (its issues), and split it when it is too big. AVOID — a time measure:
+  loopkit carries no estimates.
