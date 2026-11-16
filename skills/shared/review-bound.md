@@ -46,7 +46,24 @@
 - When round 1 ran on the cheaper no-source-change tier and the fix touches
   source or config, the next round is a fresh reviewer at the full tier.
 - Floor: no contract loosens the bound. A project may tighten it: more blocking
-  classes, or every finding blocks.
+  classes, or every finding blocks. No tightening stops on size: no limit on a
+  spec's or a diff's lines, and no stop on how much a fix grows. Line counts are
+  telemetry, never a budget.
+
+## Growth by cause
+
+A fix's growth is judged by what caused it, never by how large it is.
+
+- **In planning,** a fix that closes a finding grows the spec as far as closing
+  it needs. Scope growth is a blocking finding: a fix that adds a new outcome,
+  route, command, schema field or foundation-doc change that no blocking
+  finding asked for. The planner takes the added scope out of the spec and
+  carries it to the spec-acceptance gate as an `OPEN` Prior decisions row. If
+  the human accepts it there, it enters the spec with its id and its
+  Verification citation, like any contract.
+- **In an issue PR,** growth stays inside the spec's contracts. A new outcome,
+  route, command, schema field or foundation-doc change that the spec does not
+  contain escalates `needs:planning`, whether a finding asked for it or not.
 
 ## Ending the gate
 
@@ -71,7 +88,9 @@ Whoever runs the gate when it ends (merge, park or escalation) writes the
   blocking classes: a contradiction with the vision, the constitution or the
   architecture; an open question an implementer would hit; a wrong factual claim
   the spec relies on; a section the spec template requires missing or wrong; a
-  Foundation-doc change whose `Replaces` or `After:` text does not match its
+  contract (an Outcome or a Constraint) that no Verification item cites, so it
+  has no check; a planned cut over the phase-size limit; scope growth (see
+  Growth by cause); a Foundation-doc change whose `Replaces` or `After:` text does not match its
   doc. Non-blocking findings go into the spec PR body's `Review notes`, shown at
   the spec-acceptance gate. Planning files no follow-up issue: an out-of-scope
   finding is a note, or a `Needs you:` line when only the human can act on it.
