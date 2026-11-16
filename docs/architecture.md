@@ -8,13 +8,13 @@
 | Component | Responsibility |
 | --------- | -------------- |
 | `skills/inception/` | Phase-0 dialog -> foundation artifacts + workflow contract + board + settings + CLAUDE.md; includes the challenge lens |
-| `skills/plan/` | Producer: roadmap phase -> spec (+ prior-art links) -> milestone + issues with two-level `depends-on` |
+| `skills/plan/` | Producer: roadmap phase -> spec (+ prior-art links) -> milestone + issues with two-level `depends-on`; splits a phase over the phase-size limit into new roadmap rows, reading `skills/shared/iteration-steps.md` |
 | `skills/implement/` | Milestone orchestrator: plan the issue DAG -> fan out in-session subagents along the frontier -> QA gate |
 | `skills/design/` | The optional `/loopkit:design` skill, planning-time: for a UI surface OR a decision-clarifying visualisation (flow/architecture/concept), reads `docs/design.md`, delivers/produces a design, hands off a committed file (that renders in the review surface) referenced by the spec |
 | `skills/roadmap/` | Iteration entry point: raw idea -> prior-art sparring -> seeds 1..n roadmap rows + backing prior-art (no readiness sweep); reads `skills/shared/iteration-steps.md` |
 | `skills/ship/` | The `/loopkit:ship` release phase, human-invoked: reads `docs/release.md`, finalizes merged work into a published release (version -> changelog -> tag -> publish) via native `gh`+`git`; no CI bot, hardcodes no tool |
 | `skills/*/references/` | Subagent-only or some-runs-only detail a core `SKILL.md` links with when to read it — not skills |
-| `skills/shared/` | Plugin-shipped shared references, not skills: `iteration-steps.md` (prior-art challenge / architecture seed / roadmap seeding — inception, roadmap), `preflight.md` (the `gh`/`git` preflight — inception, plan, implement, roadmap, ship), `trust-boundary.md` (read-discipline, shell-hygiene, capability separation — plan, implement, roadmap, ship), `needs-you.md` (the `Needs you:` line, the one form of a request to the human the run does not wait for — inception, plan, implement, roadmap, ship), `review-bound.md` (the agent-review bound: finding classes, rounds, review notes, follow-ups — plan, implement) |
+| `skills/shared/` | Plugin-shipped shared references, not skills: `iteration-steps.md` (prior-art challenge / architecture seed / roadmap seeding and the phase-size limit — inception, roadmap; plan for a split), `preflight.md` (the `gh`/`git` preflight — inception, plan, implement, roadmap, ship), `trust-boundary.md` (read-discipline, shell-hygiene, capability separation — plan, implement, roadmap, ship), `needs-you.md` (the `Needs you:` line, the one form of a request to the human the run does not wait for — inception, plan, implement, roadmap, ship), `review-bound.md` (the agent-review bound: finding classes, rounds and growth by cause, review notes, follow-ups — plan, implement) |
 | `skills/*/templates/` | Pure artifact blueprints, filled into target projects by inception |
 | `hooks/` + `types/` | The status mod: a TypeScript module Claude Code runs (`hooks/hooks.json`) with its state contract (`types/`); inputs GitHub (`gh`) and session events (turn, tool and agent events, plus the meter events: `session.measure`, compaction, stop failure, permission denial), outputs a pane and a status-line entry |
 | `.claude-plugin/` | `plugin.json` (naming the status mod's types) + `marketplace.json` |
@@ -58,7 +58,9 @@
    (+ prior-art) -> spec (with prior-art links and any foundation-doc change as
    target text) -> [if UI surface OR a decision-clarifying visualisation:
    `/loopkit:design` delivers/produces a design per `docs/design.md`, committed
-   as a file and referenced by the spec] -> in-session review ->
+   as a file and referenced by the spec] -> pre-mortem (every contract mapped
+   to its check; a cut over the phase-size limit splits into new roadmap rows
+   on the spec branch) -> in-session review ->
    **spec-acceptance gate (human, reviews the design too)** -> milestone +
    roadmap link (+ a foundation-doc change that lands with the spec PR) on the
    spec branch -> merge -> issues with two-level `depends-on`.

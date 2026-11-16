@@ -109,6 +109,9 @@ of three tracks:
 The `feat`/`fix`-must-trace-to-a-spec rule is relaxed for `track:adhoc` only;
 full-spec and living-spec changes always reference a spec.
 
+Phase-size limit: 3 implementing issues per phase (a living-spec re-run is
+exempt).
+
 ## Issue conventions
 
 Per track:
@@ -169,7 +172,8 @@ Across all tracks:
 | Project board | The live work state: Todo / In Progress / Done |
 
 A PR closes an issue (`Closes #N`); the issue references its spec path. The
-spec never lists steps; the issues never restate the design. The spec's
+spec lists its planned issues, never their steps; the issues never restate the
+design. The spec's
 `Outcome` list is done-criteria, not a progress mirror. This chain applies to
 the full-spec and living-spec tracks; a `track:adhoc` issue bypasses it
 (no spec, no milestone) and goes issue -> PR directly.

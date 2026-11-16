@@ -39,7 +39,9 @@ Each one is checkable in review.
   scope to the loops explicitly.
 - **Proportional ceremony.** Three tracks, each change uses exactly one:
   full-spec (a feature), a living-spec milestone (an ongoing theme), a
-  `track:adhoc` fast-lane (a bug/QoL change — no spec, no milestone).
+  `track:adhoc` fast-lane (a bug/QoL change — no spec, no milestone). A phase
+  is sized by its structure, never by its line count: it plans at most the
+  workflow contract's limit of implementing issues, and a larger phase splits.
 - **Optional, tool-agnostic design phase.** Design runs inside planning only
   when a change has UI surface or a visualisation (a flow, a state machine, an
   architecture, a mental model) would materially clarify a decision; otherwise

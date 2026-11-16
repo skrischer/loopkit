@@ -90,6 +90,8 @@ Model aliases live only here, never in skill prose.
 - Proportional tracks (one per change): full-spec (a feature), a living-spec
   milestone (an ongoing theme), a `track:adhoc` fast-lane (a bug/QoL change —
   no spec, no milestone).
+- Phase-size limit: 3 implementing issues per phase (a living-spec re-run is
+  exempt).
 
 ## Issue conventions
 
@@ -130,7 +132,8 @@ Model aliases live only here, never in skill prose.
 | Project board | The live work state: Todo / In Progress / Done |
 
 A PR closes an issue (`Closes #N`); the issue references its spec path. The spec
-never lists steps; the issues never restate the design.
+lists its planned issues, never their steps; the issues never restate the
+design.
 
 ## Gates
 

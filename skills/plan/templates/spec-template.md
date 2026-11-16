@@ -114,15 +114,15 @@ resolved at the spec-acceptance gate.
 
 ## Tracking
 
-The decomposition into steps lives as GitHub issues, not in this file — one
-issue per step, grouped under a milestone. This spec owns the design; the issues
-own progress. Do not duplicate the step list here.
+The cut lives here: the planned issues, grouped under a milestone, at most the
+phase-size limit. The issues own their steps and progress, so never list steps.
+This spec owns the design.
 
 - Milestone: [Phase/Feature name](<milestone-url>)
-- Issues: created from this spec once it is merged (one per implementable step).
-  Each line names the Verification items its issue's `Acceptance:` mirrors
-  (`Acceptance: V1, V4`); an item may sit on several lines when each PR checks
-  it whole.
+- Planned issues: created from this spec once it is merged, exactly these. Each
+  line gives its Outcomes, the files it touches and its `Depends on`, and names
+  the Verification items its `Acceptance:` mirrors (`Acceptance: V1, V4`); an
+  item may sit on several lines when each PR checks it whole.
 - QA gate: the Verification items only the whole milestone can check (a smoke
   run, a check over the milestone's diff).
 
