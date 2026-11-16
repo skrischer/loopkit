@@ -10,7 +10,7 @@ A cut over the limit is a blocking planning finding, so split it before review:
 
 1. Keep a first part within the limit in the spec. Its Tracking lists only that
    part's issues.
-2. Move the text of each part that leaves out of the original roadmap row into a
+2. Move the text of each part that moves out of the original roadmap row into a
    new row, with that part's share of the Foundation impact line. The new row
    takes the next free phase number, or a new feature slug, per the row form and
    the permanent id in `../../shared/iteration-steps.md`. Its Spec and Milestone

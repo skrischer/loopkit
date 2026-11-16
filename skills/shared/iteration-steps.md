@@ -93,8 +93,8 @@ derived from the scope and the architecture seed. From the roadmap template
   issues and `track:adhoc` issues do not count). The limit is the workflow
   contract's `Phase-size limit:` line, default 3 where the contract has no such
   line or does not exist yet. A too-large phase is seeded as several rows, and
-  `/loopkit:plan` splits one over the limit (`../plan/references/split.md`),
-  its third reader of this section. A living-spec re-run is exempt (it is no
+  `/loopkit:plan` splits one over the limit in its pre-mortem, its third
+  reader of this section. A living-spec re-run is exempt (it is no
   roadmap phase, with no spec PR and no gate); the theme's first plan keeps the
   limit.
 - A one-line north star tying back to the vision.
