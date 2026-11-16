@@ -88,6 +88,15 @@ derived from the scope and the architecture seed. From the roadmap template
   (5a, 1c), no order (the queue order is the row order). A new phase takes the
   next free number, a split takes new numbers, and a Features-table row carries a
   slug instead.
+- Size each phase to the phase-size limit: a phase plans at most that many
+  implementing issues (the QA gate is no issue; review follow-ups, QA-gate fix
+  issues and `track:adhoc` issues do not count). The limit is the workflow
+  contract's `Phase-size limit:` line, default 3 where the contract has no such
+  line or does not exist yet. A too-large phase is seeded as several rows, and
+  `/loopkit:plan` splits one over the limit in its pre-mortem, its third
+  reader of this section. A living-spec re-run is exempt (it is no
+  roadmap phase, with no spec PR and no gate); the theme's first plan keeps the
+  limit.
 - A one-line north star tying back to the vision.
 
 No status markers in the roadmap — progress lives in the GitHub issues and

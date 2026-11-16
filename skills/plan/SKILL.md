@@ -107,7 +107,7 @@ turn out to be already determined:
 - Fill Human prerequisites completely: every secret, external provisioning,
   dashboard config, or account only a human can provide for this milestone — or
   `none` explicitly. Anything missed becomes a parked issue mid-loop.
-- No step list inside the spec — steps live as issues. The Outcome list is
+- No step list in the spec: Tracking lists the planned issues (the cut); issues own their steps. The Outcome list is
   done-criteria, not a progress mirror. Everything in `docs/` is in English.
 - Design surface: if this scope has UI surface or a visualisation would
   materially clarify a decision, Read `${CLAUDE_SKILL_DIR}/references/design-surface.md`;
@@ -135,8 +135,11 @@ feeds the existing acceptance gate (step 6), never a second human stop.
 - Write each Verification item so one PR checks it whole; Tracking names the
   items per issue and a `QA gate:` line holds the whole-milestone ones. A detail
   an issue would need goes into the spec now.
-- Scope it to questions those docs answer or that are genuinely open; a fork reaching an implementer is a
-  planning defect this step exists to catch.
+- Count the cut against the phase-size limit (the contract's, else the default in
+  `${CLAUDE_PLUGIN_ROOT}/skills/shared/iteration-steps.md`); over it, Read
+  `${CLAUDE_SKILL_DIR}/references/split.md`.
+- Scope it to questions those docs answer or that are genuinely open; a fork
+  reaching an implementer is a planning defect this step catches.
 
 ## 5. Worktree and PR
 
@@ -157,6 +160,7 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   title=$(cat "$f_title")
   gh pr create --base "$base" --head docs/<scope> --title "$title" --body-file "$f_body"
   ```
+- A split also stages `docs/roadmap.md` and `docs/prior-art.md`.
 - A `docs:` spec PR closes no issue. Its body carries the rationale, probes and
   history the spec leaves out.
 
@@ -169,7 +173,7 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   it builds on). `docs/vision.md` and `docs/constitution.md` are not re-seeded:
   the project `CLAUDE.md` imports both, so the reviewer already has them.
   `docs/architecture.md` is seeded because `CLAUDE.md` does not auto-load it.
-  Ask whether each Outcome and Constraint id has its check (blocking if not).
+  Ask whether each Outcome and Constraint id has its check and the cut fits the limit (blocking if not).
   Ask explicitly whether the spec contradicts `docs/vision.md`,
   `docs/constitution.md`, or `docs/architecture.md` (blocking if so). Verify every
   foundation-doc citation against the full source, never at face value: a spec
