@@ -8,6 +8,52 @@ Versioning and the release process are defined in [`docs/release.md`](docs/relea
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-11-16
+
+### Changed
+
+- **A phase spec is measured by its checks and its structure, never by its
+  line count.** Every contract has its check: the spec template numbers
+  Outcomes (`O1`), Constraints (`C1`) and Verification items (`V1`), and each
+  Verification item cites the Outcome and Constraint ids it checks. A
+  check is a Verify guard, a test or a QA-gate item. A line no check can cover
+  is no Constraint: sequencing goes to Tracking, a probe, measurement or
+  history to the spec PR body, an assumption or risk to Risks and
+  mitigations. `/loopkit:plan`'s pre-mortem builds the mapping, and its
+  spec-acceptance review checks that every id has its check. (#362)
+- **Details stay in the spec, not in the issues.** A planned issue's body
+  carries its `Goal:`, `Acceptance:`, `Depends on:` and `Spec:` lines and
+  nothing the spec does not say. Each Verification item is written so one PR
+  can check it whole, and each Tracking line names the items its issue's
+  `Acceptance:` mirrors; whole-milestone items sit on a `QA gate:` line. The
+  spec PR body carries the rationale, probes and history the spec leaves out.
+  (#362)
+- **A phase is sized by its structure.** A phase plans at most the workflow
+  contract's `Phase-size limit:` of implementing issues, default 3 (stated
+  once in `skills/shared/iteration-steps.md`; the workflow template carries
+  the line, and a project may change the number). Review follow-ups, QA-gate
+  fix issues and `track:adhoc` issues do not count, and a living-spec re-run
+  is exempt. The spec's Tracking lists the planned issues (the cut: per issue
+  its Outcomes, files and `Depends on`), never their steps. A cut over the
+  limit splits in the pre-mortem (`skills/plan/references/split.md`): the spec
+  keeps a first part, and each moved part becomes a new roadmap row with a
+  new id, riding the spec PR to the gate. Roadmap seeding sizes phases to the
+  limit too. The constitution's "Proportional ceremony" principle and the
+  architecture carry the rule. (#363)
+- **Growth by cause in the review bound.** In planning, a fix that closes a
+  finding grows the spec as far as closing it needs; scope growth (a new
+  outcome, route, command, schema field or foundation-doc change no blocking
+  finding asked for) is a blocking finding, and the planner carries it to the
+  spec-acceptance gate as an `OPEN` Prior decisions row. In an issue PR,
+  growth stays inside the spec's contracts: new scope escalates
+  `needs:planning`, whether a finding asked for it or not. No tightening of
+  the bound may stop on size: line counts are telemetry, never a budget. The
+  spec-acceptance review gains two blocking classes: a contract with no check,
+  and a cut over the phase-size limit. (#361)
+- `/loopkit:plan`'s step-2 source checkout and step-3 design-surface detail
+  move to `references/source-checkout.md` and `references/design-surface.md`,
+  read only on the runs that need them. (#362)
+
 ## [2.5.0] - 2026-11-04
 
 ### Changed
