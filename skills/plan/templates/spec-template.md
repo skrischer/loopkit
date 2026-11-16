@@ -125,6 +125,7 @@ own progress. Do not duplicate the step list here.
   it whole.
 - QA gate: the Verification items only the whole milestone can check (a smoke
   run, a check over the milestone's diff).
+
 Every Verification item sits on at least one line.
 
 Each issue references this spec path in its body.
