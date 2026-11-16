@@ -240,7 +240,7 @@ Target text:
 
 ## Prior art
 
-- [Checks, not lines — contract-to-check mapping, structural phase size, growth by cause (feature: checks-not-lines)](../prior-art.md#checks-not-lines--contract-to-check-mapping-structural-phase-size-growth-by-cause-feature-checks-not-lines)
+- [Checks, not lines — contract-to-check mapping, structural phase size, growth by cause (feature: checks-not-lines)](../../prior-art.md#checks-not-lines--contract-to-check-mapping-structural-phase-size-growth-by-cause-feature-checks-not-lines)
   - The relay and loopkit evidence: line rules that fired on fork-closing
     fixes, and loopkit's specs and phases growing without a structural limit.
   - Spec Kit's coverage gaps: ADOPT coverage keyed by an id; AVOID a separate
@@ -250,9 +250,9 @@ Target text:
   - Knip, Goodhart/Strathern: measure the defect; a line count is telemetry,
     never a budget.
   - DORA small batches: size by independently completable units (issues).
-- [Process-PR overhead — ceremony telemetry (feature: ceremony-overhead)](../prior-art.md#process-pr-overhead--ceremony-telemetry-feature-ceremony-overhead)
+- [Process-PR overhead — ceremony telemetry (feature: ceremony-overhead)](../../prior-art.md#process-pr-overhead--ceremony-telemetry-feature-ceremony-overhead)
   — the ceremony number this phase refines: lines per change stay telemetry.
-- [Review bound — round-limited agent review with blocking classes (feature: review-bound)](../prior-art.md#review-bound--round-limited-agent-review-with-blocking-classes-feature-review-bound)
+- [Review bound — round-limited agent review with blocking classes (feature: review-bound)](../../prior-art.md#review-bound--round-limited-agent-review-with-blocking-classes-feature-review-bound)
   — the bound that growth by cause extends.
 
 ## Human prerequisites
