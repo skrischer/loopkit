@@ -98,12 +98,14 @@ milestone and issues. A completed spec is moved to `docs/specs/archive/`.
     and `Spec:` lines and nothing the spec does not say. A detail an issue
     would need goes into the spec before acceptance.
   - An issue's `Acceptance:` mirrors each Verification item, or the part of
-    one, that checks a file the issue touches, as named by its Tracking line.
-    So an Outcome that two issues build gives each issue the part on its own
-    files. An item that checks the whole milestone (a smoke run, or a check
-    over the milestone's diff) says so and stays with the QA gate alone. A
-    foundation-doc change whose Outcome two issues build lands with the last
-    of them by `Depends on`.
+    one, that checks a file the issue touches for an Outcome the issue builds,
+    both as named by its Tracking line. A part that checks only a Constraint
+    goes to every issue touching the file the Constraint names. So two issues
+    sharing a file each take the part for their own Outcomes. An item that
+    checks the whole milestone (a smoke run, or a check over the milestone's
+    diff) says so and stays with the QA gate alone. A foundation-doc change
+    whose Outcome two issues build lands with the last of them by
+    `Depends on`.
   - The spec PR body carries the rationale, probes and history the spec leaves
     out. A Prior decisions row keeps only the rationale an implementer needs to
     judge an edge case.
@@ -269,7 +271,7 @@ none
 | The limit counts one plan run's issues. A living-spec re-run creates at most the limit's issues, and the rest waits for a re-run after the batch's QA gate. | The limit bounds what one gate reviews and one QA run covers. A re-run has no gate, so its batch is the unit. | 2026-11-16 |
 | Growth by cause has two routes: in planning, scope growth goes to the gate as an `OPEN` row; in an issue PR, any new scope escalates `needs:planning`. | Foundation-doc edits are never authored in `/loopkit:implement` (constitution), and a design beyond the spec is a fork (issue contract). | 2026-11-16 |
 | The floor forbids a tightening that stops on size. | A size stop is the defect this phase removes. Line counts stay telemetry. | 2026-11-16 |
-| An issue's `Acceptance:` takes the Verification items, or their parts, on the files it touches. Whole-milestone items stay with the QA gate. | Files are what an issue can check in its own PR, and the Tracking line names them. Citing Outcomes says which contract an item covers, not which issue builds it. | 2026-11-16 |
+| An issue's `Acceptance:` takes the Verification items, or their parts, on the files it touches for the Outcomes it builds. Whole-milestone items stay with the QA gate. | An issue can check only its own files in its own PR, and a file two issues share is split by Outcome. The Tracking line names both. | 2026-11-16 |
 | The constitution gains the size rule only. | "Never by its line count" is a binding don't. The check mapping is mechanism, and the constitution is always loaded. | 2026-11-16 |
 | Step 4 stays in the core, and two passages that only some runs need move out (C1). | References hold "subagent-only or some-runs-only detail" (architecture), and the pre-mortem runs on every run before the gate. | 2026-11-16 |
 
