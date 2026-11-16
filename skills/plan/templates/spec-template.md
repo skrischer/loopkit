@@ -10,12 +10,12 @@ and milestone. A completed spec is moved to `docs/specs/archive/`.
 ## Outcome
 
 What is true when this work is done? Write observable, verifiable outcomes — not
-activities. These are the spec's done-criteria, not a progress tracker: check a
+activities. Number each one (`O1`, `O2`, …) so Verification can cite it. These are the spec's done-criteria, not a progress tracker: check a
 box only when the outcome holds end-to-end. Step-by-step progress lives in the
 issues, never here.
 
-- [ ] Outcome 1
-- [ ] Outcome 2
+- [ ] O1. Outcome 1
+- [ ] O2. Outcome 2
 
 ## Scope
 
@@ -30,10 +30,14 @@ issues, never here.
 ## Constraints
 
 Technical constraints, existing decisions, and assumptions that affect
-implementation. Reference the constitution rather than restating it.
+implementation. Reference the constitution rather than restating it. Number each
+one (`C1`, `C2`, …); every Constraint must be covered by a check. A line no
+check can cover is not a Constraint: sequencing goes to Tracking, a probe,
+measurement or history to the spec PR body, an assumption or risk to Risks and
+mitigations.
 
-- Constraint 1
-- Constraint 2
+- C1. Constraint 1
+- C2. Constraint 2
 
 ## Foundation-doc changes
 
@@ -98,8 +102,9 @@ explicitly if there are none.
 
 ## Prior decisions
 
-Decisions already made that the implementor must respect. Include rationale so
-edge cases can be judged. Mark any genuinely-open point explicitly until it is
+Decisions already made that the implementor must respect. Keep only the
+rationale an implementer needs to judge an edge case; the rest goes in the spec
+PR body. Mark any genuinely-open point explicitly until it is
 resolved at the spec-acceptance gate.
 
 | Decision | Rationale | Date |
@@ -114,7 +119,14 @@ issue per step, grouped under a milestone. This spec owns the design; the issues
 own progress. Do not duplicate the step list here.
 
 - Milestone: [Phase/Feature name](<milestone-url>)
-- Issues: created from this spec once it is merged (one per implementable step)
+- Issues: created from this spec once it is merged (one per implementable step).
+  Each line names the Verification items its issue's `Acceptance:` mirrors
+  (`Acceptance: V1, V4`); an item may sit on several lines when each PR checks
+  it whole.
+- QA gate: the Verification items only the whole milestone can check (a smoke
+  run, a check over the milestone's diff).
+
+Every Verification item sits on at least one line.
 
 Each issue references this spec path in its body.
 
@@ -122,14 +134,20 @@ Each issue references this spec path in its body.
 
 How does Claude Code (or the developer) know the entire spec is complete? Use
 the project's Verify/Test/Build commands from `docs/workflow.md`. This list
-doubles as the script for the human milestone-QA gate: while the project's Test
+doubles as the script for the human milestone-QA gate. Number each item (`V1`, `V2`, …), write
+it so one PR can check it whole, and end it with the Outcome and Constraint ids
+it checks, in parentheses (`(O1, C2)`). Every Outcome and Constraint id appears
+in at least one item. A check is a Verify guard, a test, or a QA-gate item (a
+smoke scenario or a review check); a machine check still gets its own line,
+naming the guard or test. While the project's Test
 command is `none yet`, list every acceptance item no machine check covers —
 they are checked by the human here.
 
-- [ ] Verify passes
-- [ ] Every Foundation-doc change landed verbatim, where its `Lands:` line says
-- [ ] [Specific behavioral test]
-- [ ] [Specific edge case handled]
+- [ ] V1. Verify passes (O1, C1)
+- [ ] V2. Every Foundation-doc change landed verbatim, where its `Lands:` line
+  says (O1)
+- [ ] V3. [Specific behavioral test] (O2)
+- [ ] V4. [Specific edge case handled] (C2)
 
 ## Risks and mitigations
 

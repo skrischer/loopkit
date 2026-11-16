@@ -86,14 +86,8 @@ turn out to be already determined:
 
 1. Precedent-decided — backed by reference implementations in
    `docs/prior-art.md`. Consult it for the scope unconditionally; adopt and
-   record in the spec. When a `docs/prior-art.md` verdict is too coarse to
-   settle the decision and the entry is a clonable public repo (a code `Path:`,
-   not an article), you are encouraged to check that source out and read the
-   specific implementation — a read-only, ephemeral clone outside the repo
-   (e.g. `../loopkit-priorart/<project>`), discarded when done. Record the
-   finding (file/approach) in the spec's Prior decisions; never
-   commit the external code into this repo. Only when it hardens a real
-   decision.
+   record in the spec. When a verdict is too coarse to settle the decision, Read
+   `${CLAUDE_SKILL_DIR}/references/source-checkout.md`.
 2. Constraint-determined — derivable from this codebase, `docs/constitution.md`,
    or `CLAUDE.md`. Decide it and record the rationale.
 3. Genuinely open — neither precedent nor constraint settles it. These are
@@ -115,16 +109,9 @@ turn out to be already determined:
   `none` explicitly. Anything missed becomes a parked issue mid-loop.
 - No step list inside the spec — steps live as issues. The Outcome list is
   done-criteria, not a progress mirror. Everything in `docs/` is in English.
-- Design surface (optional, by surface only): if this scope has UI surface
-  or a visualisation would materially clarify a decision (flow / state /
-  architecture / concept), invoke `/loopkit:design` from within this planning
-  cycle (it reads `docs/design.md` for every tool specific) and reference its
-  committed design artifact from the spec by repo path — the design travels in
-  the spec package and is reviewed at the spec-acceptance gate (step 6), adding
-  no new gate. The referenced artifact's presence is the design-surface signal
-  the implementer reads — no separate label. A scope with neither surface skips
-  this entirely (proportional ceremony). If `docs/design.md` is missing or records `none`, the
-  project did not enable the design phase: note it and proceed without designing.
+- Design surface: if this scope has UI surface or a visualisation would
+  materially clarify a decision, Read `${CLAUDE_SKILL_DIR}/references/design-surface.md`;
+  a scope with neither skips it.
 
 ## 4. Anticipate implementer questions (pre-mortem — not a new gate)
 
@@ -140,6 +127,14 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   question, bake the answer into the spec — a Prior decisions row — so the implementer never has to ask.
 - What none of them settles becomes a genuinely-open item carried into the
   acceptance gate (step 6), marked in the spec as in step 3; do not guess.
+- Build the check mapping: every Outcome and Constraint id is cited by at least
+  one Verification item `(O1, C2)`; a check is a Verify guard, a test or a
+  QA-gate item. A line no check can cover is no Constraint: sequencing goes to
+  Tracking, a probe, measurement or history to the PR body, an assumption or
+  risk to Risks and mitigations.
+- Write each Verification item so one PR checks it whole; Tracking names the
+  items per issue and a `QA gate:` line holds the whole-milestone ones. A detail
+  an issue would need goes into the spec now.
 - Scope it to questions those docs answer or that are genuinely open; a fork reaching an implementer is a
   planning defect this step exists to catch.
 
@@ -162,7 +157,8 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   title=$(cat "$f_title")
   gh pr create --base "$base" --head docs/<scope> --title "$title" --body-file "$f_body"
   ```
-- A `docs:` spec PR closes no issue.
+- A `docs:` spec PR closes no issue. Its body carries the rationale, probes and
+  history the spec leaves out.
 
 ## 6. Review + spec-acceptance gate (STOP — the milestone gate)
 
@@ -173,6 +169,7 @@ feeds the existing acceptance gate (step 6), never a second human stop.
   it builds on). `docs/vision.md` and `docs/constitution.md` are not re-seeded:
   the project `CLAUDE.md` imports both, so the reviewer already has them.
   `docs/architecture.md` is seeded because `CLAUDE.md` does not auto-load it.
+  Ask whether each Outcome and Constraint id has its check (blocking if not).
   Ask explicitly whether the spec contradicts `docs/vision.md`,
   `docs/constitution.md`, or `docs/architecture.md` (blocking if so). Verify every
   foundation-doc citation against the full source, never at face value: a spec
